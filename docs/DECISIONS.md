@@ -228,3 +228,8 @@
 
 - GitHub 저장소와 README에 운영 URL `https://cheerful-sundae-3a0b77.netlify.app/`을 연결한다.
 - 링크 공유 미리보기는 Open Graph·Twitter 메타데이터와 기존 비행기 배경 자산을 재사용해 신규 이미지·저장 비용을 추가하지 않는다.
+
+## 2026-10-31 브랜드 미리보기 이미지
+
+- 단순 비행기 배경 대신 기존 챙기고 로고와 핵심 설명을 합성한 1200×630 PNG를 README와 Open Graph/Twitter 미리보기에 함께 사용한다.
+- 원본 로고·배경 자산을 재사용하고 `scripts/generate-social-preview.ps1`로 재생성 가능하게 유지한다.
