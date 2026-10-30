@@ -125,8 +125,8 @@ export default function PhotoSection({
           )}
         </div>
       ))}</div>
-      <button className="primary-action analyze-button" disabled={busy || !photos.length} onClick={analyze}>
-        <span aria-hidden="true">✦</span> 등록 사진 AI 분석
+      <button className="primary-action analyze-button" aria-busy={busy} disabled={busy || !photos.length} onClick={analyze}>
+        <span aria-hidden="true">✦</span> {busy ? '사진 분석 중…' : '등록 사진 AI 분석'}
       </button>
     </section>
   )

@@ -4,7 +4,7 @@
 
 최신 기준: [계약 2.0.0](contract/v2/README.md), [규정 엔진](docs/RULE_ENGINE.md), [프론트 추가 인계](docs/FRONTEND_RULES_HANDOFF.md). API는 `/api/v2`, 기존 `/api`는 1.0.0으로 유지. 16개 항공사 직접 운항편·한국 출발·여행자 1명·6개 분류 규정 판정 지원. 사진 인식은 Gemini, 제품 조회는 Tavily를 사용.
 
-현재 범위는 **백엔드 API·공용 계약·내부 체크 화면**. 사용자 UI/UX·티켓 디자인·개인 도감 저장은 프론트 담당. 판정은 순수 알고리즘, Gemini 인식·제품 검색은 연결 코드 준비·실제 호출 잠금 상태.
+판정은 순수 알고리즘, 사진 인식은 Gemini, 선택형 제품 검색은 Tavily를 사용한다. 목 응답은 명시적으로 `USE_DEMO_RECOGNITION=true`를 설정한 개발·테스트 환경에서만 사용한다.
 
 프론트 새 연동: [규정 입력 인계](docs/FRONTEND_RULES_HANDOFF.md), [2.0 사진 연동](docs/FRONTEND_HANDOFF_V2.md). 기존 1.0은 [이전 인계 가이드](docs/FRONTEND_HANDOFF.md)와 [이전 계약](contract/README.md)에 보존.
 
@@ -63,8 +63,8 @@ git switch -c feat/기능명
 | 항목 | 설정 |
 | --- | --- |
 | Base directory | 저장소 루트, 별도 입력 없음 |
-| Build command | `npm run check` |
-| Publish directory | `dist/check` |
+| Build command | `npm run check && npm --prefix apps/web run build` |
+| Publish directory | `apps/web/dist` |
 | Node.js / npm | 24 / 11 |
 | Functions directory | `netlify/functions` |
 | API 경로 | 함수 `config.path`의 `/api/*` |
@@ -75,9 +75,9 @@ git switch -c feat/기능명
 3. 위 설정 확인 후 배포. 환경변수가 필요하면 Netlify 프로젝트의 Environment variables에 등록하고 재배포
 4. 발급된 HTTPS 주소에서 화면·기능·새로고침 확인. 클라이언트 경로를 추가하면 해당 주소 직접 접속도 확인
 
-Netlify에서 검사와 빌드가 성공한 경우에만 `dist/check/`와 Functions 배포. 이후 연결 브랜치 변경 시 자동 배포. 현재 Netlify 프로젝트 연결·실제 배포·공개 URL 검증은 미수행.
+Netlify에서 검사와 사용자 웹 빌드가 모두 성공한 경우에만 `apps/web/dist/`와 Functions를 배포한다. 이후 연결 브랜치 변경 시 자동 배포한다.
 
-서버 환경변수: `ALLOWED_ORIGINS`(정확한 프론트 Origin, 쉼표 구분), `USE_DEMO_RECOGNITION=true`. `.env.example`을 참고해 `.env.local` 작성. Gemini 연결 준비 변수는 `GEMINI_API_KEY`, `GEMINI_MODEL`이며 `VITE_` 사용 금지. 실제 어댑터는 구현했으나 API 라우터에는 아직 연결하지 않아 키만 넣어도 외부 호출이 시작되지 않음. 실연결 전에 모델 호환성·공식 규정·요청 제한·예산을 검증. `USE_DEMO_RECOGNITION=false` 인식·조회 요청은 503 반환.
+운영 서버 환경변수: `ALLOWED_ORIGINS`(공개 사이트 Origin), `USE_DEMO_RECOGNITION=false`, `GEMINI_CALLS_ENABLED=true`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `TAVILY_API_KEY`. 비밀키에 `VITE_` 접두사를 사용하지 않는다. Gemini 키나 모델이 누락되면 인식 요청은 503을 반환한다.
 
 설정 근거: [Vite 배포](https://docs.netlify.com/build/frameworks/framework-setup-guides/vite/), [파일 기반 설정](https://docs.netlify.com/build/configure-builds/file-based-configuration/), [Node.js·npm 버전](https://docs.netlify.com/build/configure-builds/manage-dependencies/).
 

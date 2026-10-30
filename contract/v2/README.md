@@ -4,7 +4,7 @@
 
 현재는 Gemini 사진 인식·Tavily 제품 조회와 16개 항공사 규정 엔진 제공. 1.0.0의 /api/*·기존 2.0 응답 유지. details·inventoryComplete 선택 요청과 /rules 조회를 호환 확장. 최신 입력/표시 기준: docs/FRONTEND_RULES_HANDOFF.md, 근거·범위: docs/RULE_ENGINE.md.
 
-Gemini 사진 인식과 Tavily 제품 조회 연결 코드는 준비했으며 기본 호출 잠금. Tavily 조회는 정확한 모델 출처의 명시 사양만 후보로 제공하고 사용자 재확인을 요구함. candidate 목업과 apply-candidate.ts로 같은 흐름을 개발할 수 있음.
+Gemini 사진 인식과 Tavily 제품 조회를 실제 API 경로에 연결함. Tavily 조회는 정확한 모델 출처의 명시 사양만 후보로 제공하고 사용자 재확인을 요구함. candidate 목업과 apply-candidate.ts는 테스트·개발용으로 유지함.
 
 비용 절감 흐름은 라벨 판독 → 사용자 확인 → 공칭전압 기반 로컬 Wh 계산 → 규정 판정이다. 제품 검색은 모델명이 확인됐지만 사양이 부족할 때만 선택 실행한다. 검색 실패·한도 초과는 빈 후보 정상 응답으로 처리해 수동 입력과 판정을 막지 않는다. 동일 사진 인식 성공 결과는 실행 중 30분간 재사용하며 자동 재시도하지 않는다.
 
@@ -112,7 +112,7 @@ await api.recognize({
 - JPEG·PNG·WebP. 클라이언트 1280px·1MiB 목표는 현재 공통 변환 기준이며 라벨 판독 품질·비용 최적화의 최종 검증값 아님
 - 사진·base64·개인정보 서버 저장/로그 없음. 요청 뷰어에서 사진 데이터 생략. 선택만으로 네트워크 호출 없음
 - 기존 CORS 허용 목록·본문 크기·수신 제한·공통 오류 적용. 클라이언트의 메타데이터를 서버 보안 검증 대신 사용하지 않음
-- USE_DEMO_RECOGNITION=false만 설정하면 인식·조회 503. 실제 호출에는 추가 GEMINI_CALLS_ENABLED=true·서버 키·모델이 필요. 기본 잠금이며 이번 구현 중 실제 Gemini 호출·비용 발생 없음
+- 기본은 `USE_DEMO_RECOGNITION=false`. 실제 호출에는 `GEMINI_CALLS_ENABLED=true`·서버 키·모델이 필요하며, 목 응답은 `USE_DEMO_RECOGNITION=true`를 명시한 경우에만 사용
 - meta.isDemoRules=false는 실제 규정 알고리즘 사용 여부. 사진 인식·제품 조회의 시연 플래그와 별개이며 전체 실제 AI 연동 완료를 뜻하지 않음. 직원 참고 안내 유지
 
 ## 프론트 전환

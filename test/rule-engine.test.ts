@@ -165,7 +165,7 @@ describe('규정 수명·공식 출처·실제 HTTP handler 계약', () => {
     const network = vi.spyOn(globalThis, 'fetch')
     try {
       const output = await api.evaluate(request([item()]))
-      expect(output.meta).toMatchObject({ isDemoRules: false, isDemoRecognition: true })
+      expect(output.meta).toMatchObject({ isDemoRules: false, isDemoRecognition: false })
       expect(output.ruleVersion).toBe('KE-KR-2026-10-31-r2'); expect(output.results[0]!.isDemo).toBe(false)
       expect(network).not.toHaveBeenCalled()
     } finally { network.mockRestore() }

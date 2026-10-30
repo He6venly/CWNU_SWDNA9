@@ -129,7 +129,6 @@ summary { min-height: 44px; display: flex; align-items: center; cursor: pointer;
 .app-header nav button.active { color: #fff; box-shadow: inset 0 -4px var(--sky); }
 .local-badge { align-self: center; justify-self: end; padding: 6px 8px; border: 1px solid #ffffff4d; border-radius: 3px; color: #dbe4e8; font: 700 10px "IBM Plex Mono", monospace; }
 .mode-banner { position: relative; z-index: 1; min-height: 42px; display: flex; align-items: center; gap: 12px; padding: 8px max(20px, calc((100% - 1120px) / 2)); color: #5d4817; background: #f5e8bde8; border-bottom: 1px solid #ddc982; font-size: 12px; }
-.mode-banner strong { flex: 0 0 auto; padding-right: 12px; border-right: 1px solid #c7ac5a; }
 .travel { position: relative; z-index: 1; width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 56px; }
 .screen-stack { display: grid; gap: 24px; }
 
@@ -507,7 +506,6 @@ article { overflow-wrap: anywhere; }
   .app-header { min-height: 64px; }
   .brand-logo { width: 158px; height: 52px; }
   .mode-banner { align-items: flex-start; flex-direction: column; gap: 4px; padding: 9px 12px; }
-  .mode-banner strong { padding: 0; border: 0; }
   .travel { width: calc(100% - 20px); padding-top: 16px; }
   .screen-stack { gap: 14px; }
   .trip-summary, .route-bar { grid-template-columns: 1fr; gap: 14px; padding: 20px 16px; }

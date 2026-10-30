@@ -41,7 +41,7 @@ const request = {
 ## 결과·표시
 
 - 지원 16개 항공사: 항공사별 검수 규정 알고리즘, meta.isDemoRules=false, result.isDemo=false, 개별 ruleVersion 제공
-- 인식·제품 조회는 여전히 시연. isDemoRules=false를 전체 AI 연동 완료로 해석하지 않기
+- 운영에서 인식은 Gemini, 제품 조회는 Tavily를 사용. 각 응답의 `meta` 플래그로 실제 연동 여부 확인
 - createMockClient.evaluate는 기존 고정 NEEDS_INFO 유지. 실제 판정 검수는 로컬 API의 지원 항공사로 수행
 - 합산 초과: verdict=PROHIBITED, reason의 현재 구성 불가 안내, action=CHECK_CONDITIONS. 모든 물품을 버리라는 뜻이 아니므로 action을 UI에서 재계산하지 않기
 - 출력용 displayValue를 판정에 다시 사용하지 않기. 최신 판정이 반환한 derivedFields.wh를 표시
@@ -55,8 +55,7 @@ const request = {
 
 ## Gemini 연결 준비
 
-- 사용자 승인으로 로컬 실호출 활성화. 신규 설치의 .env.example은 GEMINI_CALLS_ENABLED=false 유지. 키만 추가해도 호출되지 않음
-- 실제 연결 시 USE_DEMO_RECOGNITION=false, GEMINI_CALLS_ENABLED=true, 서버 GEMINI_API_KEY·GEMINI_MODEL 설정. 검색 모델은 GEMINI_LOOKUP_MODEL로 분리 가능. 로컬 실행에서는 기존 프로세스 환경변수가 .env.local보다 우선하므로 실제 적용 모델 확인
+- 운영·로컬 기본은 USE_DEMO_RECOGNITION=false, GEMINI_CALLS_ENABLED=true, 서버 GEMINI_API_KEY·GEMINI_MODEL 설정. 시연 모드는 개발·테스트에서만 명시적으로 true 사용
 - 제품 조회는 모델명이 정확히 일치하고 검색 인용 출처가 있는 후보만 반환. apply-candidate.ts의 applyCandidate로 기존 값을 보존하고 빈 값만 채운 뒤 재확인
 - createMockClient({lookupScenario:'candidate'})로 실제 호출 없이 후보 적용 UI 개발 가능. 가상 사양·출처임을 표시
 - 실제 조회 응답에는 선택 searchSuggestions HTML이 추가될 수 있으므로 최신 계약으로 갱신한 뒤 실제 연결 활성화. LookupCandidates.tsx처럼 스크립트 없는 sandbox iframe에서 표시하고 직접 DOM 삽입 금지

@@ -32,7 +32,7 @@ export async function handleApiV2(request: Request, environment: GeminiEnvironme
     if (request.method === 'OPTIONS') return preflight(request, headers, method)
     if (request.method !== method) { headers.set('Allow', `${method}, OPTIONS`); throw new HttpError(405, 'METHOD_NOT_ALLOWED', '지원하지 않는 요청 방식입니다.') }
     if (!['categories', 'rules'].includes(operation) && url.search) throw invalidRequest()
-    const demoEnabled = environment.USE_DEMO_RECOGNITION === undefined || environment.USE_DEMO_RECOGNITION === 'true'
+    const demoEnabled = environment.USE_DEMO_RECOGNITION === 'true'
     const demoRuntimeMeta = { ...demoMeta, isDemoRecognition: demoEnabled, isDemoLookup: demoEnabled }
     const rulesMeta = { ...demoRuntimeMeta, isDemoRules: false }
     let body: unknown

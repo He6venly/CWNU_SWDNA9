@@ -16,16 +16,17 @@ import { handleApi } from '../netlify/functions/_lib/api.ts'
 const overview = s.RecognizeRequestSchema.parse(requests.overview)
 const label = s.RecognizeRequestSchema.parse(requests.label)
 const estimate = s.RecognizeRequestSchema.parse(requests.estimate)
-const actual = createApiClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), {}) })
+const demoEnvironment = { USE_DEMO_RECOGNITION: 'true' }
+const actual = createApiClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), demoEnvironment) })
 const itemInfo = () => ({ ...s.DetectedItemSchema.parse(fixtureItems.label), confirmed: false, userEdited: false })
 const evaluateBody = () => ({ airlineId: 'demo-airline', flightType: 'domestic' as const, departureCountry: 'KR' as const, items: [itemInfo()] })
-const post = (operation: string, body: unknown, headers?: HeadersInit) => handleApi(new Request(`https://api.example/api/v2/${operation}`, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', ...headers } }), {})
+const post = (operation: string, body: unknown, headers?: HeadersInit) => handleApi(new Request(`https://api.example/api/v2/${operation}`, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', ...headers } }), demoEnvironment)
 beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-31T09:00:00Z')) })
 afterEach(() => vi.useRealTimers())
 
 describe('2.0 계약과 버전 공존', () => {
   it('v1과 v2 실제 클라이언트가 서로 다른 메타 계약으로 동작', async () => {
-    const legacy = createLegacyClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), {}) })
+    const legacy = createLegacyClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), demoEnvironment) })
     expect((await legacy.health()).meta.contractVersion).toBe('1.0.0')
     expect((await actual.health()).meta).toEqual({ ...demoMeta, isDemoRules: false })
     expect((await actual.meta()).capabilities.evaluation).toBe('rules')
