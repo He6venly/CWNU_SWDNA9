@@ -2,6 +2,10 @@
 
 2026 CWNU SW-DNA² 챌린지 웹앱 개발 저장소. 임시 제목: 여행 짐 반입 확인.
 
+**[배포 서비스 바로가기](https://cheerful-sundae-3a0b77.netlify.app/)**
+
+[![챙기고 서비스 미리보기](https://cheerful-sundae-3a0b77.netlify.app/sky-airplane-background.jpg)](https://cheerful-sundae-3a0b77.netlify.app/)
+
 최신 기준: [계약 2.0.0](contract/v2/README.md), [규정 엔진](docs/RULE_ENGINE.md), [프론트 추가 인계](docs/FRONTEND_RULES_HANDOFF.md). API는 `/api/v2`, 기존 `/api`는 1.0.0으로 유지. 16개 항공사 직접 운항편·한국 출발·여행자 1명·6개 분류 규정 판정 지원. 사진 인식은 Gemini, 제품 조회는 Tavily를 사용.
 
 판정은 순수 알고리즘, 사진 인식은 Gemini, 선택형 제품 검색은 Tavily를 사용한다. 목 응답은 명시적으로 `USE_DEMO_RECOGNITION=true`를 설정한 개발·테스트 환경에서만 사용한다.
