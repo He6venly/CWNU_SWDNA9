@@ -223,3 +223,8 @@
 - 촬영용 SKY-PD20 고정 응답·3초 지연·시연 배지를 제거하고 사진을 Gemini에 전송하는 기존 인식 경로로 복귀한다.
 - 실행 환경은 `USE_DEMO_RECOGNITION=false`, `GEMINI_CALLS_ENABLED=true`를 기본으로 하고 서버 전용 `GEMINI_API_KEY`와 `GEMINI_MODEL`을 요구한다.
 - 배포 환경에서 시연이 묵시적으로 활성화되지 않도록 `USE_DEMO_RECOGNITION=true`일 때만 목 응답을 사용한다. 목·fixture는 계약 검증용으로 유지한다.
+
+## 2026-10-31 배포 링크·미리보기
+
+- GitHub 저장소와 README에 운영 URL `https://cheerful-sundae-3a0b77.netlify.app/`을 연결한다.
+- 링크 공유 미리보기는 Open Graph·Twitter 메타데이터와 기존 비행기 배경 자산을 재사용해 신규 이미지·저장 비용을 추가하지 않는다.
