@@ -83,11 +83,25 @@ export default function PhotoSection({
       </div>
       <div className="photo-grid">{photos.map((photo) => (
         <div className="photo-preview" key={photo.id}>
-          <img
-            className="photo"
-            alt={`선택한 사진 ${photo.id}`}
-            src={photo.preview}
-          />
+          <div className="photo-preview-media">
+            <img
+              className="photo"
+              alt={`선택한 사진 ${photo.id}`}
+              src={photo.preview}
+            />
+            <button className="photo-delete-button"
+              type="button"
+              aria-label={`선택한 사진 ${photo.id} 삭제`}
+              title="사진 삭제"
+              disabled={busy}
+              onClick={() => {
+                invalidate()
+                setPhotos((current) => current.filter((p) => p.id !== photo.id))
+              }}
+            >
+              <span aria-hidden="true">×</span> 삭제
+            </button>
+          </div>
           {captureMode === 'detail' && (
             <label>
               사진 종류
@@ -109,15 +123,6 @@ export default function PhotoSection({
               </select>
             </label>
           )}
-          <button className="danger-action"
-            disabled={busy}
-            onClick={() => {
-              invalidate()
-              setPhotos((current) => current.filter((p) => p.id !== photo.id))
-            }}
-          >
-            사진 삭제
-          </button>
         </div>
       ))}</div>
       <button className="primary-action analyze-button" disabled={busy || !photos.length} onClick={analyze}>
