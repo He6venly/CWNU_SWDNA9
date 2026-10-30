@@ -11,12 +11,16 @@ import type {
 } from '../../../../contract/v2/types.ts'
 import type { Source } from '../../../../contract/types.ts'
 import type { Photo } from './PhotoPicker'
+import { FIELD_KEYS } from '../../../../contract/v2/constants.ts'
+import { mergeLabel } from './mergeLabel.ts'
+import { recognizeCached } from './recognitionCache.ts'
 import { DEPARTURE_COUNTRY } from '../../../../contract/v2/constants.ts'
 import { applyCandidate } from '../../../../contract/v2/apply-candidate.ts'
 import { saveCatalogCard } from './catalogStore'
 import { useCheckTask } from './useCheckTask'
 export function useTravelWorkbench() {
   const [refresh, setRefresh] = useState(0)
+  const [itemPhotos, setItemPhotos] = useState<Record<string, Photo[]>>({})
   const [status, setStatus] = useState('API 상태 확인 중'),
     [airlines, setAirlines] = useState<Airline[]>([])
   const [captureMode, setCaptureMode] = useState<'overview' | 'detail'>(
@@ -53,14 +57,12 @@ export function useTravelWorkbench() {
       api.health(controller.signal),
       api.meta(controller.signal),
       api.airlines(controller.signal),
-      api.rules('korean-air', controller.signal),
     ])
-      .then(([health, metadata, list, rules]) => {
+      .then(([health, metadata, list]) => {
         setStatus(
           `계약 ${health.meta.contractVersion} · 사진 인식: ${metadata.meta.isDemoRecognition ? '시연' : metadata.capabilities.recognition} · 제품 조회: ${metadata.meta.isDemoLookup ? '시연' : metadata.capabilities.productLookup} · 규정 판정: ${metadata.meta.isDemoRules ? '시연' : metadata.capabilities.evaluation}`,
         )
         setAirlines(list.airlines)
-        setRuleInfo(rules)
       })
       .catch(() => {
         if (!controller.signal.aborted)
@@ -68,6 +70,13 @@ export function useTravelWorkbench() {
       })
     return () => controller.abort()
   }, [refresh])
+  useEffect(() => {
+    const controller = new AbortController()
+    void api.rules(airlineId, controller.signal).then(setRuleInfo).catch(() => {
+      if (!controller.signal.aborted) setRuleInfo(null)
+    })
+    return () => controller.abort()
+  }, [airlineId, refresh])
   function invalidate() {
     task.cancel()
     setAssessment(null)
@@ -76,10 +85,6 @@ export function useTravelWorkbench() {
   function resetPhotos() {
     invalidate()
     setPhotos([])
-    setItems((current) =>
-      current.filter((item) => item.identification === 'manual'),
-    )
-    setLookups({})
     setPreparing(false)
   }
   function updateItem(changed: ItemInfo) {
@@ -104,15 +109,24 @@ export function useTravelWorkbench() {
   }
   function applyRecognition(response: RecognizeResponse) {
     setDemoRecognition(response.meta.isDemoRecognition)
-    setLookups({})
-    setItems((current) => [
-      ...current.filter((item) => item.identification === 'manual'),
-      ...response.items.map((item) => ({
-        ...item,
-        confirmed: false,
-        userEdited: false,
-      })),
-    ])
+    const recognized = response.items.map((item) => ({
+      ...item,
+      id: `item-${crypto.randomUUID()}`,
+      confirmed: false,
+      userEdited: false,
+    }))
+    setItems((current) => [...current, ...recognized])
+    setItemPhotos((current) => ({
+      ...current,
+      ...Object.fromEntries(
+        recognized.map((item) => [
+          item.id,
+          photos.filter((photo) =>
+            item.imageId ? photo.id === item.imageId : true,
+          ),
+        ]),
+      ),
+    }))
     setAssessment(null)
     setSaved([])
     task.setMessage(
@@ -127,7 +141,7 @@ export function useTravelWorkbench() {
         response.needsLabelPhoto
           ? '라벨 사진 또는 직접 입력이 필요합니다.'
           : '',
-        response.multipleItemsDetected
+        response.captureMode === 'detail' && response.multipleItemsDetected
           ? '개별 사진에는 한 물품만 포함해 주세요.'
           : '',
         response.items.length === 0
@@ -156,9 +170,7 @@ export function useTravelWorkbench() {
       const attached =
         item.identification === 'manual'
           ? []
-          : photos.filter(
-              (photo) => captureMode === 'detail' || photo.id === item.imageId,
-            )
+          : itemPhotos[item.id] ?? photos.filter(photo => photo.id === item.imageId)
       const blobs = Object.fromEntries(
         attached.map((photo, index) => {
           const bytes = Uint8Array.from(atob(photo.base64), (character) =>
@@ -195,11 +207,11 @@ export function useTravelWorkbench() {
       setSaved((current) => [...current, item.id])
       setCatalogRevision((value) => value + 1)
       task.setMessage(
-        '개인 도감에 저장했습니다. 아래 도감에서 직원 제시 화면을 열 수 있습니다.',
+        '여행 기록에 물품을 저장했습니다. 직원 제시 화면을 열 수 있습니다.',
       )
     } catch (error) {
       task.setMessage(
-        error instanceof Error ? error.message : '도감에 저장하지 못했습니다.',
+        error instanceof Error ? error.message : '물품 기록을 저장하지 못했습니다.',
       )
     } finally {
       savingRef.current = false
@@ -211,6 +223,33 @@ export function useTravelWorkbench() {
     return captureMode === 'overview'
       ? { captureMode, images }
       : { captureMode, mode, images }
+  }
+  function analyze() {
+    invalidate()
+    const input = request()
+    void task.run('사진 분석', null, signal => recognizeCached(input, status, signal), applyRecognition)
+  }
+  function analyzeLabel(item: ItemInfo, selected: Photo[]) {
+    invalidate()
+    const input: RecognizeRequest = { captureMode: 'detail', mode: 'label', targetItemId: item.id,
+      images: selected.map(({ preview: _preview, ...photo }) => photo) }
+    void task.run('라벨 보완', null, signal => recognizeCached(input, status, signal), response => {
+      const label = response.items[0]
+      if (!label) { task.setMessage('라벨을 읽지 못했습니다. 기존 목록은 유지됩니다.'); return }
+      updateItem(mergeLabel(item, label))
+      setItemPhotos(current => ({ ...current, [item.id]: selected }))
+      task.setMessage('선택한 물품의 빈 사양을 보완했습니다. 제품 일치 여부와 정보를 다시 확인해 주세요.')
+    })
+  }
+  function restoreItems(restored: ItemInfo[]) {
+    invalidate(); setPhotos([]); setItemPhotos({}); setLookups({}); setProductSources({}); setInventoryComplete(false)
+    setItems(restored.map(item => ({ ...item, id: 'manual-' + crypto.randomUUID(), identification: 'manual', imageId: undefined,
+      estimate: undefined, bbox: undefined, confirmed: false, userEdited: true,
+      fieldSources: Object.fromEntries(FIELD_KEYS.filter(key => item.fields[key] !== null).map(key => [key,
+        { source: 'user', confirmed: true, ...(key === 'volts' ? { voltageType: item.fieldSources.volts?.voltageType ?? 'unknown' } : {}) }])),
+      ...(item.details ? { details: { ...item.details, confirmed: false } } : {}),
+    })))
+    task.setMessage('과거 목록을 직접 입력 초안으로 복사했습니다. 현재 제품·수량·안전 상태를 확인하고 재판정해 주세요.')
   }
   function lookupItem(item: ItemInfo) {
     if (!item.fields.modelName) return
@@ -269,6 +308,10 @@ export function useTravelWorkbench() {
     )
   }
   return {
+    analyze,
+    analyzeLabel,
+    restoreItems,
+    albumPhotos: [...photos, ...items.flatMap(item => itemPhotos[item.id] ?? [])],
     status,
     airlines,
     captureMode,

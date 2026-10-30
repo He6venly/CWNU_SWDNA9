@@ -1,0 +1,702 @@
+[
+  {
+    "id": "power-bank",
+    "name": "보조배터리",
+    "category": "power-bank",
+    "file": "power-bank.png",
+    "sourceIcon": "BatteryCharging"
+  },
+  {
+    "id": "camera-battery",
+    "name": "카메라 여분 배터리",
+    "category": "power-bank",
+    "file": "camera-battery.png",
+    "sourceIcon": "Camera"
+  },
+  {
+    "id": "spare-batteries",
+    "name": "일반·여분 배터리",
+    "category": "power-bank",
+    "file": "spare-batteries.png",
+    "sourceIcon": "BatteryMedium"
+  },
+  {
+    "id": "button-battery",
+    "name": "단추형 배터리",
+    "category": "power-bank",
+    "file": "button-battery.png",
+    "sourceIcon": "CircleDot"
+  },
+  {
+    "id": "laptop",
+    "name": "노트북",
+    "category": "electronics",
+    "file": "laptop.png",
+    "sourceIcon": "Laptop"
+  },
+  {
+    "id": "e-cigarette",
+    "name": "전자담배",
+    "category": "electronics",
+    "file": "e-cigarette.png",
+    "sourceIcon": "Cigarette"
+  },
+  {
+    "id": "drone",
+    "name": "드론",
+    "category": "electronics",
+    "file": "drone.png",
+    "sourceIcon": "Drone"
+  },
+  {
+    "id": "bluetooth-earbuds",
+    "name": "무선 이어폰",
+    "category": "electronics",
+    "file": "bluetooth-earbuds.png",
+    "sourceIcon": "Headphones"
+  },
+  {
+    "id": "smart-luggage",
+    "name": "스마트 캐리어",
+    "category": "electronics",
+    "file": "smart-luggage.png",
+    "sourceIcon": "Luggage"
+  },
+  {
+    "id": "portable-fan",
+    "name": "휴대용 선풍기",
+    "category": "electronics",
+    "file": "portable-fan.png",
+    "sourceIcon": "Fan"
+  },
+  {
+    "id": "electric-toothbrush",
+    "name": "전동칫솔",
+    "category": "electronics",
+    "file": "electric-toothbrush.png",
+    "sourceIcon": "BrushCleaning"
+  },
+  {
+    "id": "electric-shaver",
+    "name": "전기면도기",
+    "category": "electronics",
+    "file": "electric-shaver.png",
+    "sourceIcon": "Vibrate"
+  },
+  {
+    "id": "e-scooter",
+    "name": "전동킥보드·호버보드",
+    "category": "electronics",
+    "file": "e-scooter.png",
+    "sourceIcon": "Bike"
+  },
+  {
+    "id": "electric-wheelchair",
+    "name": "전동휠체어·전동스쿠터",
+    "category": "electronics",
+    "file": "electric-wheelchair.png",
+    "sourceIcon": "Accessibility"
+  },
+  {
+    "id": "game-console",
+    "name": "게임기·휴대용 게임기",
+    "category": "electronics",
+    "file": "game-console.png",
+    "sourceIcon": "Gamepad2"
+  },
+  {
+    "id": "smartphone",
+    "name": "휴대전화·태블릿",
+    "category": "electronics",
+    "file": "smartphone.png",
+    "sourceIcon": "TabletSmartphone"
+  },
+  {
+    "id": "camera",
+    "name": "카메라·촬영 장비",
+    "category": "electronics",
+    "file": "camera.png",
+    "sourceIcon": "Camera"
+  },
+  {
+    "id": "bluetooth-speaker",
+    "name": "블루투스 스피커",
+    "category": "electronics",
+    "file": "bluetooth-speaker.png",
+    "sourceIcon": "Speaker"
+  },
+  {
+    "id": "robot-vacuum",
+    "name": "로봇청소기",
+    "category": "electronics",
+    "file": "robot-vacuum.png",
+    "sourceIcon": "Bot"
+  },
+  {
+    "id": "curling-iron",
+    "name": "고데기·봉고데기",
+    "category": "cordless-iron",
+    "file": "curling-iron.png",
+    "sourceIcon": "Heater"
+  },
+  {
+    "id": "tripod",
+    "name": "삼각대",
+    "category": "general-items",
+    "file": "tripod.png",
+    "sourceIcon": "GalleryVerticalEnd"
+  },
+  {
+    "id": "umbrella",
+    "name": "우산",
+    "category": "general-items",
+    "file": "umbrella.png",
+    "sourceIcon": "Umbrella"
+  },
+  {
+    "id": "thermos",
+    "name": "보온병·텀블러",
+    "category": "general-items",
+    "file": "thermos.png",
+    "sourceIcon": "CupSoda"
+  },
+  {
+    "id": "dry-ice",
+    "name": "드라이아이스",
+    "category": "general-items",
+    "file": "dry-ice.png",
+    "sourceIcon": "Snowflake"
+  },
+  {
+    "id": "car-seat",
+    "name": "유아용 카시트",
+    "category": "general-items",
+    "file": "car-seat.png",
+    "sourceIcon": "Baby"
+  },
+  {
+    "id": "hand-warmer",
+    "name": "핫팩·전열 의류",
+    "category": "general-items",
+    "file": "hand-warmer.png",
+    "sourceIcon": "Hand"
+  },
+  {
+    "id": "power-tools",
+    "name": "전동공구",
+    "category": "general-items",
+    "file": "power-tools.png",
+    "sourceIcon": "Drill"
+  },
+  {
+    "id": "live-animals",
+    "name": "반려동물·살아있는 동물",
+    "category": "general-items",
+    "file": "live-animals.png",
+    "sourceIcon": "PawPrint"
+  },
+  {
+    "id": "magnets",
+    "name": "자석",
+    "category": "general-items",
+    "file": "magnets.png",
+    "sourceIcon": "Magnet"
+  },
+  {
+    "id": "hair-dryer",
+    "name": "헤어드라이어",
+    "category": "general-items",
+    "file": "hair-dryer.png",
+    "sourceIcon": "Wind"
+  },
+  {
+    "id": "laser-pointer",
+    "name": "레이저 포인터",
+    "category": "general-items",
+    "file": "laser-pointer.png",
+    "sourceIcon": "Crosshair"
+  },
+  {
+    "id": "musical-instrument",
+    "name": "악기",
+    "category": "general-items",
+    "file": "musical-instrument.png",
+    "sourceIcon": "Music2"
+  },
+  {
+    "id": "candles",
+    "name": "양초",
+    "category": "general-items",
+    "file": "candles.png",
+    "sourceIcon": "Flame"
+  },
+  {
+    "id": "binoculars",
+    "name": "쌍안경",
+    "category": "general-items",
+    "file": "binoculars.png",
+    "sourceIcon": "Binoculars"
+  },
+  {
+    "id": "jewelry",
+    "name": "보석·귀중품",
+    "category": "general-items",
+    "file": "jewelry.png",
+    "sourceIcon": "Gem"
+  },
+  {
+    "id": "cremated-remains",
+    "name": "유골함",
+    "category": "general-items",
+    "file": "cremated-remains.png",
+    "sourceIcon": "Archive"
+  },
+  {
+    "id": "meat-products",
+    "name": "육류 제품",
+    "category": "general-items",
+    "file": "meat-products.png",
+    "sourceIcon": "Beef"
+  },
+  {
+    "id": "fresh-fruits",
+    "name": "신선 과일",
+    "category": "general-items",
+    "file": "fresh-fruits.png",
+    "sourceIcon": "Apple"
+  },
+  {
+    "id": "instant-noodles",
+    "name": "라면·즉석면",
+    "category": "general-items",
+    "file": "instant-noodles.png",
+    "sourceIcon": "Soup"
+  },
+  {
+    "id": "baby-food",
+    "name": "유아식·모유",
+    "category": "general-items",
+    "file": "baby-food.png",
+    "sourceIcon": "Milk"
+  },
+  {
+    "id": "semi-liquid-food",
+    "name": "소스·반고체 식품",
+    "category": "general-items",
+    "file": "semi-liquid-food.png",
+    "sourceIcon": "CookingPot"
+  },
+  {
+    "id": "canned-food",
+    "name": "통조림",
+    "category": "general-items",
+    "file": "canned-food.png",
+    "sourceIcon": "PackageOpen"
+  },
+  {
+    "id": "frozen-food",
+    "name": "냉동식품·아이스팩",
+    "category": "general-items",
+    "file": "frozen-food.png",
+    "sourceIcon": "Snowflake"
+  },
+  {
+    "id": "seafood",
+    "name": "생선·해산물",
+    "category": "general-items",
+    "file": "seafood.png",
+    "sourceIcon": "Fish"
+  },
+  {
+    "id": "dry-snacks",
+    "name": "과자·건조식품",
+    "category": "general-items",
+    "file": "dry-snacks.png",
+    "sourceIcon": "Cookie"
+  },
+  {
+    "id": "powder-food",
+    "name": "분말 식품",
+    "category": "general-items",
+    "file": "powder-food.png",
+    "sourceIcon": "Wheat"
+  },
+  {
+    "id": "tea-coffee",
+    "name": "차·커피",
+    "category": "general-items",
+    "file": "tea-coffee.png",
+    "sourceIcon": "Coffee"
+  },
+  {
+    "id": "cooking-oil",
+    "name": "식용유·식초",
+    "category": "general-items",
+    "file": "cooking-oil.png",
+    "sourceIcon": "BottleWine"
+  },
+  {
+    "id": "pet-food",
+    "name": "반려동물 사료",
+    "category": "general-items",
+    "file": "pet-food.png",
+    "sourceIcon": "Bone"
+  },
+  {
+    "id": "seeds-plants",
+    "name": "씨앗·식물",
+    "category": "general-items",
+    "file": "seeds-plants.png",
+    "sourceIcon": "Sprout"
+  },
+  {
+    "id": "hiking-poles",
+    "name": "등산 스틱",
+    "category": "general-items",
+    "file": "hiking-poles.png",
+    "sourceIcon": "Mountain"
+  },
+  {
+    "id": "golf-clubs",
+    "name": "골프채",
+    "category": "general-items",
+    "file": "golf-clubs.png",
+    "sourceIcon": "Goal"
+  },
+  {
+    "id": "sports-bat",
+    "name": "야구방망이·스포츠 스틱",
+    "category": "general-items",
+    "file": "sports-bat.png",
+    "sourceIcon": "Dumbbell"
+  },
+  {
+    "id": "tennis-racket",
+    "name": "라켓",
+    "category": "general-items",
+    "file": "tennis-racket.png",
+    "sourceIcon": "CircleDotDashed"
+  },
+  {
+    "id": "scuba-gear",
+    "name": "스쿠버다이빙 장비",
+    "category": "general-items",
+    "file": "scuba-gear.png",
+    "sourceIcon": "Waves"
+  },
+  {
+    "id": "fishing-gear",
+    "name": "낚시 장비",
+    "category": "general-items",
+    "file": "fishing-gear.png",
+    "sourceIcon": "FishingRod"
+  },
+  {
+    "id": "yoga-mat",
+    "name": "요가매트·운동 소품",
+    "category": "general-items",
+    "file": "yoga-mat.png",
+    "sourceIcon": "PersonStanding"
+  },
+  {
+    "id": "bicycle",
+    "name": "자전거",
+    "category": "general-items",
+    "file": "bicycle.png",
+    "sourceIcon": "Bike"
+  },
+  {
+    "id": "skateboard",
+    "name": "스케이트보드·인라인스케이트",
+    "category": "general-items",
+    "file": "skateboard.png",
+    "sourceIcon": "Footprints"
+  },
+  {
+    "id": "ski-gear",
+    "name": "스키·스노보드 장비",
+    "category": "general-items",
+    "file": "ski-gear.png",
+    "sourceIcon": "Snowflake"
+  },
+  {
+    "id": "hair-spray",
+    "name": "헤어스프레이",
+    "category": "liquid",
+    "file": "hair-spray.png",
+    "sourceIcon": "SprayCan"
+  },
+  {
+    "id": "perfume",
+    "name": "향수",
+    "category": "liquid",
+    "file": "perfume.png",
+    "sourceIcon": "FlaskConical"
+  },
+  {
+    "id": "sunscreen",
+    "name": "선크림",
+    "category": "liquid",
+    "file": "sunscreen.png",
+    "sourceIcon": "Sun"
+  },
+  {
+    "id": "skincare-liquid",
+    "name": "액체 화장품·스킨케어",
+    "category": "liquid",
+    "file": "skincare-liquid.png",
+    "sourceIcon": "Droplets"
+  },
+  {
+    "id": "alcohol-beverage",
+    "name": "주류",
+    "category": "liquid",
+    "file": "alcohol-beverage.png",
+    "sourceIcon": "Wine"
+  },
+  {
+    "id": "insecticide",
+    "name": "살충제",
+    "category": "liquid",
+    "file": "insecticide.png",
+    "sourceIcon": "BugOff"
+  },
+  {
+    "id": "insect-repellent",
+    "name": "모기 기피제",
+    "category": "liquid",
+    "file": "insect-repellent.png",
+    "sourceIcon": "Bug"
+  },
+  {
+    "id": "hand-sanitizer",
+    "name": "손소독제",
+    "category": "liquid",
+    "file": "hand-sanitizer.png",
+    "sourceIcon": "HandCoins"
+  },
+  {
+    "id": "wet-wipes",
+    "name": "물티슈·소독티슈",
+    "category": "liquid",
+    "file": "wet-wipes.png",
+    "sourceIcon": "PanelsTopLeft"
+  },
+  {
+    "id": "medication",
+    "name": "의약품",
+    "category": "general-items",
+    "file": "medication.png",
+    "sourceIcon": "PillBottle"
+  },
+  {
+    "id": "insulin-syringes",
+    "name": "인슐린·주사기",
+    "category": "general-items",
+    "file": "insulin-syringes.png",
+    "sourceIcon": "Syringe"
+  },
+  {
+    "id": "contact-lens-solution",
+    "name": "렌즈 세정액",
+    "category": "general-items",
+    "file": "contact-lens-solution.png",
+    "sourceIcon": "Eye"
+  },
+  {
+    "id": "cpap",
+    "name": "양압기·분무치료기",
+    "category": "general-items",
+    "file": "cpap.png",
+    "sourceIcon": "Activity"
+  },
+  {
+    "id": "mercury-thermometer",
+    "name": "수은 체온계",
+    "category": "general-items",
+    "file": "mercury-thermometer.png",
+    "sourceIcon": "Thermometer"
+  },
+  {
+    "id": "inhaler",
+    "name": "흡입기·응급 주사",
+    "category": "general-items",
+    "file": "inhaler.png",
+    "sourceIcon": "SprayCan"
+  },
+  {
+    "id": "prosthetics",
+    "name": "의수·의족·보조기",
+    "category": "general-items",
+    "file": "prosthetics.png",
+    "sourceIcon": "Accessibility"
+  },
+  {
+    "id": "medical-cannabis",
+    "name": "의료용 대마·CBD",
+    "category": "general-items",
+    "file": "medical-cannabis.png",
+    "sourceIcon": "Cannabis"
+  },
+  {
+    "id": "scissors",
+    "name": "가위",
+    "category": "general-items",
+    "file": "scissors.png",
+    "sourceIcon": "Scissors"
+  },
+  {
+    "id": "swiss-army-knife",
+    "name": "맥가이버칼·스위스 아미 나이프",
+    "category": "general-items",
+    "file": "swiss-army-knife.png",
+    "sourceIcon": "PocketKnife"
+  },
+  {
+    "id": "nail-clippers",
+    "name": "손톱깎이",
+    "category": "general-items",
+    "file": "nail-clippers.png",
+    "sourceIcon": "ScissorsLineDashed"
+  },
+  {
+    "id": "razor",
+    "name": "면도기·면도날",
+    "category": "general-items",
+    "file": "razor.png",
+    "sourceIcon": "Slice"
+  },
+  {
+    "id": "utility-knife",
+    "name": "커터칼·미술용 칼",
+    "category": "general-items",
+    "file": "utility-knife.png",
+    "sourceIcon": "UtilityPole"
+  },
+  {
+    "id": "tweezers-needles",
+    "name": "핀셋·바느질바늘",
+    "category": "general-items",
+    "file": "tweezers-needles.png",
+    "sourceIcon": "Pencil"
+  },
+  {
+    "id": "corkscrew",
+    "name": "병따개·와인 오프너",
+    "category": "general-items",
+    "file": "corkscrew.png",
+    "sourceIcon": "Wine"
+  },
+  {
+    "id": "self-defense-spray",
+    "name": "호신용 스프레이",
+    "category": "general-items",
+    "file": "self-defense-spray.png",
+    "sourceIcon": "ShieldAlert"
+  },
+  {
+    "id": "fireworks",
+    "name": "폭죽·불꽃놀이 용품",
+    "category": "general-items",
+    "file": "fireworks.png",
+    "sourceIcon": "Sparkles"
+  },
+  {
+    "id": "toy-gun",
+    "name": "장난감 총·모형 무기",
+    "category": "general-items",
+    "file": "toy-gun.png",
+    "sourceIcon": "Crosshair"
+  },
+  {
+    "id": "bleach",
+    "name": "표백제·부식성 세정제",
+    "category": "general-items",
+    "file": "bleach.png",
+    "sourceIcon": "TestTubeDiagonal"
+  },
+  {
+    "id": "stun-gun",
+    "name": "전기충격기·호신 무기",
+    "category": "general-items",
+    "file": "stun-gun.png",
+    "sourceIcon": "Zap"
+  },
+  {
+    "id": "firearms",
+    "name": "총기·탄약",
+    "category": "general-items",
+    "file": "firearms.png",
+    "sourceIcon": "Crosshair"
+  },
+  {
+    "id": "fire-extinguisher",
+    "name": "소화기·압축가스 용기",
+    "category": "general-items",
+    "file": "fire-extinguisher.png",
+    "sourceIcon": "FireExtinguisher"
+  },
+  {
+    "id": "lighter",
+    "name": "라이터",
+    "category": "lighter",
+    "file": "lighter.png",
+    "sourceIcon": "Flame"
+  },
+  {
+    "id": "safety-matches",
+    "name": "안전성냥",
+    "category": "lighter",
+    "file": "safety-matches.png",
+    "sourceIcon": "FlameKindling"
+  },
+  {
+    "id": "camping-gas",
+    "name": "부탄가스·캠핑 가스통",
+    "category": "lighter",
+    "file": "camping-gas.png",
+    "sourceIcon": "Cylinder"
+  },
+  {
+    "id": "spray-paint",
+    "name": "스프레이 페인트·가연성 용제",
+    "category": "lighter",
+    "file": "spray-paint.png",
+    "sourceIcon": "SprayCan"
+  },
+  {
+    "id": "gas-torch",
+    "name": "가스토치·부탄 연료",
+    "category": "lighter",
+    "file": "gas-torch.png",
+    "sourceIcon": "Flame"
+  },
+  {
+    "id": "cigarettes",
+    "name": "담배",
+    "category": "general-items",
+    "file": "cigarettes.png",
+    "sourceIcon": "Cigarette"
+  },
+  {
+    "id": "cash",
+    "name": "현금·외화",
+    "category": "general-items",
+    "file": "cash.png",
+    "sourceIcon": "Banknote"
+  },
+  {
+    "id": "shampoo",
+    "name": "샴푸·린스",
+    "category": "liquid",
+    "file": "shampoo.png",
+    "sourceIcon": "ShowerHead"
+  },
+  {
+    "id": "toothpaste",
+    "name": "치약",
+    "category": "liquid",
+    "file": "toothpaste.png",
+    "sourceIcon": "BrushCleaning"
+  }
+]

@@ -1,0 +1,113 @@
+{
+  "reviewedAt": "2026-10-30T17:00:00Z",
+  "reviewBy": "2026-11-30T00:00:00Z",
+  "departureCountry": "KR",
+  "passengers": 1,
+  "commonSources": [
+    {
+      "title": "인천공항 제한물품 FAQ — 주류·국제선 액체",
+      "url": "https://www.airport.kr/ap_ko/907/subview.do?enc=Zm5jdDF8QEB8JTJGYXBfa28lMkY5NDYlMkYxMzg0MjMlMkZhcnRjbFZpZXcuZG8lM0Y%3D",
+      "retrievedAt": "2026-10-30T17:00:00Z"
+    },
+    {
+      "title": "국토교통부 보조배터리·전자담배 기내반입 관리 지침",
+      "url": "https://www.molit.go.kr/portal/common/download/DownloadMltm2.jsp?FileName=%EB%B3%B4%EC%A1%B0%EB%B0%B0%ED%84%B0%EB%A6%AC+%EB%B0%8F+%EC%A0%84%EC%9E%90%EB%8B%B4%EB%B0%B0+%EA%B8%B0%EB%82%B4%EB%B0%98%EC%9E%85%EC%A0%88%EC%B0%A8+%EA%B4%80%EB%A6%AC%EA%B0%95%ED%99%94+%EB%B0%A9%EC%95%88+%EC%9D%B4%ED%96%89+%EC%A7%80%EC%B9%A8%EC%84%9C%283%ED%8C%90%29.pdf&FilePath=portal%2FDextUpload%2F202503%2F20250326_163451_226.pdf",
+      "retrievedAt": "2026-10-30T17:00:00Z"
+    }
+  ],
+  "liquid": {
+    "internationalContainerMl": 100,
+    "toiletryContainerMl": 500,
+    "toiletryTotalMl": 2000,
+    "sanitizerContainerMl": 100,
+    "sanitizerTotalMl": 500,
+    "alcoholLowPercent": 24,
+    "alcoholHighPercent": 70,
+    "alcoholTotalMl": 5000
+  },
+  "profiles": [
+    {
+      "airlineId": "korean-air", "name": "대한항공", "version": "KE-KR-2026-10-31-r2", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [
+        { "title": "대한항공 운송 제한 물품", "url": "https://www.koreanair.com/contents/plan-your-travel/baggage/restricted-item", "retrievedAt": "2026-10-30T17:00:00Z" },
+        { "title": "대한항공 보조배터리 기내 반입 기준", "url": "https://www.koreanair.com/contents/footer/customer-support/notice/2026/260410-powerbanks-guide", "retrievedAt": "2026-10-30T17:00:00Z" }
+      ]
+    },
+    {
+      "airlineId": "asiana-airlines", "name": "아시아나항공", "version": "OZ-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "아시아나항공 운송 제한 물품", "url": "https://flyasiana.com/C/KR/KO/contents/restricted-transport-items", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "jeju-air", "name": "제주항공", "version": "7C-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "제주항공 운송 제한 물품", "url": "https://www.jejuair.net/en/linkService/boardingProcessGuide/transportLimitation.do", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "jin-air", "name": "진에어", "version": "LJ-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "진에어 배터리 운송 제한", "url": "https://www.jinair.com/ready/battery", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "air-busan", "name": "에어부산", "version": "BX-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "에어부산 운송 제한 물품", "url": "https://www.airbusan.com/content/common/service/baggage/restriction", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "eastar-jet", "name": "이스타항공", "version": "ZE-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "이스타항공 보조배터리 기내 반입 안내", "url": "https://zeimage.eastarjet.com/newstar/images/In-flight_Carry-on_Guide_20250416.pdf", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "tway-air", "name": "티웨이항공", "version": "TW-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "티웨이항공 운송 제한 물품", "url": "https://www.twayair.com/app/serviceInfo/contents/1148", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "air-seoul", "name": "에어서울", "version": "RS-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "에어서울 보조배터리 규정 변경 공지", "url": "https://flyairseoul.com/CM/en/noticeContent.do?board_id=notice&seq=10688", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "air-premia", "name": "에어프레미아", "version": "YP-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "에어프레미아 보조배터리 기내 반입 규정", "url": "https://www.airpremia.com/a/en/customer/notice/686", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "aero-k", "name": "에어로케이", "version": "RF-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "에어로케이 공식 안내", "url": "https://www.aerok.com", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "parata-air", "name": "파라타항공", "version": "WE-KR-2026-10-31-r1", "flightTypes": ["domestic", "international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "파라타항공 공식 안내", "url": "https://www.parataair.com", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "china-southern", "name": "중국남방항공", "version": "CZ-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 0,
+      "sources": [{ "title": "중국남방항공 리튬배터리 안전 안내", "url": "https://www.csair.com/newh5/en/tourguide/booking/orders/order/battery/", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "china-eastern", "name": "중국동방항공", "version": "MU-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 0,
+      "sources": [{ "title": "중국동방항공 리튬배터리 안전 운송 규정", "url": "https://global.ceair.com/global/en_static/Announcement/BaggageService/RegulationsonSafeTransportationofLithiumBatteries/", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "air-china", "name": "중국국제항공", "version": "CA-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 160, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 0,
+      "sources": [{ "title": "중국국제항공 보조배터리 안전 안내", "url": "https://www.airchina.com.cn/zh-CN/content/c/2026-08-04/30035.shtml", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "vietnam-airlines", "name": "베트남항공", "version": "VN-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 100, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "베트남항공 리튬배터리 운송 규정", "url": "https://www.vietnamairlines.com/ca/en/travel-information/baggage/restricted-baggage/pin-lithium", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    },
+    {
+      "airlineId": "delta-air-lines", "name": "델타항공", "version": "DL-KR-2026-10-31-r1", "flightTypes": ["international"],
+      "battery": { "approvalAboveWh": 100, "powerBankMaximumWh": 100, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 }, "lighterCount": 1,
+      "sources": [{ "title": "델타항공 배터리·연료 사용 물품 제한", "url": "https://www.delta.com/ca/en/baggage/prohibited-or-restricted-items/battery-or-fuel-powered", "retrievedAt": "2026-10-30T17:00:00Z" }]
+    }
+  ]
+}

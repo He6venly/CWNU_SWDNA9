@@ -12,7 +12,7 @@
 - apps/check/src의 ResultCard → Catalog → StaffCard가 연결 예시. 직원 모드에 저장 사진·모델·사양·기내/위탁·조건·출처·규정 기준일·영문 요약 표시, 인쇄/PDF와 기한 경과 안내 포함
 - 직원 모드는 저장 당시의 참고 화면이며 현재 유효한 허가로 표시하지 않음. 과거 결과에 상세 정보가 없으면 재판정 안내
 
-기존 contract 2.0.0 응답·1.0 API 유지. 선택 요청 필드와 GET /api/v2/rules를 추가한 호환 확장. 기존 클라이언트가 보내는 추가정보 없는 입력은 대한항공에서 NEEDS_INFO. 최신 contract 전체를 병합한 뒤 아래 입력 UI를 연결.
+기존 contract 2.0.0 응답·1.0 API 유지. 선택 요청 필드와 GET /api/v2/rules를 추가한 호환 확장. 추가정보 없는 입력은 지원 항공사에서 NEEDS_INFO. 최신 contract 전체를 병합한 뒤 아래 입력 UI를 연결.
 
 ## 입력
 
@@ -39,14 +39,14 @@ const request = {
 
 ## 결과·표시
 
-- 대한항공: 실제 검수 규정 알고리즘, meta.isDemoRules=false, result.isDemo=false, ruleVersion 제공
+- 지원 16개 항공사: 항공사별 검수 규정 알고리즘, meta.isDemoRules=false, result.isDemo=false, 개별 ruleVersion 제공
 - 인식·제품 조회는 여전히 시연. isDemoRules=false를 전체 AI 연동 완료로 해석하지 않기
-- 시연 항공사와 createMockClient.evaluate는 기존 고정 NEEDS_INFO 유지. 실제 판정 검수는 로컬 API의 대한항공으로 수행
+- createMockClient.evaluate는 기존 고정 NEEDS_INFO 유지. 실제 판정 검수는 로컬 API의 지원 항공사로 수행
 - 합산 초과: verdict=PROHIBITED, reason의 현재 구성 불가 안내, action=CHECK_CONDITIONS. 모든 물품을 버리라는 뜻이 아니므로 action을 UI에서 재계산하지 않기
 - 출력용 displayValue를 판정에 다시 사용하지 않기. 최신 판정이 반환한 derivedFields.wh를 표시
-- await api.rules('korean-air')로 출처·검수일·재검수 기한·scope.notice 표시. 검수기한 초과 시 항공사 비활성·evaluate 409, 입력 보존하고 재검수 필요 안내
+- await api.rules(airlineId)로 항공사별 출처·검수일·재검수 기한·scope.notice 표시. 검수기한 초과 시 항공사 비활성·evaluate 409, 입력 보존하고 재검수 필요 안내
 - 규정 목업 rules()는 시연 메타데이터이며 current=false·ruleVersion=null. 실제 최신성 확인으로 표시하지 않기
-- 대한항공 직접 운항편·한국 출발·1명 기준 명시. 공동운항·환승·목적지 세관/검역·수하물 규격/무게를 판정한 것처럼 표시하지 않기
+- 선택 항공사 직접 운항편·한국 출발·1명 기준 명시. 공동운항·환승·목적지 세관/검역·수하물 규격/무게를 판정한 것처럼 표시하지 않기
 
 도감은 추가된 선택 details와 ruleVersion·evaluatedAt을 보관. 예전 카드는 원본을 보존하고 최신 규정과 다르면 재판정 안내. 도감이 직원의 허가를 대체하지 않는 참고 화면이라는 문구 유지.
 

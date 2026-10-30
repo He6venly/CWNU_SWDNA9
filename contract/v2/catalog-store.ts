@@ -11,8 +11,8 @@ function openDatabase() {
       db.createObjectStore('cards', { keyPath: 'id' }); db.createObjectStore('photos')
     }
     request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(request.error ?? new Error('도감 저장소를 열지 못했습니다.'))
-    request.onblocked = () => reject(new Error('다른 탭의 도감을 닫은 뒤 다시 시도해 주세요.'))
+    request.onerror = () => reject(request.error ?? new Error('물품 기록 저장소를 열지 못했습니다.'))
+    request.onblocked = () => reject(new Error('다른 탭의 여행 기록을 닫은 뒤 다시 시도해 주세요.'))
   })
 }
 async function transaction<T>(mode: IDBTransactionMode, action: (tx: IDBTransaction, setResult: (value: T) => void) => void): Promise<T> {
@@ -22,8 +22,8 @@ async function transaction<T>(mode: IDBTransactionMode, action: (tx: IDBTransact
       let value: T
       const tx = db.transaction(['cards', 'photos'], mode)
       tx.oncomplete = () => resolve(value)
-      tx.onabort = () => reject(tx.error ?? new Error('도감 처리에 실패했습니다. 저장 공간을 확인해 주세요.'))
-      tx.onerror = () => reject(tx.error ?? new Error('도감 처리에 실패했습니다.'))
+      tx.onabort = () => reject(tx.error ?? new Error('물품 기록 처리에 실패했습니다. 저장 공간을 확인해 주세요.'))
+      tx.onerror = () => reject(tx.error ?? new Error('물품 기록 처리에 실패했습니다.'))
       try { action(tx, result => { value = result }) } catch (error) { tx.abort(); reject(error) }
     })
   } finally { db.close() }

@@ -16,7 +16,7 @@ export default function ResultCard({ item, result, onSave, saving, saved }: { it
     <h4>근거</h4>
     {view ? <><p>{view.ruleVersion ?? '규정 버전 없음'} · 검수 {view.reviewedAt?.slice(0, 10) ?? '미확인'}{!view.current && ' · 유효한 실제 규정 판정이 아님'}</p>
       {view.sources.map(source => <p key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a></p>)}<p>{view.scopeNotice}</p></> : <p>이전 형식의 결과입니다. 상세 근거와 조건을 받으려면 다시 판정해 주세요.</p>}
-    {onSave && <button disabled={saving || saved || !item.confirmed} onClick={onSave}>{saved ? '도감에 저장됨' : saving ? '도감에 저장 중…' : '확인한 물품을 개인 도감에 저장'}</button>}
+    {onSave && <button disabled={saving || saved || !item.confirmed} onClick={onSave}>{saved ? '여행 기록에 저장됨' : saving ? '여행 기록에 저장 중…' : '확인한 물품 저장'}</button>}
     {!item.confirmed && <p>저장하려면 물품과 제품 정보를 먼저 확인해 주세요.</p>}
   </article>
 }

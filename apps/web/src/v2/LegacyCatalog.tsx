@@ -12,17 +12,17 @@ export default function LegacyCatalog() {
         if (alive) setCards(values)
       })
       .catch(() => {
-        if (alive) setError('이전 도감을 읽지 못했습니다.')
+        if (alive) setError('이전 물품 기록을 읽지 못했습니다.')
       })
     return () => {
       alive = false
     }
   }, [])
   return (
-    <details>
-      <summary>이전 시연 도감 (읽기 전용 · {cards.length}개)</summary>
+    <details className="legacy-catalog">
+      <summary>이전 시연 물품 (읽기 전용 · {cards.length}개)</summary>
       <p>
-        기존 사진·도감은 원본 그대로 보존됩니다. v2 규정 결과로 승격하지
+        기존 사진·물품 기록은 원본 그대로 보존됩니다. v2 규정 결과로 승격하지
         않았습니다. 최신 입력 화면에서 다시 확인해 주세요.
       </p>
       {error && <p role="alert">{error}</p>}

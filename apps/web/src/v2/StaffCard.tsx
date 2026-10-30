@@ -64,9 +64,7 @@ export default function StaffCard({
         <button onClick={onClose}>닫기 / Close</button>
         <button onClick={() => window.print()}>인쇄 / PDF 저장</button>
       </div>
-      <h2 id="staff-title">
-        물품 참고 정보 <small>Item reference</small>
-      </h2>
+      <header className="staff-heading"><p className="eyebrow">TRAVEL ITEM RECORD</p><h2 id="staff-title">물품 확인 기록 <small>Item reference</small></h2><p>직원에게 제품 정보를 보여주기 위한 참고 화면입니다. 반입 허가증은 아닙니다.</p></header>
       {card.meta.isDemoRules || result.isDemo ? (
         <p className="staff-warning">시연 데이터 / Demo data</p>
       ) : (
@@ -83,7 +81,7 @@ export default function StaffCard({
           대상입니다. / Demo recognition; verify the actual item.
         </p>
       )}
-      <h3>{item.name}</h3>
+      <h3 className="staff-item-name">{item.name}</h3>
       <p>
         {item.categoryId
           ? englishTypes[item.categoryId]
@@ -127,7 +125,7 @@ export default function StaffCard({
           {result.derivedFields.wh.displayValue}Wh
         </p>
       )}
-      <div className="verdict-grid">
+      <div className="verdict-grid staff-verdicts">
         <div>
           <strong>기내 / Carry-on</strong>
           <p>

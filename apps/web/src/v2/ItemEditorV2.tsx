@@ -16,7 +16,7 @@ export default function ItemEditorV2({
   const edit = (patch: Partial<ItemInfo>) =>
     onChange({ ...item, ...patch, confirmed: false, userEdited: true })
   return (
-    <fieldset>
+    <fieldset className="item-editor">
       <legend>{item.name}</legend>
       <p>
         식별:{' '}

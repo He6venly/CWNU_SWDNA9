@@ -1,6 +1,6 @@
 [build]
-  command = "npm run check"
-  publish = "dist/check"
+  command = "npm run check && npm --prefix apps/web run build"
+  publish = "apps/web/dist"
 
 [build.environment]
   NODE_VERSION = "24"
@@ -10,4 +10,4 @@
   directory = "netlify/functions"
 
 # API custom path는 functions/api.ts의 config.path로 관리.
-# 현재 체크 화면은 / 하나만 사용하므로 SPA 전체 경로 rewrite는 두지 않음.
+# 사용자 웹앱은 해시 화면 전환을 사용하므로 SPA rewrite가 필요하지 않음.

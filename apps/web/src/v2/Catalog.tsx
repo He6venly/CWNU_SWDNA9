@@ -4,6 +4,7 @@ import { deleteCatalogCard, listCatalogCards } from './catalogStore'
 import { labels } from '../../../../contract/v2/labels.ts'
 import StaffCard from './StaffCard.tsx'
 import { useCatalogPhotos } from './useCatalogPhotos.ts'
+import UiIcon from '../../../check/src/UiIcon.tsx'
 
 function Entry({
   card,
@@ -16,25 +17,28 @@ function Entry({
 }) {
   const { photos } = useCatalogPhotos(card.photoKeys.slice(0, 1))
   return (
-    <article>
-      <h3>{card.item.name}</h3>
-      {photos[0] && (
+    <article className="catalog-card">
+      <div className="catalog-thumb">
+      {photos[0] ? (
         <img
-          className="photo"
           src={photos[0]}
-          alt={`도감: ${card.item.name}`}
+          alt={`저장한 물품: ${card.item.name}`}
         />
-      )}
-      <p>
-        {card.item.fields.modelName ?? '모델명 미확인'} · {card.airline.name}
-      </p>
-      <p>
-        기내 {labels.verdicts[card.result.cabin.verdict]} / 위탁{' '}
-        {labels.verdicts[card.result.checked.verdict]}
-      </p>
-      <p>{card.result.staffSummary}</p>
-      <button onClick={onOpen}>직원에게 보여주기 / Staff view</button>
-      <button onClick={onDelete}>도감에서 삭제</button>
+      ) : <span aria-hidden="true">✓</span>}
+      </div>
+      <div className="catalog-card-copy">
+        <div className="catalog-title-row"><div><p className="eyebrow">CHECKED ITEM</p><h3>{card.item.name}</h3></div><span className="saved-date">{card.savedAt.slice(0, 10)}</span></div>
+        <dl className="catalog-meta">
+          <div><dt>제품</dt><dd>{card.item.fields.modelName ?? '모델명 미확인'}</dd></div>
+          <div><dt>판정 기준</dt><dd>{card.airline.name}</dd></div>
+        </dl>
+        <div className="catalog-verdicts">
+          <span className={`verdict-chip verdict-${card.result.cabin.verdict}`}><small>기내</small><strong>{labels.verdicts[card.result.cabin.verdict]}</strong></span>
+          <span className={`verdict-chip verdict-${card.result.checked.verdict}`}><small>위탁</small><strong>{labels.verdicts[card.result.checked.verdict]}</strong></span>
+        </div>
+        <details className="catalog-summary"><summary>판정 요약 보기</summary><p>{card.result.staffSummary}</p></details>
+        <div className="catalog-actions"><button className="primary-action" onClick={onOpen}>직원에게 보여주기</button><button className="danger-action" onClick={onDelete}>삭제</button></div>
+      </div>
     </article>
   )
 }
@@ -63,7 +67,7 @@ export default function Catalog({
       .catch(() => {
         if (active)
           setMessage(
-            '도감을 읽지 못했습니다. 브라우저 저장 기능을 확인해 주세요.',
+            '저장한 물품을 읽지 못했습니다. 브라우저 저장 기능을 확인해 주세요.',
           )
       })
     return () => {
@@ -79,24 +83,21 @@ export default function Catalog({
     }
   }
   return (
-    <section>
-      <h2>개인 도감</h2>
-      <p>
-        사진·제품 정보는 이 브라우저에 저장됩니다. 다른 기기와 동기화되지 않으며
-        브라우저 데이터를 지우면 삭제됩니다.
-      </p>
+    <section id="catalog" className="card-section catalog-section">
+      <div className="section-heading"><UiIcon name="catalog" /><div><p className="eyebrow">CHECKED ITEMS</p><h2>저장한 물품</h2><p>판정을 마친 물품 정보와 직원 제시 화면을 다시 확인합니다.</p></div></div>
+      <p className="local-storage-note">이 기기의 브라우저에만 저장되며 다른 기기와 자동 동기화되지 않습니다.</p>
       {message && <p role="status">{message}</p>}
       {!cards.length && (
-        <p>저장된 물품이 없습니다. 판정 후 확인한 물품을 저장해 주세요.</p>
+        <div className="empty-state"><strong>저장한 물품이 없습니다.</strong><p>판정 결과에서 확인한 물품을 저장해 주세요.</p></div>
       )}
-      {cards.map((card) => (
+      <div className="catalog-grid">{cards.map((card) => (
         <Entry
           key={card.id}
           card={card}
           onOpen={() => setSelected(card)}
           onDelete={() => void remove(card)}
         />
-      ))}
+      ))}</div>
       {selected && (
         <StaffCard
           card={selected}

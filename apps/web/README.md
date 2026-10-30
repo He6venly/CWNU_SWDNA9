@@ -1,6 +1,6 @@
 # v2 사용자 화면 연결
 
-현재 진입점: apps/web/src/main.tsx → v2/TravelApp.tsx. 임시 제목은 여행 짐 반입 확인입니다. 기존 App.tsx·연구용 화면·이전 IndexedDB 원본은 보존했습니다.
+현재 진입점: apps/web/src/main.tsx → v2/TravelApp.tsx. 앱 이름은 `챙기고`입니다. 기존 App.tsx·연구용 화면·이전 IndexedDB 원본은 보존했습니다.
 
 ## Git 반영
 
@@ -31,11 +31,14 @@ npm --prefix apps/web run dev
 - api.ts: contract/v2 클라이언트 단일 생성 지점. 실제 /api/v2 호출. 자동 재시도 없음.
 - useTravelWorkbench.ts: 비동기 요청·취소·입력 변경 시 결과 폐기·제품 후보 적용·저장 상태. 화면 선택이나 입력 변경으로 AI 호출하지 않음.
 - PhotoSection/PhotoPicker/image: 기존 이미지 변환 기준 재사용, 전체 1장/개별 3장, 보관함 선택·미리보기·삭제·전체 교체. 사진 선택만으로 분석하지 않음. 분석 버튼만 실제 인식 호출.
+- image.worker/recognitionCache: 전처리는 Worker에서 실행하고 밝기·흐림을 먼저 경고. 라벨은 보수적 자동 크롭과 높은 해상도·품질을 우선. 동일 사진·분석 입력은 5분간 재사용하며 연결 상태 새로 확인 시 캐시를 비움.
+- LabelSupplement/mergeLabel: 인식 목록의 개별 항목에 라벨 사진을 추가해 빈 사양만 보완. 기존 사용자 값·수량은 보존하고 재확인을 요구.
 - ItemEditorV2/DetailsEditor: 6개 분류, 계약 details·안전 정보·수량·전압 출처·사용자 확인. 제품 후보는 공용 applyCandidate로 빈 값만 적용. 검색 제안 HTML은 스크립트 없는 sandbox iframe.
 - ResultCard: detailed presentation.conditions/requiredInfo/sources 직접 표시. reason 분석·규정 재계산 없음. ADJUST_QUANTITY 조건 코드가 있으면 현재 구성 불가 및 재판정 안내.
 - catalogStore.ts: 새 v2 IndexedDB travel-bag-web-v2. 계약 카드와 사진 Blob, 판정 당시 전체 ItemInfo 스냅샷을 함께 저장. strict 계약을 바꾸지 않고 로컬 저장 확장으로만 스냅샷 추가. 기존 travel-bag-web DB를 덮어쓰지 않음.
 - Catalog/StaffCard/useCatalogPhotos: 저장 기록·상세·한영 직원 제시·사진·사양·판정 시각·규정 기준일·버전. 규정 변경/기한 초과는 재확인 안내. 기존 도감은 LegacyCatalog에서 읽기 전용.
-- ui.css: 중립적인 폼·카드. 색상/폰트/간격/모서리를 상단 CSS 변수로 관리. 티켓/브랜딩 결정은 미반영.
+- TravelAlbum: 확인한 목록·사진·메모를 브라우저에 여행별 저장. 다음 여행 복사 시 새 직접 입력 초안으로 만들고 재판정하도록 확인 상태를 해제.
+- ui.css: 네이비·스카이블루 항공 여행 톤, `짐 반입 확인`·`여행 준비함` 2화면, 카드형 사진 분석·빠른 확인·앨범·도감 UI. `챙기고` 로고 슬롯과 기능별 색상 아이콘을 포함하며 특정 항공사 상표는 사용하지 않음.
 
 ## 검증 범위
 

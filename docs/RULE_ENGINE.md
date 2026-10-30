@@ -1,50 +1,40 @@
-# 대한항공 규정 엔진 — 2026-10-30
-
-사용자 확정: 6개 분류, 여행자 1명, 한국 국내선·한국 출발 국제선. 목록 합산 한도 초과는 관련 카드의 현재 구성을 불가로 표시하고 수량 조정·재판정 안내.
+# 16개 항공사 규정 엔진 — 2026-10-31
 
 ## 적용 범위
 
-대한항공 직접 운항편의 한국 출발 구간 기준. 공동운항·환승·목적지 세관/검역·수하물 규격/무게는 별도 확인. 모델/사진의 진위나 보안검색 결과를 증명하는 기능은 아님.
+지원 항공사 직접 운항편의 한국 국내선·한국 출발 국제선, 여행자 1명 기준. 공동운항·환승·해외 출발·목적지 세관/검역·수하물 크기/무게는 별도 확인 대상이다.
 
-| 분류 | 구현 | 자동 확정하지 않는 유형 |
-| --- | --- | --- |
-| 보조배터리 | 확인된 리튬이온 Wh, 100/160Wh 경계, 개인 합계 2개, 위탁 금지·보관/사용 조건 | 배터리 종류·안전 상태·용량 미확인, 미조치 리콜 |
-| 고데기 | 리튬이온 배터리 분리/물리 차단·항공사 승인·위탁 금지, 소프트웨어 잠금 불인정 | 가스·기타 전원, 차단/안전 상태 미확인 |
-| 액체 | 물/비알코올 음료, 개인용 화장품류, 에탄올 손소독제, 주류. 용기 표시 용량·개수·품목별 합계 | 의약품·면세 예외·기타 화학제품, 주류 24도/70도 경계 |
-| 라이터 | 일반 소형/안전성냥 수량·소지 조건, 위탁 금지, 토치/플라즈마/연료 금지 | 기타 종류 |
-| 전자기기 | 일반 휴대 리튬이온 제품의 100/160Wh·15개 승인 조건·전원/포장 | 리튬메탈·발열·이동/의료장치·기타 배터리·미조치 리콜 |
-| 일반 소지품 | 제한 부품 없는 일반 의류/책을 사용자가 확인한 경우 | 막연한 일반 분류, 제한 부품 포함·미확인 |
+지원 항공사: 대한항공, 아시아나항공, 제주항공, 진에어, 에어부산, 이스타항공, 티웨이항공, 에어서울, 에어프레미아, 에어로케이, 파라타항공, 중국남방항공, 중국동방항공, 중국국제항공, 베트남항공, 델타항공.
 
-## 근거와 해석
+## 구현 기준
 
-- [대한항공 운송 제한 물품](https://www.koreanair.com/contents/plan-your-travel/baggage/restricted-item): 용량·승인·고데기 차단·액체 종류·라이터 조건의 기본 자료
-- [2026년 4월 20일 시행 공지](https://www.koreanair.com/contents/footer/customer-support/notice/2026/260410-powerbanks-guide): 보조배터리 1명 2개. 이전 5개 공지를 대체하는 기준
-- [인천공항 주류 FAQ](https://www.airport.kr/ap_ko/907/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGYXBfa28lMkY5NDYlMkYxMzg0MjMlMkZhcnRjbFZpZXcuZG8lM0Y%3D): 주류 경계 표현과 용기 기준 교차 확인
+- 항공사별 공식 출처·규정 버전·노선·배터리 용량/수량·라이터 허용 수량을 `data/rules/airline-profiles.json`에서 관리한다.
+- 대한항공 규칙을 다른 항공사에 재사용하지 않는다. 베트남항공·델타항공 보조배터리는 100Wh 이하, 나머지는 160Wh 이하 기준을 적용한다.
+- 중국남방항공·중국동방항공·중국국제항공은 라이터·성냥 기내 휴대를 불가 처리한다.
+- 한국 공통 액체·보조배터리 보안 기준은 인천공항·국토교통부 자료를 함께 적용한다.
+- 에어로케이·파라타항공은 공식 사이트에서 세부 제한 페이지를 확인하지 못해 국토교통부 한국 항공사 공통 지침을 보수적으로 적용한다.
+- 6개 분류: 보조배터리, 무선 고데기, 액체, 라이터, 전자기기, 일반 소지품.
+- 확인된 사용자 입력만 판정에 사용한다. 용량·수량·안전 상태 미확인은 `NEEDS_INFO`다.
+- 규정 검수 기한은 2026-11-30 00:00 UTC 전까지다. 기한이 지나면 전체 항공사를 비활성화하고 자동 판정을 중단한다.
 
-공식 자료의 주류 범위가 대한항공은 24도 이상·70도 미만, 공항 FAQ는 24도 초과·70도 이하로 달라 정확히 24/70도는 NEEDS_INFO. 여행자 선택으로 공식 규정 충돌을 해결하지 않음.
+## 주요 출처
 
-일반 의류/책과 배터리·가스 없는 유선 고데기는 위험 요소 없는 일반 수하물에 대한 제한적 설계 해석. 품목 전체를 명시적으로 열거한 공식 허용 목록이라고 주장하지 않음. 다른 유형으로 확장하지 않고 규격·포장·공항 확인 안내 유지.
+각 항공사의 전체 출처는 `GET /api/v2/rules?airlineId=...` 응답에서 제공한다.
 
-## 데이터·알고리즘
+- [대한항공 운송 제한 물품](https://www.koreanair.com/contents/plan-your-travel/baggage/restricted-item)
+- [아시아나항공 운송 제한 물품](https://flyasiana.com/C/KR/KO/contents/restricted-transport-items)
+- [제주항공 운송 제한 물품](https://www.jejuair.net/en/linkService/boardingProcessGuide/transportLimitation.do)
+- [에어부산 운송 제한 물품](https://www.airbusan.com/content/common/service/baggage/restriction)
+- [중국남방항공 리튬배터리 안내](https://www.csair.com/newh5/en/tourguide/booking/orders/order/battery/)
+- [중국동방항공 리튬배터리 안내](https://global.ceair.com/global/en_static/Announcement/BaggageService/RegulationsonSafeTransportationofLithiumBatteries/)
+- [중국국제항공 보조배터리 안내](https://www.airchina.com.cn/zh-CN/content/c/2026-08-04/30035.shtml)
+- [베트남항공 리튬배터리 안내](https://www.vietnamairlines.com/ca/en/travel-information/baggage/restricted-baggage/pin-lithium)
+- [델타항공 배터리 제한](https://www.delta.com/ca/en/baggage/prohibited-or-restricted-items/battery-or-fuel-powered)
 
-- 원본 수치·출처·검수일: data/rules/korean-air.json. 규정 버전은 KE-KR-2026-10-30-r1
-- 순수 함수: netlify/functions/_lib/rules/evaluate.ts. Gemini·DB·외부 통신·로그·사진 저장 없음
-- 30일 재검수 간격은 내부 설계 선택. 항공사가 정한 규정 만료일이 아님. reviewBy 이상 또는 reviewedAt 이전에는 자동 판정 중단
-- API /rules로 출처·검수 기한 조회. 기한 경과 시 actual airline 비활성·evaluate 409, 순수 함수는 NEEDS_INFO·ruleVersion=null
-- 규정 숫자·날짜·출처 구조 검증. 범용 조건 DSL·동적 코드 실행·호출 때마다 웹 수집하는 구조는 추가하지 않음
-- Wh는 확인된 직접 값 또는 확인된 mAh×공칭 V/1000. 출력 V·임의 3.7V 사용 금지. 직접 Wh와 계산값 충돌 시 NEEDS_INFO. 반올림은 표시값에만 적용
-- 필드 출처 confirmed, item.confirmed, details.confirmed를 각각 검사. 사용자 확인 메타데이터는 서명된 인증 자료가 아님
-- 개수·용량은 확인된 목록에서 합산. inventoryComplete 생략/false는 부분 목록. 다른 짐과 여분 배터리·액체 포장 조건을 확인하는 조건부 결과 유지
-- 국제선 1L 지퍼백은 실제 봉투 밀봉 조건. 개별 용기 용량의 합계만으로 봉투에 맞는다고 보증하거나 임의로 추가 허용하지 않음
-- 독립적으로 확인된 금지는 다른 정보 누락 때문에 지우지 않음. 추가 정보의 누락은 reason으로 안내, missingFields는 기존 숫자/제품 필드 키만 사용
-- 일반 권장 조치는 16개 조합으로 검증. 합산 초과는 제품 자체 금지와 구분해 양쪽 불가라도 CHECK_CONDITIONS로 수량 조정·재판정 안내
+## 검증 기준
 
-## 규정 변경 절차
-
-1. 직접 공식 출처를 다시 읽고 시행일·적용 범위·상충 안내 확인
-2. 수치·검수일·기한·revision 갱신. 불명확한 범위는 NEEDS_INFO 유지
-3. 독립 기대값과 경계 테스트 변경. 생성된 엔진 응답을 정답으로 복사하지 않음
-4. npm run contract:generate, npm run check 실행. 실제 HTTP·체크 화면·프론트 계약 대조
-5. 검증 결과·남은 제한을 기록하고 배포 검증은 별도로 수행
-
-Gemini 연결 코드는 준비했으나 사용자 요청으로 실호출은 잠금. 기본 시연 숫자를 실제 판독 결과로 표시하면 안 됨. 연결 설정은 docs/FRONTEND_RULES_HANDOFF.md 참조.
+- `npm run check`
+- 16개 항공사 목록·규정 메타데이터·평가 API가 모두 성공해야 한다.
+- 아시아나항공 120Wh 보조배터리는 조건부, 델타항공 120Wh 보조배터리는 불가여야 한다.
+- 중국 항공사 라이터와 대한항공 라이터 결과가 달라야 한다.
+- `trinity-airways`·`트리니티항공` 문자열이 없어야 한다.

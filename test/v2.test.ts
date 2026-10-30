@@ -20,7 +20,7 @@ const actual = createApiClient({ baseUrl: 'https://api.example', fetch: async (u
 const itemInfo = () => ({ ...s.DetectedItemSchema.parse(fixtureItems.label), confirmed: false, userEdited: false })
 const evaluateBody = () => ({ airlineId: 'demo-airline', flightType: 'domestic' as const, departureCountry: 'KR' as const, items: [itemInfo()] })
 const post = (operation: string, body: unknown, headers?: HeadersInit) => handleApi(new Request(`https://api.example/api/v2/${operation}`, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', ...headers } }), {})
-beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-30T09:00:00Z')) })
+beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-31T09:00:00Z')) })
 afterEach(() => vi.useRealTimers())
 
 describe('2.0 계약과 버전 공존', () => {

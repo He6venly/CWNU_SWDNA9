@@ -2,7 +2,7 @@
 
 2026 CWNU SW-DNA² 챌린지 웹앱 개발 저장소. 임시 제목: 여행 짐 반입 확인.
 
-최신 기준: [계약 2.0.0](contract/v2/README.md), [규정 엔진](docs/RULE_ENGINE.md), [프론트 추가 인계](docs/FRONTEND_RULES_HANDOFF.md). API는 `/api/v2`, 기존 `/api`는 1.0.0으로 유지. 대한항공 직접 운항편·한국 출발·여행자 1명·6개 분류 규정 판정 지원. 실제 인식·제품 조회는 시연.
+최신 기준: [계약 2.0.0](contract/v2/README.md), [규정 엔진](docs/RULE_ENGINE.md), [프론트 추가 인계](docs/FRONTEND_RULES_HANDOFF.md). API는 `/api/v2`, 기존 `/api`는 1.0.0으로 유지. 16개 항공사 직접 운항편·한국 출발·여행자 1명·6개 분류 규정 판정 지원. 사진 인식은 Gemini, 제품 조회는 Tavily를 사용.
 
 현재 범위는 **백엔드 API·공용 계약·내부 체크 화면**. 사용자 UI/UX·티켓 디자인·개인 도감 저장은 프론트 담당. 판정은 순수 알고리즘, Gemini 인식·제품 검색은 연결 코드 준비·실제 호출 잠금 상태.
 

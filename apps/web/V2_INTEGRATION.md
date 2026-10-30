@@ -1,6 +1,6 @@
 # v2 사용자 화면 연결
 
-현재 진입점: apps/web/src/main.tsx → v2/TravelApp.tsx. 임시 제목은 여행 짐 반입 확인입니다. 기존 App.tsx·연구용 화면·이전 IndexedDB 원본은 보존했습니다.
+현재 진입점: apps/web/src/main.tsx → v2/TravelApp.tsx. 앱 이름은 `챙기고`입니다. 기존 App.tsx·연구용 화면·이전 IndexedDB 원본은 보존했습니다.
 
 ## Git 반영
 

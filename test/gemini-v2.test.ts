@@ -3,27 +3,24 @@ import { createGeminiV2 } from '../netlify/functions/_lib/providers/gemini-v2.ts
 import { RecognizeRequestSchema } from '../contract/v2/schemas.ts'
 import { recognizeDemo } from '../contract/v2/demo.ts'
 import requests from '../contract/v2/fixtures/requests.json' with { type: 'json' }
-import { createMockClient } from '../contract/v2/mock.ts'
 import { applyCandidate } from '../contract/v2/apply-candidate.ts'
 import { handleApi } from '../netlify/functions/_lib/api.ts'
 
-const environment = { GEMINI_CALLS_ENABLED: 'true', GEMINI_API_KEY: 'test-only-not-a-real-key', GEMINI_MODEL: 'gemini-3.8-flash' }
+const environment = { GEMINI_CALLS_ENABLED: 'true', GEMINI_API_KEY: 'test-only-not-a-real-key', GEMINI_MODEL: 'gemini-3.6-flash', TAVILY_API_KEY: 'tvly-test-only-not-a-real-key' }
 const label = RecognizeRequestSchema.parse(requests.label), estimate = RecognizeRequestSchema.parse(requests.estimate)
 function recognized(input = label) {
   const { meta: _meta, ...output } = recognizeDemo(input)
   return { ...output, warnings: [], imageQuality: output.imageQuality.map(quality => ({ ...quality, source: 'ai' as const })) }
 }
-const envelope = (value: unknown, sources: string[] = []) => Response.json({ status: 'completed', output_text: JSON.stringify(value), steps: [
+const envelope = (value: unknown, sources: string[] = []) => {
+  if (value && typeof value === 'object' && 'items' in value && Array.isArray(value.items)) value = { ...value, items: value.items.map(item => ({ ...item, fieldSources: { brand: null, modelName: null, wh: null, mah: null, volts: null, ml: null, count: null, ...item.fieldSources } })) }
+  return Response.json({ status: 'completed', output_text: JSON.stringify(value), steps: [
   { type: 'google_search_result', result: [{ search_suggestions: '<div>검색 제안</div>' }] },
   { type: 'model_output', content: [{ type: 'text', text: JSON.stringify(value), annotations: sources.map(url => ({ type: 'url_citation', url, title: '검증용 출처' })) }] },
-] })
+] }) }
 const lookupInput = { itemId: 'existing-item-1', categoryId: 'power-bank' as const, modelName: 'MODEL-TEST', brand: null }
-const searchEnvelope = (urls: string[]) => Response.json({ candidates: [{ content: { parts: [{ text: 'MODEL-TEST 제품 사양' }] }, groundingMetadata: {
-  groundingChunks: urls.map(uri => ({ web: { uri, title: '검증용 출처' } })), searchEntryPoint: { renderedContent: '<div>검색 제안</div>' },
-} }] })
-function lookupFetch(value: unknown, urls: string[]) {
-  return vi.fn<typeof fetch>(async url => String(url).includes(':generateContent') ? searchEnvelope(urls) : envelope(value))
-}
+const searchEnvelope = (urls: string[], content = 'MODEL-TEST 제품 사양', title = 'MODEL-TEST 검증용 출처') => Response.json({ results: urls.map(url => ({ title, url, content, score: 0.9 })) })
+function lookupFetch(urls: string[], content?: string, title?: string) { return vi.fn<typeof fetch>(async () => searchEnvelope(urls, content, title)) }
 
 describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () => {
   it('키만 있어도 잠금 유지, API 기본·잠금 상태는 외부 호출 없음', async () => {
@@ -45,6 +42,10 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
     expect(new Headers(options!.headers).get('x-goog-api-key')).toBe(environment.GEMINI_API_KEY)
     expect(body.store).toBe(false); expect(body.tools).toBeUndefined(); expect(body.input[1].type).toBe('image')
     expect(options!.signal).toBeDefined(); expect(request).toHaveBeenCalledTimes(1); expect('evaluate' in provider).toBe(false)
+    const sourceSchema = body.response_format.schema.properties.items.items.properties.fieldSources
+    expect(sourceSchema.properties.wh.anyOf[0].properties.source.enum).toContain('label')
+    expect(sourceSchema.properties.volts.anyOf[0].properties.voltageType.enum).toContain('nominal')
+    expect(sourceSchema.properties.modelName.anyOf[0].properties.imageId.type).toBe('string')
   })
   it('외형 추정 모드에서 수치·모델을 반환하면 거부', async () => {
     const output = recognized(estimate), entry = output.items[0]!
@@ -53,15 +54,16 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
     await expect(createGeminiV2(environment, async () => envelope(output)).recognize(estimate)).rejects.toMatchObject({ code: 'RECOGNITION_FAILED' })
   })
   it('인용 출처가 있는 정확한 모델 후보만 제공, 라벨 보존·재확인', async () => {
-    const sample = await createMockClient({ lookupScenario: 'candidate', delayMs: 0 }).lookup(lookupInput)
-    const candidate = sample.candidates[0]!, url = candidate.sources[0]!.url
-    const { sources: _sources, ...fields } = candidate
-    const request = lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [0] }], message: '확인할 후보' }, [url])
+    const url = 'https://example.com/products/model-test'
+    const request = lookupFetch([url], 'MODEL-TEST battery capacity 1000 mAh. Rated capacity 74 Wh.')
     const output = await createGeminiV2(environment, request).lookup(lookupInput)
-    expect(output.meta.isDemoLookup).toBe(false); expect(output.searchSuggestions).toContain('검색 제안')
-    const body = JSON.parse(request.mock.calls[0]![1]!.body as string)
-    expect(body.tools).toEqual([{ google_search: {} }]); expect(JSON.stringify(body.contents)).not.toContain('base64')
-    expect(request).toHaveBeenCalledTimes(2)
+    expect(output.meta.isDemoLookup).toBe(false); expect(output.searchSuggestions).toBeUndefined()
+    const [searchUrl, searchOptions] = request.mock.calls[0]!, body = JSON.parse(searchOptions!.body as string)
+    expect(searchUrl).toBe('https://api.tavily.com/search')
+    expect(new Headers(searchOptions!.headers).get('Authorization')).toBe(`Bearer ${environment.TAVILY_API_KEY}`)
+    expect(body).toMatchObject({ search_depth: 'basic', max_results: 5, include_answer: false, include_raw_content: false })
+    expect(body.query).toContain('MODEL-TEST'); expect(JSON.stringify(body)).not.toContain('base64')
+    expect(request).toHaveBeenCalledTimes(1)
     const entry = { ...recognizeDemo(label).items[0]!, confirmed: true, userEdited: false }
     const merged = applyCandidate(entry, output.candidates[0])
     expect(merged.fields.mah).toBe(1000); expect(merged.fields.wh).toBe(74)
@@ -69,21 +71,25 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
     expect(merged.fieldSources.volts!.source).toBe('label')
   })
   it('검색 인용 없는 URL·비슷한 다른 모델 후보 거부', async () => {
-    const sample = await createMockClient({ lookupScenario: 'candidate', delayMs: 0 }).lookup(lookupInput), candidate = sample.candidates[0]!
-    const { sources: _sources, ...fields } = candidate
-    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [0] }], message: '후보' }, [])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
-    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [1] }], message: '후보' }, [candidate.sources[0]!.url])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
-    candidate.fields.modelName = 'MODEL-TEST-PRO'
-    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, fields: candidate.fields, sourceIndices: [0] }], message: '후보' }, [candidate.sources[0]!.url])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
+    const failed = await createGeminiV2(environment, lookupFetch([])).lookup(lookupInput)
+    expect(failed.candidates).toEqual([]); expect(failed.message).toContain('직접 입력')
+    const output = await createGeminiV2(environment, lookupFetch(['https://example.com/products/model-test-pro'], 'MODEL-TEST-PRO 제품 사양', 'MODEL-TEST-PRO 검증용 출처')).lookup(lookupInput)
+    expect(output.candidates).toEqual([])
   })
-  it('활성화한 API도 가짜 fetch로만 인식, 상류 한도 오류는 재시도 없이 공통 오류', async () => {
+  it('제품 조회는 Gemini 키·모델 없이 Tavily만 사용', async () => {
+    const request = lookupFetch(['https://example.com/products/model-test'])
+    const output = await createGeminiV2({ GEMINI_CALLS_ENABLED: 'true', TAVILY_API_KEY: environment.TAVILY_API_KEY }, request).lookup(lookupInput)
+    expect(output.candidates).toHaveLength(1); expect(request).toHaveBeenCalledTimes(1)
+  })
+  it('활성화한 API도 가짜 fetch로만 인식, 검색 한도 오류는 재시도 없이 수동 입력으로 계속', async () => {
     const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => envelope(recognized()))
     try {
       const response = await handleApi(new Request('https://api.example/api/v2/recognize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(label) }), { ...environment, USE_DEMO_RECOGNITION: 'false' })
       expect(response.status).toBe(200); expect((await response.json()).meta.isDemoRecognition).toBe(false)
     } finally { network.mockRestore() }
     const request = vi.fn<typeof fetch>(async () => new Response('private provider detail', { status: 429 }))
-    await expect(createGeminiV2(environment, request).lookup(lookupInput)).rejects.toMatchObject({ status: 429, code: 'RATE_LIMITED' })
+    const fallback = await createGeminiV2(environment, request).lookup(lookupInput)
+    expect(fallback.candidates).toEqual([]); expect(fallback.message).toContain('라벨 값을 확인하거나 직접 입력')
     expect(request).toHaveBeenCalledTimes(1)
   })
 })

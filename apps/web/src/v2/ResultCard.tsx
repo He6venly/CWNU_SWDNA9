@@ -17,8 +17,10 @@ export default function ResultCard({
   const view = result.presentation
   return (
     <article className="result-card">
-      <h3>{item.name}</h3>
-      <p>{result.isDemo ? '시연 결과' : '확인한 정보에 따른 규정 참고 결과'}</p>
+      <header className="result-card-header">
+        <div><p className="eyebrow">ITEM RESULT</p><h3>{item.name}</h3></div>
+        <span className={result.isDemo ? 'result-source demo' : 'result-source'}>{result.isDemo ? '시연 판정' : '규정 알고리즘'}</span>
+      </header>
       <div className="verdict-grid">
         <div>
           <strong>기내 휴대</strong>
@@ -42,7 +44,7 @@ export default function ResultCard({
           현재 구성 불가 · 수량을 조정한 뒤 다시 판정해 주세요.
         </p>
       )}
-      <h4>해야 할 조건</h4>
+      <section className="result-details"><h4>해야 할 조건</h4>
       {view?.conditions.length ? (
         <ul>
           {view.conditions.map((entry) => (
@@ -92,6 +94,7 @@ export default function ResultCard({
           {view.inFlightUse === 'prohibited' ? '금지' : '별도 확인'}
         </p>
       )}
+      </section>
       <details>
         <summary>결과 설명</summary>
         <p>기내: {result.cabin.reason}</p>
@@ -127,12 +130,12 @@ export default function ResultCard({
         </p>
       )}
       {onSave && (
-        <button disabled={saving || saved || !item.confirmed} onClick={onSave}>
+        <button className="secondary-action result-save" disabled={saving || saved || !item.confirmed} onClick={onSave}>
           {saved
-            ? '도감에 저장됨'
+            ? '여행 기록에 저장됨'
             : saving
-              ? '도감에 저장 중…'
-              : '확인한 물품을 개인 도감에 저장'}
+              ? '여행 기록에 저장 중…'
+              : '확인한 물품 저장'}
         </button>
       )}
       {!item.confirmed && (
