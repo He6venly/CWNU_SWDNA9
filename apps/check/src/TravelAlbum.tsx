@@ -35,7 +35,7 @@ function AlbumView({ album, update, remove, restore }: { album: Album; update: (
   return <article className="album-card"><header><div><small>MY TRIP</small><h3>{album.title}</h3><p>{album.date || '날짜 미정'}</p></div><span aria-hidden="true">✈</span></header>{album.photos.map((photo, index) => <AlbumPhoto key={index} photo={photo} />)}
     <label>메모<textarea value={album.memo} onChange={e => update({ ...album, memo: e.target.value })} /></label>
     <ul>{album.items.map(item => <li key={item.id}><label><input type="checkbox" checked={album.checked.includes(item.id)} onChange={e => update({ ...album, checked: e.target.checked ? [...album.checked, item.id] : album.checked.filter(id => id !== item.id) })} />{item.name}</label></li>)}</ul>
-    <button className="secondary-action" onClick={restore}>다음 여행에 목록 복사</button><button className="danger-action" onClick={remove}>앨범 삭제</button></article>
+    <div className="album-actions"><button className="secondary-action" onClick={restore}>다음 여행에 목록 복사</button><button className="danger-action" onClick={remove}>앨범 삭제</button></div></article>
 }
 export default function TravelAlbum({ items, photos, onRestore, readOnly = false }: { items: ItemInfo[]; photos: Photo[]; onRestore: (items: ItemInfo[]) => void; readOnly?: boolean }) {
   const [albums, setAlbums] = useState<Album[]>([]), [title, setTitle] = useState(''), [date, setDate] = useState(''), [message, setMessage] = useState('')
