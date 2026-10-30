@@ -1,5 +1,7 @@
 # 계약 2.0.0 — 전체·개별 사진 등록
 
+최신 추가 구현: 사진 없는 manual 입력, evaluate의 선택 resultFormat=detailed, 구조화된 presentation 결과, 로컬 도감·직원 모드. 사용법은 docs/FRONTEND_RULES_HANDOFF.md 상단. 이번 확장의 테스트·빌드는 사용자 요청으로 보류.
+
 현재는 사진 인식·제품 조회 시연과 대한항공 규정 엔진 제공. 1.0.0의 /api/*·기존 2.0 응답 유지. details·inventoryComplete 선택 요청과 /rules 조회를 호환 확장. 최신 입력/표시 기준: docs/FRONTEND_RULES_HANDOFF.md, 근거·범위: docs/RULE_ENGINE.md.
 
 Gemini 연결 코드는 준비했으며 기본 호출 잠금. 활성화 전 최신 계약·프론트 인계 반영 필요. 실제 lookup만 선택 searchSuggestions HTML을 포함할 수 있음. candidate 목업과 apply-candidate.ts로 사용자 재확인 흐름 개발 가능.

@@ -16,4 +16,26 @@ p, summary { overflow-wrap: anywhere; }
 .photo { display: block; max-width: 100%; max-height: 240px; object-fit: contain; margin-block: 12px; }
 details { padding: 12px; }
 summary { cursor: pointer; }
+.verdict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 12px; }
+.verdict-grid > div { border: 1px solid #d4dbe0; border-radius: 6px; padding: 12px; }
+.verdict { font-size: 1.15rem; font-weight: 700; }
+.verdict-ALLOWED { color: #116443; }
+.verdict-CONDITIONAL, .verdict-NEEDS_INFO { color: #805300; }
+.verdict-PROHIBITED { color: #a12121; }
+.result-card li { margin-block: 10px; overflow-wrap: anywhere; }
+.staff-dialog { width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow: auto; border: 1px solid #bac5cd; border-radius: 10px; padding: 24px; color: #17212a; }
+.staff-dialog::backdrop { background: #17212aaa; }
+.staff-dialog small { display: block; font-size: .85rem; font-weight: 400; }
+.staff-photo { max-width: 100%; max-height: 300px; object-fit: contain; display: block; margin-block: 16px; }
+.staff-warning { background: #fff3d8; padding: 12px; border-left: 4px solid #a87000; }
+.staff-specs > div { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding-block: 8px; border-bottom: 1px solid #dce2e7; }
+.staff-specs dd { margin: 0; overflow-wrap: anywhere; }
+.staff-dialog p, .staff-dialog li { overflow-wrap: anywhere; }
+@media print {
+  body:has(.staff-dialog[open]) { visibility: hidden; }
+  .staff-dialog[open], .staff-dialog[open] * { visibility: visible; }
+  .staff-dialog[open] { position: absolute; inset: 0; width: 100%; max-height: none; overflow: visible; border: 0; margin: 0; }
+  .staff-toolbar { display: none; }
+  .staff-photo { max-height: 200px; }
+}
 @media (max-width: 480px) { main { padding: 12px; } section, aside, fieldset { padding: 12px; } button { width: 100%; margin-right: 0; } }

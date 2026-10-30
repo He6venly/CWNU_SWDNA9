@@ -14,3 +14,5 @@ export type LookupResponse = z.infer<typeof s.LookupResponseSchema>
 export type EvaluateRequest = z.infer<typeof s.EvaluateRequestSchema>
 export type EvaluateResponse = z.infer<typeof s.EvaluateResponseSchema>
 export type CatalogCard = z.infer<typeof s.CatalogCardSchema>
+export type Airline = z.infer<typeof s.AirlineSchema>
+export type { ResultPresentation, ConditionCode } from './presentation.ts'

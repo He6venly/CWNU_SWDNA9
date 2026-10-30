@@ -3,7 +3,7 @@
   "info": {
     "title": "여행 짐 반입 확인 API",
     "version": "2.0.0",
-    "description": "2.0.0 호환 확장. 사진 인식·제품 조회는 시연. 대한항공 직접 운항·한국 출발·1명 기준의 검수 규정 판정 지원. 선택 입력 details·inventoryComplete와 /rules 추가. mode/이미지 kind/출처/ID/추가정보 관계 등 의미 제약은 README와 런타임 검증을 함께 준수."
+    "description": "2.0.0 확장. 기본 사진 인식·제품 조회는 시연, 실제 Gemini 호출 잠금. 대한항공 한국 출발·1명 규정 판정. identification=manual은 사진 없는 사용자 입력. resultFormat=detailed 요청에만 presentation 조건·추가정보·근거·영문 요약 반환. 도감은 브라우저 로컬 저장. 의미 제약은 README와 런타임 검증 준수."
   },
   "servers": [
     {
@@ -1326,7 +1326,6 @@
             "pattern": "^[a-zA-Z0-9_-]+$"
           },
           "photoKeys": {
-            "minItems": 1,
             "maxItems": 3,
             "type": "array",
             "items": {
@@ -1555,7 +1554,8 @@
                 "type": "string",
                 "enum": [
                   "label_read",
-                  "ai_estimated"
+                  "ai_estimated",
+                  "manual"
                 ]
               },
               "estimate": {
@@ -1974,7 +1974,6 @@
               "fieldSources",
               "unreadFields",
               "identification",
-              "imageId",
               "confirmed",
               "userEdited"
             ],
@@ -2105,6 +2104,207 @@
                     "additionalProperties": false
                   }
                 },
+                "additionalProperties": false
+              },
+              "presentation": {
+                "type": "object",
+                "properties": {
+                  "conditions": {
+                    "maxItems": 30,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "AIRLINE_APPROVAL",
+                            "INSULATE_TERMINALS",
+                            "KEEP_WITH_YOU",
+                            "NO_OVERHEAD",
+                            "NO_INFLIGHT_USE",
+                            "POWER_BANK_LIMIT",
+                            "HIGH_CAPACITY_SPARES",
+                            "POWER_OFF",
+                            "PROTECT_DEVICE",
+                            "DEVICE_LIMIT",
+                            "REMOVE_BATTERY",
+                            "PHYSICAL_ISOLATION",
+                            "LIQUID_BAG",
+                            "PREVENT_LEAKS",
+                            "TOILETRY_LIMIT",
+                            "SANITIZER_LIMIT",
+                            "SANITIZER_TOTAL",
+                            "ALCOHOL_LIMIT",
+                            "LIGHTER_ON_PERSON",
+                            "LIGHTER_LIMIT",
+                            "CHECK_OTHER_ITEMS",
+                            "BAGGAGE_AND_DESTINATION",
+                            "ADJUST_QUANTITY"
+                          ]
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 400
+                        },
+                        "textEn": {
+                          "type": "string",
+                          "maxLength": 500
+                        },
+                        "appliesTo": {
+                          "type": "string",
+                          "enum": [
+                            "cabin",
+                            "checked",
+                            "both"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "code",
+                        "text",
+                        "textEn",
+                        "appliesTo"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "requiredInfo": {
+                    "maxItems": 25,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "maxLength": 80
+                        },
+                        "text": {
+                          "type": "string",
+                          "maxLength": 600
+                        },
+                        "textEn": {
+                          "type": "string",
+                          "maxLength": 600
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "text",
+                        "textEn"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "sources": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200,
+                          "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                        },
+                        "url": {
+                          "type": "string",
+                          "maxLength": 2048,
+                          "pattern": "^https:\\/\\/"
+                        },
+                        "retrievedAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "title",
+                        "url",
+                        "retrievedAt"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "ruleVersion": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "reviewedAt": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "reviewBy": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "current": {
+                    "type": "boolean"
+                  },
+                  "airlineApproval": {
+                    "type": "string",
+                    "enum": [
+                      "required",
+                      "not-required",
+                      "not-assessed"
+                    ]
+                  },
+                  "inFlightUse": {
+                    "type": "string",
+                    "enum": [
+                      "prohibited",
+                      "not-assessed"
+                    ]
+                  },
+                  "inFlightCharging": {
+                    "type": "string",
+                    "enum": [
+                      "prohibited",
+                      "not-assessed"
+                    ]
+                  },
+                  "staffSummaryEn": {
+                    "type": "string",
+                    "maxLength": 1200
+                  },
+                  "scopeNotice": {
+                    "type": "string",
+                    "maxLength": 600
+                  }
+                },
+                "required": [
+                  "conditions",
+                  "requiredInfo",
+                  "sources",
+                  "ruleVersion",
+                  "reviewedAt",
+                  "reviewBy",
+                  "current",
+                  "airlineApproval",
+                  "inFlightUse",
+                  "inFlightCharging",
+                  "staffSummaryEn",
+                  "scopeNotice"
+                ],
                 "additionalProperties": false
               }
             },
@@ -2250,6 +2450,30 @@
               "isDemoRecognition",
               "isDemoRules",
               "isDemoLookup"
+            ],
+            "additionalProperties": false
+          },
+          "assessmentContext": {
+            "type": "object",
+            "properties": {
+              "inventoryComplete": {
+                "type": "boolean"
+              },
+              "evaluatedItemIds": {
+                "minItems": 1,
+                "maxItems": 30,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                }
+              }
+            },
+            "required": [
+              "inventoryComplete",
+              "evaluatedItemIds"
             ],
             "additionalProperties": false
           }
@@ -4159,6 +4383,207 @@
                     }
                   },
                   "additionalProperties": false
+                },
+                "presentation": {
+                  "type": "object",
+                  "properties": {
+                    "conditions": {
+                      "maxItems": 30,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "type": "string",
+                            "enum": [
+                              "AIRLINE_APPROVAL",
+                              "INSULATE_TERMINALS",
+                              "KEEP_WITH_YOU",
+                              "NO_OVERHEAD",
+                              "NO_INFLIGHT_USE",
+                              "POWER_BANK_LIMIT",
+                              "HIGH_CAPACITY_SPARES",
+                              "POWER_OFF",
+                              "PROTECT_DEVICE",
+                              "DEVICE_LIMIT",
+                              "REMOVE_BATTERY",
+                              "PHYSICAL_ISOLATION",
+                              "LIQUID_BAG",
+                              "PREVENT_LEAKS",
+                              "TOILETRY_LIMIT",
+                              "SANITIZER_LIMIT",
+                              "SANITIZER_TOTAL",
+                              "ALCOHOL_LIMIT",
+                              "LIGHTER_ON_PERSON",
+                              "LIGHTER_LIMIT",
+                              "CHECK_OTHER_ITEMS",
+                              "BAGGAGE_AND_DESTINATION",
+                              "ADJUST_QUANTITY"
+                            ]
+                          },
+                          "text": {
+                            "type": "string",
+                            "maxLength": 400
+                          },
+                          "textEn": {
+                            "type": "string",
+                            "maxLength": 500
+                          },
+                          "appliesTo": {
+                            "type": "string",
+                            "enum": [
+                              "cabin",
+                              "checked",
+                              "both"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "code",
+                          "text",
+                          "textEn",
+                          "appliesTo"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "requiredInfo": {
+                      "maxItems": 25,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "key": {
+                            "type": "string",
+                            "maxLength": 80
+                          },
+                          "text": {
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "textEn": {
+                            "type": "string",
+                            "maxLength": 600
+                          }
+                        },
+                        "required": [
+                          "key",
+                          "text",
+                          "textEn"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "sources": {
+                      "maxItems": 5,
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200,
+                            "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                          },
+                          "url": {
+                            "type": "string",
+                            "maxLength": 2048,
+                            "pattern": "^https:\\/\\/"
+                          },
+                          "retrievedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "title",
+                          "url",
+                          "retrievedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "ruleVersion": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "reviewedAt": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "reviewBy": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "current": {
+                      "type": "boolean"
+                    },
+                    "airlineApproval": {
+                      "type": "string",
+                      "enum": [
+                        "required",
+                        "not-required",
+                        "not-assessed"
+                      ]
+                    },
+                    "inFlightUse": {
+                      "type": "string",
+                      "enum": [
+                        "prohibited",
+                        "not-assessed"
+                      ]
+                    },
+                    "inFlightCharging": {
+                      "type": "string",
+                      "enum": [
+                        "prohibited",
+                        "not-assessed"
+                      ]
+                    },
+                    "staffSummaryEn": {
+                      "type": "string",
+                      "maxLength": 1200
+                    },
+                    "scopeNotice": {
+                      "type": "string",
+                      "maxLength": 600
+                    }
+                  },
+                  "required": [
+                    "conditions",
+                    "requiredInfo",
+                    "sources",
+                    "ruleVersion",
+                    "reviewedAt",
+                    "reviewBy",
+                    "current",
+                    "airlineApproval",
+                    "inFlightUse",
+                    "inFlightCharging",
+                    "staffSummaryEn",
+                    "scopeNotice"
+                  ],
+                  "additionalProperties": false
                 }
               },
               "required": [
@@ -4454,7 +4879,8 @@
                   "type": "string",
                   "enum": [
                     "label_read",
-                    "ai_estimated"
+                    "ai_estimated",
+                    "manual"
                   ]
                 },
                 "estimate": {
@@ -4873,7 +5299,6 @@
                 "fieldSources",
                 "unreadFields",
                 "identification",
-                "imageId",
                 "confirmed",
                 "userEdited"
               ],
@@ -4883,6 +5308,11 @@
           "inventoryComplete": {
             "description": "여행자 1명의 전체 물품 목록인지 여부. 생략은 부분 목록. 합산 한도를 별도 확인해야 함.",
             "type": "boolean"
+          },
+          "resultFormat": {
+            "description": "상세 조건·추가 확인 정보·근거·영문 요약을 요청. 생략하면 기존 응답 형식 유지.",
+            "type": "string",
+            "const": "detailed"
           }
         },
         "required": [

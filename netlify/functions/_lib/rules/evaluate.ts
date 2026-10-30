@@ -3,14 +3,17 @@ import type { EvaluateRequest, FieldKey, ItemInfo, ItemResult } from '../../../.
 import { labels } from '../../../../contract/v2/labels.ts'
 import { CONTRACT_VERSION } from '../../../../contract/v2/constants.ts'
 import { koreanAirRules as rules, rulesCurrent } from './korean-air.ts'
+import { buildPresentation } from './presentation.ts'
+import { condition } from '../../../../contract/v2/presentation.ts'
+import type { ConditionCode } from '../../../../contract/v2/presentation.ts'
 
 type Verdict = ItemResult['cabin']['verdict']
-type Detail = ItemResult['cabin']
+type Detail = ItemResult['cabin'] & { conditionCodes?: ConditionCode[] }
 type Energy = { value?: number; derived: ItemResult['derivedFields']; issue?: string }
 const detail = (verdict: Verdict, reason: string): Detail => ({ verdict, reason })
 const need = (reason: string) => detail('NEEDS_INFO', reason)
 const prohibited = (reason: string) => detail('PROHIBITED', reason)
-const conditional = (reason: string) => detail('CONDITIONAL', reason)
+const conditional = (reason: string, conditionCodes: ConditionCode[] = []): Detail => ({ ...detail('CONDITIONAL', reason), conditionCodes })
 
 export function deriveAction(cabin: Verdict, checked: Verdict): ItemResult['action'] {
   if (cabin === 'ALLOWED') return 'PUT_IN_CABIN'
@@ -40,11 +43,16 @@ function safety(item: ItemInfo): Detail | undefined {
   if (info.damaged !== false) return need('배터리 손상·팽창·과열 징후가 없는지 확인해 주세요.')
 }
 function finish(item: ItemInfo, cabin: Detail, checked: Detail, missingFields: FieldKey[] = [], derivedFields: ItemResult['derivedFields'] = {}, quantityIssue = false): ItemResult {
-  return {
-    itemId: item.id, cabin, checked, missingFields, derivedFields, isDemo: false,
+  const result: ItemResult = {
+    itemId: item.id, cabin: { verdict: cabin.verdict, reason: cabin.reason }, checked: { verdict: checked.verdict, reason: checked.reason }, missingFields, derivedFields, isDemo: false,
     action: quantityIssue ? 'CHECK_CONDITIONS' : deriveAction(cabin.verdict, checked.verdict),
     staffSummary: `${item.name} / 여행자 1명 기준 / 기내: ${labels.verdicts[cabin.verdict]} / 위탁: ${labels.verdicts[checked.verdict]}${quantityIssue ? ' / 현재 목록의 합산 한도 초과. 수량 조정 후 재판정 필요' : ''} / 제공·확인된 정보와 ${rules.version} 기준의 참고 결과. 최종 운송 판단은 항공사·보안검색 직원에게 확인.`,
   }
+  result.presentation = buildPresentation(item, result, [
+    ...(cabin.conditionCodes ?? []).map(code => condition(code, 'cabin')),
+    ...(checked.conditionCodes ?? []).map(code => condition(code, 'checked')),
+  ], quantityIssue)
+  return result
 }
 function both(item: ItemInfo, value: Detail) { return finish(item, value, value) }
 function ready(item: ItemInfo) { return item.confirmed && item.details?.confirmed === true }
@@ -68,21 +76,21 @@ function liquid(input: EvaluateRequest, item: ItemInfo): ItemResult {
   }
   const ml = item.fields.ml!, type = info.liquidType, limits = rules.liquid
   let cabin = input.flightType === 'international'
-    ? ml > limits.internationalContainerMl ? prohibited('일반 액체의 국제선 기내 휴대 용기는 100mL 이하여야 합니다. 면세품·의약품 예외는 별도 확인 대상입니다.') : conditional('개별 용기 100mL 이하. 여행자 1명당 1L 투명 지퍼백 1개에 모두 넣어 밀봉해야 합니다.')
+    ? ml > limits.internationalContainerMl ? prohibited('일반 액체의 국제선 기내 휴대 용기는 100mL 이하여야 합니다. 면세품·의약품 예외는 별도 확인 대상입니다.') : conditional('개별 용기 100mL 이하. 여행자 1명당 1L 투명 지퍼백 1개에 모두 넣어 밀봉해야 합니다.', ['LIQUID_BAG'])
     : detail('ALLOWED', '해당 한국 국내선 액체에 국제선 100mL 제한을 일괄 적용하지 않습니다. 품목별 용량·포장 조건과 수하물 규격은 별도 확인해 주세요.')
-  let checked = conditional('내용물 누출·파손을 막아 포장하고 수하물 규격과 목적지 반입·검역 조건을 확인해 주세요.')
+  let checked = conditional('내용물 누출·파손을 막아 포장하고 수하물 규격과 목적지 반입·검역 조건을 확인해 주세요.', ['PREVENT_LEAKS', 'BAGGAGE_AND_DESTINATION'])
   let quantityIssue = false
   const total = (kind: typeof type) => volume(input.items, candidate => candidate.details?.type === 'liquid' && candidate.details.liquidType === kind)
   if (type === 'toiletry') {
     quantityIssue = total(type) > limits.toiletryTotalMl
     const restricted = ml > limits.toiletryContainerMl || quantityIssue
-    checked = restricted ? prohibited('현재 구성 불가. 개인용 화장품·향수·헤어스프레이는 용기당 500mL 이하, 여행자 1명 합계 2L 이하로 조정 후 재판정해 주세요.') : conditional('개인용 화장품·향수·헤어스프레이: 용기당 500mL 이하·1명 합계 2L 이하. 분사 밸브 보호·누출 방지 포장 필요.')
+    checked = restricted ? prohibited('현재 구성 불가. 개인용 화장품·향수·헤어스프레이는 용기당 500mL 이하, 여행자 1명 합계 2L 이하로 조정 후 재판정해 주세요.') : conditional('개인용 화장품·향수·헤어스프레이: 용기당 500mL 이하·1명 합계 2L 이하. 분사 밸브 보호·누출 방지 포장 필요.', ['TOILETRY_LIMIT', 'PREVENT_LEAKS'])
     if (input.flightType === 'domestic') cabin = checked
     else if (quantityIssue) cabin = prohibited('현재 구성 불가. 개인용 화장품류의 합산 수량·용량을 줄인 뒤 재판정해 주세요.')
   } else if (type === 'ethanol-sanitizer') {
     quantityIssue = total(type) > limits.sanitizerTotalMl
-    checked = quantityIssue ? prohibited('현재 구성 불가. 에탄올 손소독제는 1명 합계 500mL 이하로 조정해 주세요.') : conditional('에탄올 손소독제는 위탁 용기 제한 없이 1명 합계 500mL 이하. 누출 방지 포장 필요.')
-    cabin = quantityIssue ? prohibited('현재 구성 불가. 에탄올 손소독제는 1명 합계 500mL 이하로 조정해 주세요.') : ml > limits.sanitizerContainerMl ? prohibited('국내·국제선 모두 에탄올 손소독제 기내 휴대 용기는 100mL 이하여야 합니다.') : conditional('에탄올 손소독제: 용기당 100mL 이하·1명 합계 500mL 이하. 국제선은 1L 투명 지퍼백 조건도 확인해 주세요.')
+    checked = quantityIssue ? prohibited('현재 구성 불가. 에탄올 손소독제는 1명 합계 500mL 이하로 조정해 주세요.') : conditional('에탄올 손소독제는 위탁 용기 제한 없이 1명 합계 500mL 이하. 누출 방지 포장 필요.', ['SANITIZER_TOTAL', 'PREVENT_LEAKS'])
+    cabin = quantityIssue ? prohibited('현재 구성 불가. 에탄올 손소독제는 1명 합계 500mL 이하로 조정해 주세요.') : ml > limits.sanitizerContainerMl ? prohibited('국내·국제선 모두 에탄올 손소독제 기내 휴대 용기는 100mL 이하여야 합니다.') : conditional('에탄올 손소독제: 용기당 100mL 이하·1명 합계 500mL 이하. 국제선은 1L 투명 지퍼백 조건도 확인해 주세요.', ['SANITIZER_LIMIT', ...(input.flightType === 'international' ? ['LIQUID_BAG' as const] : [])])
   } else if (type === 'alcohol') {
     const percent = info.alcoholPercent
     if (percent === null || percent === limits.alcoholLowPercent || percent === limits.alcoholHighPercent) {
@@ -93,15 +101,15 @@ function liquid(input: EvaluateRequest, item: ItemInfo): ItemResult {
     if (percent > limits.alcoholLowPercent) {
       const alcoholTotal = volume(input.items, candidate => candidate.details?.type === 'liquid' && candidate.details.liquidType === 'alcohol' && candidate.details.alcoholPercent !== null && candidate.details.alcoholPercent > limits.alcoholLowPercent)
       quantityIssue = alcoholTotal > limits.alcoholTotalMl
-      checked = quantityIssue ? prohibited('현재 구성 불가. 해당 도수 주류 합계를 1명당 5L 이하로 조정해 주세요.') : conditional('24도 초과·70도 미만 주류는 1명당 합계 5L 이하. 누출·파손 방지 포장과 목적지 주류 제한 별도 확인 필요.')
+      checked = quantityIssue ? prohibited('현재 구성 불가. 해당 도수 주류 합계를 1명당 5L 이하로 조정해 주세요.') : conditional('24도 초과·70도 미만 주류는 1명당 합계 5L 이하. 누출·파손 방지 포장과 목적지 주류 제한 별도 확인 필요.', ['ALCOHOL_LIMIT', 'PREVENT_LEAKS', 'BAGGAGE_AND_DESTINATION'])
       if (input.flightType === 'domestic' || quantityIssue) cabin = checked
     }
   }
   const incomplete = !input.inventoryComplete ? ' 부분 목록이므로 다른 물품을 포함한 개인 합산 한도는 별도 확인해야 합니다.' : ''
   if (incomplete) {
     if (cabin.verdict === 'ALLOWED') cabin = conditional(cabin.reason)
-    if (cabin.verdict === 'CONDITIONAL') cabin = conditional(cabin.reason + incomplete)
-    if (checked.verdict === 'CONDITIONAL') checked = conditional(checked.reason + incomplete)
+    if (cabin.verdict === 'CONDITIONAL') cabin = conditional(cabin.reason + incomplete, [...(cabin.conditionCodes ?? []), 'CHECK_OTHER_ITEMS'])
+    if (checked.verdict === 'CONDITIONAL') checked = conditional(checked.reason + incomplete, [...(checked.conditionCodes ?? []), 'CHECK_OTHER_ITEMS'])
   }
   return finish(item, cabin, checked, [], {}, quantityIssue)
 }
@@ -121,11 +129,11 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     if (!['standard', 'safety-matches'].includes(info.lighterType ?? '')) return finish(item, need('일반 소형 라이터인지 안전성냥인지 확인해 주세요.'), need('종류가 확인되지 않아 위탁 결과를 확정하지 않습니다.'))
     if (!trusted(item, 'count')) return finish(item, need('여행자 1명 기준 수량을 확인해 주세요.'), checked, ['count'])
     const quantityIssue = count(input.items, candidate => candidate.details?.type === 'lighter' && ['standard', 'safety-matches'].includes(candidate.details.lighterType ?? '')) > rules.lighterCount
-    return finish(item, quantityIssue ? prohibited('현재 구성 불가. 일반 라이터·안전성냥 합계를 1명당 1개로 줄이고 재판정해 주세요.') : conditional('1명당 1개 이하. 일반 라이터는 가방에 넣지 말고 몸에 소지해야 합니다. 다른 라이터·성냥과 합산 여부를 확인해 주세요.'), checked, [], {}, quantityIssue)
+    return finish(item, quantityIssue ? prohibited('현재 구성 불가. 일반 라이터·안전성냥 합계를 1명당 1개로 줄이고 재판정해 주세요.') : conditional('1명당 1개 이하. 일반 라이터는 가방에 넣지 말고 몸에 소지해야 합니다. 다른 라이터·성냥과 합산 여부를 확인해 주세요.', ['LIGHTER_LIMIT', ...(info.lighterType === 'standard' ? ['LIGHTER_ON_PERSON' as const] : [])]), checked, [], {}, quantityIssue)
   }
   if (category === 'cordless-iron' && info.type === 'cordless-iron') {
     if (info.powerSource === 'mains' && (info.damaged === true || info.recalled === true)) return both(item, need('유선 전용과 배터리 손상·미조치 리콜 정보가 함께 입력되었습니다. 제품 정보를 다시 확인해 주세요.'))
-    if (info.powerSource === 'mains') return both(item, conditional('배터리·가스가 없는 유선 제품인지 확인하고 전원을 분리·포장해 주세요. 수하물 크기·무게와 공항 기준은 별도 확인 대상입니다.'))
+    if (info.powerSource === 'mains') return both(item, conditional('배터리·가스가 없는 유선 제품인지 확인하고 전원을 분리·포장해 주세요. 수하물 크기·무게와 공항 기준은 별도 확인 대상입니다.', ['PROTECT_DEVICE', 'BAGGAGE_AND_DESTINATION']))
     if (info.powerSource !== 'lithium-ion-battery') return both(item, need('가스식·기타 전원 제품은 별도 규정 확인이 필요합니다. 충전식 리튬이온 제품이면 전원 방식과 물리적 차단 여부를 입력해 주세요.'))
     const danger = safety(item)
     if (danger?.verdict === 'PROHIBITED') return both(item, danger)
@@ -136,15 +144,15 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     const energy = resolveEnergy(item)
     if (energy.value === undefined) return finish(item, need(energy.issue!), checked, ['wh'])
     if (energy.value > rules.battery.maximumWh) return finish(item, prohibited('160Wh 초과 배터리 제품은 운송 불가입니다.'), checked, [], energy.derived)
-    return finish(item, conditional('배터리 분리형 또는 물리적 퓨즈 차단 제품은 항공사 승인 후 기내 휴대만 가능합니다. 분리·차단 방법과 단락 방지 조치를 확인해 주세요.'), checked, [], energy.derived)
+    return finish(item, conditional('배터리 분리형 또는 물리적 퓨즈 차단 제품은 항공사 승인 후 기내 휴대만 가능합니다. 분리·차단 방법과 단락 방지 조치를 확인해 주세요.', ['AIRLINE_APPROVAL', info.isolation === 'removable' ? 'REMOVE_BATTERY' : 'PHYSICAL_ISOLATION', 'INSULATE_TERMINALS']), checked, [], energy.derived)
   }
   if (category === 'power-bank' && info.type === 'power-bank' || category === 'electronics' && info.type === 'electronics') {
     const powerBank = info.type === 'power-bank'
     if (!powerBank && info.deviceType !== 'portable-electronic') return both(item, need('발열·이동장치·의료기기·기타 전자장비는 일반 휴대 전자기기로 판정하지 않습니다. 종류별 확인이 필요합니다.'))
     if (!powerBank && info.batteryType === 'none' && (info.damaged === true || info.recalled === true)) return both(item, need('배터리 없음과 손상·미조치 리콜 정보가 함께 입력되었습니다. 제품 정보를 다시 확인해 주세요.'))
-    if (!powerBank && info.batteryType === 'none') return both(item, conditional('배터리가 없는 일반 휴대 전자기기 기준입니다. 파손 방지·수하물 규격과 다른 위험 요소를 확인해 주세요.'))
+    if (!powerBank && info.batteryType === 'none') return both(item, conditional('배터리가 없는 일반 휴대 전자기기 기준입니다. 파손 방지·수하물 규격과 다른 위험 요소를 확인해 주세요.', ['PROTECT_DEVICE', 'BAGGAGE_AND_DESTINATION']))
     if (info.batteryType !== 'lithium-ion') return both(item, need('현재 용량 알고리즘은 충전식 리튬이온 제품용입니다. 배터리 종류·리튬 함량 등 별도 정보가 필요합니다.'))
-    const checked = powerBank ? prohibited('보조배터리는 용량과 관계없이 위탁 금지입니다.') : conditional('기기 전원을 완전히 끄고 우발 작동·손상 방지 포장 및 항공사 승인 조건을 확인해 주세요. 귀중품은 직접 휴대를 권장합니다.')
+    const checked = powerBank ? prohibited('보조배터리는 용량과 관계없이 위탁 금지입니다.') : conditional('기기 전원을 완전히 끄고 우발 작동·손상 방지 포장 및 항공사 승인 조건을 확인해 주세요. 귀중품은 직접 휴대를 권장합니다.', ['POWER_OFF', 'PROTECT_DEVICE'])
     const danger = safety(item)
     if (danger) return danger.verdict === 'PROHIBITED' ? both(item, danger) : finish(item, danger, powerBank ? checked : danger)
     const energy = resolveEnergy(item)
@@ -160,8 +168,12 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     if (aboveApproval || !powerBank && total > rules.battery.electronicDeviceCount) reason += ' 항공사 사전 승인이 필요합니다.'
     if (aboveApproval && powerBank) reason += ' 100Wh 초과 교체용 배터리를 함께 소지하면 합산 2개 한도도 확인해 주세요.'
     if (!input.inventoryComplete) reason += ' 부분 목록이므로 나머지 짐과 개인 합산 한도를 확인해 주세요.'
-    const cabin = quantityIssue ? prohibited('현재 구성 불가. 보조배터리 목록 합계가 1명당 2개를 초과합니다. 선택 수량을 줄인 후 재판정해 주세요.') : conditional(reason)
-    const finalChecked = !powerBank && (aboveApproval || total > rules.battery.electronicDeviceCount) ? conditional(checked.reason + ' 100Wh 초과 또는 총 15개 초과 기기는 항공사 승인이 필요합니다.') : checked
+    const codes: ConditionCode[] = powerBank ? ['POWER_BANK_LIMIT', 'INSULATE_TERMINALS', 'KEEP_WITH_YOU', 'NO_OVERHEAD', 'NO_INFLIGHT_USE'] : ['DEVICE_LIMIT', 'PROTECT_DEVICE']
+    if (aboveApproval || !powerBank && total > rules.battery.electronicDeviceCount) codes.push('AIRLINE_APPROVAL')
+    if (aboveApproval && powerBank) codes.push('HIGH_CAPACITY_SPARES')
+    if (!input.inventoryComplete) codes.push('CHECK_OTHER_ITEMS')
+    const cabin = quantityIssue ? prohibited('현재 구성 불가. 보조배터리 목록 합계가 1명당 2개를 초과합니다. 선택 수량을 줄인 후 재판정해 주세요.') : conditional(reason, codes)
+    const finalChecked = !powerBank && (aboveApproval || total > rules.battery.electronicDeviceCount) ? conditional(checked.reason + ' 100Wh 초과 또는 총 15개 초과 기기는 항공사 승인이 필요합니다.', [...(checked.conditionCodes ?? []), 'AIRLINE_APPROVAL']) : checked
     return finish(item, cabin, finalChecked, [], energy.derived, quantityIssue)
   }
   return both(item, need('지원 분류와 추가 제품 정보를 확인해 주세요.'))
@@ -174,7 +186,13 @@ export function evaluateKoreanAir(value: EvaluateRequest, now = new Date()) {
   return EvaluateResponseSchema.parse({
     airlineId: input.airlineId, flightType: input.flightType, departureCountry: input.departureCountry,
     ruleVersion: current ? rules.version : null,
-    results: input.items.map(item => current ? evaluateItem(input, item) : both(item, need('규정 검수 유효기간 밖입니다. 공식 규정을 다시 확인하기 전에는 자동 판정하지 않습니다.'))),
+    results: input.items.map(item => {
+      const result = current ? evaluateItem(input, item) : both(item, need('규정 검수 유효기간 밖입니다. 공식 규정을 다시 확인하기 전에는 자동 판정하지 않습니다.'))
+      if (input.resultFormat === 'detailed' && result.presentation) {
+        result.presentation.current = current; result.presentation.ruleVersion = current ? rules.version : null
+      } else delete result.presentation
+      return result
+    }),
     meta: { contractVersion: CONTRACT_VERSION, isDemoRules: false, isDemoRecognition: true, isDemoLookup: true },
   })
 }
