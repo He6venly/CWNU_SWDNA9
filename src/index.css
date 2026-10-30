@@ -1,0 +1,54 @@
+:root {
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  color: #17251e;
+  background: #f6f7f2;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}
+
+main {
+  width: min(100% - 48px, 960px);
+  margin-inline: auto;
+  padding-block: clamp(64px, 12vh, 144px) 40px;
+}
+
+.eyebrow {
+  color: #42634d;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+h1 {
+  margin-block: 36px 24px;
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.07em;
+}
+
+.description {
+  color: #526258;
+  font-size: clamp(1rem, 2vw, 1.125rem);
+  line-height: 1.9;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+footer {
+  margin-top: 80px;
+  padding-top: 24px;
+  border-top: 1px solid #d5ddd1;
+  color: #526258;
+  font-size: 0.75rem;
+}

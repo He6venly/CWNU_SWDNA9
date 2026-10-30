@@ -1,0 +1,14 @@
+[
+  { "id": "needs-info", "title": "제품 정보 미확인",
+    "result": { "itemId": "power-bank-1", "cabin": { "verdict": "NEEDS_INFO", "reason": "시연 목업: 제품 라벨의 Wh 입력 필요" }, "checked": { "verdict": "PROHIBITED", "reason": "시연 목업: 위탁 불가 예시" }, "action": "CHECK_CONDITIONS", "missingFields": ["wh"], "staffSummary": "보조배터리 / 제품 정보 미확인 / 기내: 제품 정보 확인 필요 / 위탁: 불가 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } },
+  { "id": "cabin", "title": "Wh 입력 후 기내 가능 예시 — 실제 판정 아님",
+    "result": { "itemId": "power-bank-1", "cabin": { "verdict": "ALLOWED", "reason": "시연 목업: 기내 가능 예시" }, "checked": { "verdict": "PROHIBITED", "reason": "시연 목업: 위탁 불가 예시" }, "action": "PUT_IN_CABIN", "missingFields": [], "staffSummary": "보조배터리 / 시연 제품 정보 / 기내: 가능 / 위탁: 불가 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } },
+  { "id": "checked", "title": "큰 용량의 액체 — 위탁 예시",
+    "result": { "itemId": "liquid-1", "cabin": { "verdict": "PROHIBITED", "reason": "시연 목업: 기내 불가 예시. 실제 용량 기준 미연결" }, "checked": { "verdict": "ALLOWED", "reason": "시연 목업: 위탁 가능 예시" }, "action": "PUT_IN_CHECKED", "missingFields": [], "staffSummary": "샴푸 / 시연 제품 정보 / 기내: 불가 / 위탁: 가능 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } },
+  { "id": "conditional", "title": "무선 고데기 — 조건부 가능 예시",
+    "result": { "itemId": "iron-1", "cabin": { "verdict": "CONDITIONAL", "reason": "시연 목업: 제품 조건을 별도로 확인해야 하는 예시" }, "checked": { "verdict": "NEEDS_INFO", "reason": "시연 목업: 모델명 입력 필요" }, "action": "CHECK_CONDITIONS", "missingFields": ["modelName"], "staffSummary": "무선 고데기 / 제품 정보 미확인 / 기내: 조건부 가능 / 위탁: 제품 정보 확인 필요 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } },
+  { "id": "prohibited", "title": "양쪽 모두 불가 예시",
+    "result": { "itemId": "item-1", "cabin": { "verdict": "PROHIBITED", "reason": "시연 목업: 기내 불가 예시" }, "checked": { "verdict": "PROHIBITED", "reason": "시연 목업: 위탁 불가 예시" }, "action": "LEAVE_BEHIND", "missingFields": [], "staffSummary": "시연 물품 / 제품 정보 미확인 / 기내: 불가 / 위탁: 불가 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } },
+  { "id": "unknown", "title": "규칙 없는 물품",
+    "result": { "itemId": "unknown-1", "cabin": { "verdict": "NEEDS_INFO", "reason": "시연 목업: 대응하는 규칙 없음" }, "checked": { "verdict": "NEEDS_INFO", "reason": "시연 목업: 대응하는 규칙 없음" }, "action": "CHECK_CONDITIONS", "missingFields": [], "staffSummary": "일반 케이블 / 제품 정보 미확인 / 기내: 제품 정보 확인 필요 / 위탁: 제품 정보 확인 필요 / 시연 항공사 기준 / 시연용 데이터", "isDemo": true } }
+]

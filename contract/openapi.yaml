@@ -1,0 +1,3046 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "여행 짐 반입 확인 API",
+    "version": "1.0.0",
+    "description": "B1 스텁. 실제 Gemini·최신 규정 미연결. resolve-product는 명시적 제품 조회 단계. fields의 null과 unreadFields 일치, bbox 좌표 합 상한, ID 고유성은 서버 의미 검증. 상세: contract/README.md"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5173",
+      "description": "로컬 체크 화면·API"
+    }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/healthResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/meta": {
+      "get": {
+        "operationId": "meta",
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/metaResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/airlines": {
+      "get": {
+        "operationId": "airlines",
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/airlinesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/categories": {
+      "get": {
+        "operationId": "categories",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "airlineId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-zA-Z0-9_-]+$",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/categoriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recognize": {
+      "post": {
+        "operationId": "recognize",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/recognizeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/recognizeResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/resolve-product": {
+      "post": {
+        "operationId": "resolveProduct",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/resolveProductRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/resolveProductResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evaluate": {
+      "post": {
+        "operationId": "evaluate",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/evaluateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/evaluateResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ErrorResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "INVALID_REQUEST",
+                  "UNKNOWN_AIRLINE",
+                  "AIRLINE_NOT_ENABLED",
+                  "PAYLOAD_TOO_LARGE",
+                  "UNSUPPORTED_MEDIA_TYPE",
+                  "ORIGIN_NOT_ALLOWED",
+                  "METHOD_NOT_ALLOWED",
+                  "NOT_FOUND",
+                  "REQUEST_TIMEOUT",
+                  "RECOGNITION_FAILED",
+                  "PRODUCT_LOOKUP_FAILED",
+                  "EVALUATION_FAILED",
+                  "UPSTREAM_TIMEOUT",
+                  "SERVICE_UNAVAILABLE",
+                  "RATE_LIMITED",
+                  "INTERNAL_ERROR"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 300,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "additionalProperties": false
+      },
+      "CatalogCard": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "photoKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "item": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              },
+              "categoryId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "power-bank",
+                      "cordless-iron",
+                      "liquid",
+                      "lighter",
+                      "electronics"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "bbox": {
+                "description": "원본 이미지 기준 정규화 [x,y,width,height]. 미확인이면 생략. x+width,y+height는 1 이하.",
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1
+                  }
+                ],
+                "items": false,
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "fields": {
+                "type": "object",
+                "properties": {
+                  "modelName": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "wh": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mah": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 100000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "volts": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "ml": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "count": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "modelName",
+                  "wh",
+                  "mah",
+                  "volts",
+                  "ml",
+                  "count"
+                ],
+                "additionalProperties": false
+              },
+              "unreadFields": {
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ]
+                }
+              },
+              "confirmed": {
+                "type": "boolean"
+              },
+              "userEdited": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "categoryId",
+              "confidence",
+              "fields",
+              "unreadFields",
+              "confirmed",
+              "userEdited"
+            ],
+            "additionalProperties": false
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "itemId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "cabin": {
+                "type": "object",
+                "properties": {
+                  "verdict": {
+                    "type": "string",
+                    "enum": [
+                      "ALLOWED",
+                      "CONDITIONAL",
+                      "PROHIBITED",
+                      "NEEDS_INFO"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 600,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                  }
+                },
+                "required": [
+                  "verdict",
+                  "reason"
+                ],
+                "additionalProperties": false
+              },
+              "checked": {
+                "type": "object",
+                "properties": {
+                  "verdict": {
+                    "type": "string",
+                    "enum": [
+                      "ALLOWED",
+                      "CONDITIONAL",
+                      "PROHIBITED",
+                      "NEEDS_INFO"
+                    ]
+                  },
+                  "reason": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 600,
+                    "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                  }
+                },
+                "required": [
+                  "verdict",
+                  "reason"
+                ],
+                "additionalProperties": false
+              },
+              "action": {
+                "type": "string",
+                "enum": [
+                  "PUT_IN_CABIN",
+                  "PUT_IN_CHECKED",
+                  "CHECK_CONDITIONS",
+                  "LEAVE_BEHIND"
+                ]
+              },
+              "missingFields": {
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ]
+                }
+              },
+              "staffSummary": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1200,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              },
+              "isDemo": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "itemId",
+              "cabin",
+              "checked",
+              "action",
+              "missingFields",
+              "staffSummary",
+              "isDemo"
+            ],
+            "additionalProperties": false
+          },
+          "airline": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "isDemo": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "enabled",
+              "isDemo"
+            ],
+            "additionalProperties": false
+          },
+          "productSources": {
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2048,
+                  "pattern": "^https:\\/\\/"
+                },
+                "retrievedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "title",
+                "url",
+                "retrievedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "savedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "id",
+          "photoKey",
+          "item",
+          "result",
+          "airline",
+          "productSources",
+          "savedAt",
+          "evaluatedAt",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "healthResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "const": true
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "ok",
+          "time",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "metaResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          },
+          "labels": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "verdicts": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "enum": [
+                    "ALLOWED",
+                    "CONDITIONAL",
+                    "PROHIBITED",
+                    "NEEDS_INFO"
+                  ]
+                },
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "required": [
+                  "ALLOWED",
+                  "CONDITIONAL",
+                  "PROHIBITED",
+                  "NEEDS_INFO"
+                ]
+              },
+              "actions": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "enum": [
+                    "PUT_IN_CABIN",
+                    "PUT_IN_CHECKED",
+                    "CHECK_CONDITIONS",
+                    "LEAVE_BEHIND"
+                  ]
+                },
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "required": [
+                  "PUT_IN_CABIN",
+                  "PUT_IN_CHECKED",
+                  "CHECK_CONDITIONS",
+                  "LEAVE_BEHIND"
+                ]
+              },
+              "fields": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string",
+                  "enum": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ]
+                },
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "required": [
+                  "modelName",
+                  "wh",
+                  "mah",
+                  "volts",
+                  "ml",
+                  "count"
+                ]
+              },
+              "demoBanner": {
+                "type": "string"
+              },
+              "stubBanner": {
+                "type": "string"
+              },
+              "referenceNotice": {
+                "type": "string"
+              },
+              "productNotice": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "title",
+              "verdicts",
+              "actions",
+              "fields",
+              "demoBanner",
+              "stubBanner",
+              "referenceNotice",
+              "productNotice"
+            ],
+            "additionalProperties": false
+          },
+          "capabilities": {
+            "type": "object",
+            "properties": {
+              "recognition": {
+                "type": "string",
+                "enum": [
+                  "demo",
+                  "gemini",
+                  "unavailable"
+                ]
+              },
+              "productLookup": {
+                "type": "string",
+                "enum": [
+                  "demo",
+                  "gemini",
+                  "unavailable"
+                ]
+              },
+              "evaluation": {
+                "type": "string",
+                "enum": [
+                  "stub",
+                  "gemini",
+                  "rules",
+                  "unavailable"
+                ]
+              }
+            },
+            "required": [
+              "recognition",
+              "productLookup",
+              "evaluation"
+            ],
+            "additionalProperties": false
+          },
+          "limits": {
+            "type": "object",
+            "properties": {
+              "requestBytes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "evaluateBytes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "imageBytes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "clientImageBytes": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "imageLongEdge": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "maxItems": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "requestTimeoutMs": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              },
+              "upstreamTimeoutMs": {
+                "type": "integer",
+                "minimum": -9007199254740991,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "requestBytes",
+              "evaluateBytes",
+              "imageBytes",
+              "clientImageBytes",
+              "imageLongEdge",
+              "maxItems",
+              "requestTimeoutMs",
+              "upstreamTimeoutMs"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "meta",
+          "labels",
+          "capabilities",
+          "limits"
+        ],
+        "additionalProperties": false
+      },
+      "airlinesResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "enabled": {
+                  "type": "boolean"
+                },
+                "isDemo": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "enabled",
+                "isDemo"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "airlines",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "categoriesResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "enum": [
+                    "power-bank",
+                    "cordless-iron",
+                    "liquid",
+                    "lighter",
+                    "electronics"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "requiredFields": {
+                  "type": "object",
+                  "properties": {
+                    "cabin": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "modelName",
+                          "wh",
+                          "mah",
+                          "volts",
+                          "ml",
+                          "count"
+                        ]
+                      }
+                    },
+                    "checked": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "modelName",
+                          "wh",
+                          "mah",
+                          "volts",
+                          "ml",
+                          "count"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "cabin",
+                    "checked"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "id",
+                "label",
+                "requiredFields"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "airlineId",
+          "categories",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "categoriesRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        },
+        "required": [
+          "airlineId"
+        ],
+        "additionalProperties": false
+      },
+      "recognizeResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "items": {
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "categoryId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "power-bank",
+                        "cordless-iron",
+                        "liquid",
+                        "lighter",
+                        "electronics"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "bbox": {
+                  "description": "원본 이미지 기준 정규화 [x,y,width,height]. 미확인이면 생략. x+width,y+height는 1 이하.",
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "modelName": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120,
+                          "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "wh": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "mah": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 100000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "volts": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "ml": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "count": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "unreadFields": {
+                  "maxItems": 6,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "modelName",
+                      "wh",
+                      "mah",
+                      "volts",
+                      "ml",
+                      "count"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "categoryId",
+                "confidence",
+                "fields",
+                "unreadFields"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "items",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "recognizeRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "image": {
+            "type": "object",
+            "properties": {
+              "mimeType": {
+                "type": "string",
+                "enum": [
+                  "image/jpeg",
+                  "image/png",
+                  "image/webp"
+                ]
+              },
+              "base64": {
+                "type": "string",
+                "minLength": 4,
+                "maxLength": 2796204,
+                "pattern": "^[A-Za-z0-9+/]+={0,2}$",
+                "description": "data URL 접두사 없는 표준 base64. 디코딩 이미지 상한 2MiB."
+              }
+            },
+            "required": [
+              "mimeType",
+              "base64"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "airlineId",
+          "image"
+        ],
+        "additionalProperties": false
+      },
+      "resolveProductResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "NEEDS_INFO",
+              "CANDIDATES_FOUND",
+              "NOT_FOUND"
+            ]
+          },
+          "candidates": {
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "itemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "modelName": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120,
+                          "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "wh": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "mah": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 100000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "volts": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "ml": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "count": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "sources": {
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 2048,
+                        "pattern": "^https:\\/\\/"
+                      },
+                      "retrievedAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "url",
+                      "retrievedAt"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "requiresConfirmation": {
+                  "type": "boolean",
+                  "const": true
+                }
+              },
+              "required": [
+                "id",
+                "itemId",
+                "name",
+                "fields",
+                "sources",
+                "requiresConfirmation"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "missingFields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "modelName",
+                "wh",
+                "mah",
+                "volts",
+                "ml",
+                "count"
+              ]
+            }
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600,
+            "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "itemId",
+          "status",
+          "candidates",
+          "missingFields",
+          "message",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "resolveProductRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "item": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              },
+              "categoryId": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "power-bank",
+                      "cordless-iron",
+                      "liquid",
+                      "lighter",
+                      "electronics"
+                    ]
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "confidence": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "bbox": {
+                "description": "원본 이미지 기준 정규화 [x,y,width,height]. 미확인이면 생략. x+width,y+height는 1 이하.",
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1
+                  },
+                  {
+                    "type": "number",
+                    "exclusiveMinimum": 0,
+                    "maximum": 1
+                  }
+                ],
+                "items": false,
+                "minItems": 4,
+                "maxItems": 4
+              },
+              "fields": {
+                "type": "object",
+                "properties": {
+                  "modelName": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120,
+                        "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "wh": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "mah": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 100000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "volts": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "ml": {
+                    "anyOf": [
+                      {
+                        "type": "number",
+                        "exclusiveMinimum": 0,
+                        "maximum": 1000000
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "count": {
+                    "anyOf": [
+                      {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 100
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "modelName",
+                  "wh",
+                  "mah",
+                  "volts",
+                  "ml",
+                  "count"
+                ],
+                "additionalProperties": false
+              },
+              "unreadFields": {
+                "maxItems": 6,
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ]
+                }
+              },
+              "confirmed": {
+                "type": "boolean"
+              },
+              "userEdited": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "categoryId",
+              "confidence",
+              "fields",
+              "unreadFields",
+              "confirmed",
+              "userEdited"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "airlineId",
+          "item"
+        ],
+        "additionalProperties": false
+      },
+      "evaluateResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "results": {
+            "minItems": 1,
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "itemId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "cabin": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": {
+                      "type": "string",
+                      "enum": [
+                        "ALLOWED",
+                        "CONDITIONAL",
+                        "PROHIBITED",
+                        "NEEDS_INFO"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 600,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                    }
+                  },
+                  "required": [
+                    "verdict",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                "checked": {
+                  "type": "object",
+                  "properties": {
+                    "verdict": {
+                      "type": "string",
+                      "enum": [
+                        "ALLOWED",
+                        "CONDITIONAL",
+                        "PROHIBITED",
+                        "NEEDS_INFO"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 600,
+                      "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                    }
+                  },
+                  "required": [
+                    "verdict",
+                    "reason"
+                  ],
+                  "additionalProperties": false
+                },
+                "action": {
+                  "type": "string",
+                  "enum": [
+                    "PUT_IN_CABIN",
+                    "PUT_IN_CHECKED",
+                    "CHECK_CONDITIONS",
+                    "LEAVE_BEHIND"
+                  ]
+                },
+                "missingFields": {
+                  "maxItems": 6,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "modelName",
+                      "wh",
+                      "mah",
+                      "volts",
+                      "ml",
+                      "count"
+                    ]
+                  }
+                },
+                "staffSummary": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1200,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "isDemo": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "itemId",
+                "cabin",
+                "checked",
+                "action",
+                "missingFields",
+                "staffSummary",
+                "isDemo"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "contractVersion": {
+                "type": "string",
+                "const": "1.0.0"
+              }
+            },
+            "required": [
+              "isDemoRecognition",
+              "isDemoRules",
+              "contractVersion"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "results",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "evaluateRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "items": {
+            "minItems": 1,
+            "maxItems": 30,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80,
+                  "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "categoryId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "enum": [
+                        "power-bank",
+                        "cordless-iron",
+                        "liquid",
+                        "lighter",
+                        "electronics"
+                      ]
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "confidence": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1
+                },
+                "bbox": {
+                  "description": "원본 이미지 기준 정규화 [x,y,width,height]. 미확인이면 생략. x+width,y+height는 1 이하.",
+                  "type": "array",
+                  "prefixItems": [
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    },
+                    {
+                      "type": "number",
+                      "exclusiveMinimum": 0,
+                      "maximum": 1
+                    }
+                  ],
+                  "items": false,
+                  "minItems": 4,
+                  "maxItems": 4
+                },
+                "fields": {
+                  "type": "object",
+                  "properties": {
+                    "modelName": {
+                      "anyOf": [
+                        {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120,
+                          "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "wh": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "mah": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 100000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "volts": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "ml": {
+                      "anyOf": [
+                        {
+                          "type": "number",
+                          "exclusiveMinimum": 0,
+                          "maximum": 1000000
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "count": {
+                      "anyOf": [
+                        {
+                          "type": "integer",
+                          "minimum": 1,
+                          "maximum": 100
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "modelName",
+                    "wh",
+                    "mah",
+                    "volts",
+                    "ml",
+                    "count"
+                  ],
+                  "additionalProperties": false
+                },
+                "unreadFields": {
+                  "maxItems": 6,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "modelName",
+                      "wh",
+                      "mah",
+                      "volts",
+                      "ml",
+                      "count"
+                    ]
+                  }
+                },
+                "confirmed": {
+                  "type": "boolean"
+                },
+                "userEdited": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "categoryId",
+                "confidence",
+                "fields",
+                "unreadFields",
+                "confirmed",
+                "userEdited"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "airlineId",
+          "items"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+}
