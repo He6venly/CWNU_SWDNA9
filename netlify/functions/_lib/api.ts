@@ -32,7 +32,7 @@ export async function handleApi(request: Request, environment: ApiEnvironment = 
       headers.set('Allow', `${method}, OPTIONS`)
       throw new HttpError(405, 'METHOD_NOT_ALLOWED', '지원하지 않는 요청 방식입니다.')
     }
-    const demoEnabled = environment.USE_DEMO_RECOGNITION === undefined || environment.USE_DEMO_RECOGNITION === 'true'
+    const demoEnabled = environment.USE_DEMO_RECOGNITION === 'true'
     let body: unknown
     switch (url.pathname) {
       case '/api/health': body = s.HealthResponseSchema.parse({ ok: true, time: new Date().toISOString(), meta: demoMeta }); break

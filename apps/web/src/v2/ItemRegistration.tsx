@@ -78,7 +78,7 @@ export default function ItemRegistration({ workbench, travel, onFlightTypeChange
         {w.items.map((item, index) => <article className="item-card" key={item.id}>
           <span className="item-sequence">ITEM {String(index + 1).padStart(2, '0')}</span>
           <fieldset className="item-lock" disabled={w.saving}>
-            <ItemEditor item={item} isDemo={w.demoRecognition} onChange={(changed) => { w.updateItem(changed); w.task.setMessage('정보가 변경되어 이전 판정을 폐기했습니다.') }} />
+            <ItemEditor item={item} onChange={(changed) => { w.updateItem(changed); w.task.setMessage('정보가 변경되어 이전 판정을 폐기했습니다.') }} />
             <LabelSupplement item={item} busy={w.busy} onAnalyze={(selected) => w.analyzeLabel(item, selected)} />
             <p className="helper-copy">라벨 값을 우선 확인하세요. 제품 검색은 모델명 확인 후 사양이 부족할 때만 선택적으로 사용합니다.</p>
             <div className="item-card-actions">
@@ -90,7 +90,7 @@ export default function ItemRegistration({ workbench, travel, onFlightTypeChange
         </article>)}
         <label className="completion-check"><input type="checkbox" checked={w.inventoryComplete} disabled={w.busy} onChange={(event) => { w.invalidate(); w.setInventoryComplete(event.target.checked) }} />여행자 1명의 전체 물품 목록입니다.</label>
         <div className="registration-actions">
-          <button className="primary-action" disabled={!routeReady || w.busy || !w.items.length || w.items.some((item) => !item.confirmed || !item.name.trim()) || !w.airlines.some((airline) => airline.id === w.airlineId && !airline.isDemo && airline.enabled && airline.supportedFlightTypes.includes(w.flightType))} onClick={w.evaluate}>반입 판정 실행 →</button>
+          <button className="primary-action" disabled={!routeReady || !w.inventoryComplete || w.busy || !w.items.length || w.items.some((item) => !item.confirmed || !item.name.trim()) || !w.airlines.some((airline) => airline.id === w.airlineId && !airline.isDemo && airline.enabled && airline.supportedFlightTypes.includes(w.flightType))} onClick={w.evaluate}>반입 판정 실행 →</button>
         </div>
       </section>
       {!!w.results.length && <AssessmentResults workbench={w} onCatalog={onCatalog} embedded />}

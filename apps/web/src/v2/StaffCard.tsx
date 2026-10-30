@@ -23,33 +23,23 @@ const englishTypes = {
   'general-items': 'General belongings',
 }
 export default function StaffCard({
-  card,
+  cards,
   onClose,
   currentRuleVersion,
   rulesCurrent,
 }: {
-  card: CatalogCard
+  cards: CatalogCard[]
   onClose: () => void
   currentRuleVersion: string | null
   rulesCurrent: boolean
 }) {
   const dialog = useRef<HTMLDialogElement>(null)
-  const { photos, error } = useCatalogPhotos(card.photoKeys)
   const [openedAt] = useState(() => Date.now())
   useEffect(() => {
     const element = dialog.current
     element?.showModal()
     return () => element?.close()
   }, [])
-  const item = card.item,
-    result = card.result,
-    view = result.presentation
-  const expired =
-    !rulesCurrent ||
-    !view?.current ||
-    !view.reviewBy ||
-    openedAt >= Date.parse(view.reviewBy) ||
-    card.ruleVersion !== currentRuleVersion
   return (
     <dialog
       ref={dialog}
@@ -64,7 +54,29 @@ export default function StaffCard({
         <button onClick={onClose}>닫기 / Close</button>
         <button onClick={() => window.print()}>인쇄 / PDF 저장</button>
       </div>
-      <header className="staff-heading"><p className="eyebrow">TRAVEL ITEM RECORD</p><h2 id="staff-title">물품 확인 기록 <small>Item reference</small></h2><p>직원에게 제품 정보를 보여주기 위한 참고 화면입니다. 반입 허가증은 아닙니다.</p></header>
+      <header className="staff-heading"><p className="eyebrow">TRAVEL ITEM RECORDS</p><h2 id="staff-title">전체 물품 확인 기록 <small>Item references</small></h2><p>저장한 물품 {cards.length}개를 한 화면에 모았습니다. 직원 참고용이며 반입 허가증은 아닙니다.</p></header>
+      {cards.map((card, index) => <StaffItem key={card.id} card={card} index={index} total={cards.length} openedAt={openedAt} currentRuleVersion={currentRuleVersion} rulesCurrent={rulesCurrent} />)}
+      <p>{labels.referenceNotice}</p>
+      <p lang="en">For reference only. This is not a permit or clearance certificate. Final decisions rest with airline, security and customs staff.</p>
+    </dialog>
+  )
+}
+
+function StaffItem({ card, index, total, openedAt, currentRuleVersion, rulesCurrent }: {
+  card: CatalogCard
+  index: number
+  total: number
+  openedAt: number
+  currentRuleVersion: string | null
+  rulesCurrent: boolean
+}) {
+  const { photos, error } = useCatalogPhotos(card.photoKeys)
+  const item = card.item,
+    result = card.result,
+    view = result.presentation
+  const expired = !rulesCurrent || !view?.current || !view.reviewBy || openedAt >= Date.parse(view.reviewBy) || card.ruleVersion !== currentRuleVersion
+  return <section className="staff-item-record" aria-labelledby={`staff-item-${card.id}`}>
+      <p className="staff-item-count">물품 {index + 1} / {total}</p>
       {card.meta.isDemoRules || result.isDemo ? (
         <p className="staff-warning">시연 데이터 / Demo data</p>
       ) : (
@@ -81,7 +93,7 @@ export default function StaffCard({
           대상입니다. / Demo recognition; verify the actual item.
         </p>
       )}
-      <h3 className="staff-item-name">{item.name}</h3>
+      <h3 className="staff-item-name" id={`staff-item-${card.id}`}>{item.name}</h3>
       <p>
         {item.categoryId
           ? englishTypes[item.categoryId]
@@ -229,11 +241,5 @@ export default function StaffCard({
           </a>
         </p>
       ))}
-      <p>{labels.referenceNotice}</p>
-      <p lang="en">
-        For reference only. This is not a permit or clearance certificate. Final
-        decisions rest with airline, security and customs staff.
-      </p>
-    </dialog>
-  )
+    </section>
 }

@@ -8,11 +8,9 @@ import UiIcon from '../../../check/src/UiIcon.tsx'
 
 function Entry({
   card,
-  onOpen,
   onDelete,
 }: {
   card: CatalogCard
-  onOpen: () => void
   onDelete: () => void
 }) {
   const { photos } = useCatalogPhotos(card.photoKeys.slice(0, 1))
@@ -37,7 +35,7 @@ function Entry({
           <span className={`verdict-chip verdict-${card.result.checked.verdict}`}><small>위탁</small><strong>{labels.verdicts[card.result.checked.verdict]}</strong></span>
         </div>
         <details className="catalog-summary"><summary>판정 요약 보기</summary><p>{card.result.staffSummary}</p></details>
-        <div className="catalog-actions"><button className="primary-action" onClick={onOpen}>직원에게 보여주기</button><button className="danger-action" onClick={onDelete}>삭제</button></div>
+        <div className="catalog-actions"><button className="danger-action" onClick={onDelete}>삭제</button></div>
       </div>
     </article>
   )
@@ -52,7 +50,7 @@ export default function Catalog({
   rulesCurrent: boolean
 }) {
   const [cards, setCards] = useState<CatalogCard[]>([]),
-    [selected, setSelected] = useState<CatalogCard | null>(null),
+    [showStaff, setShowStaff] = useState(false),
     [message, setMessage] = useState(''),
     [change, setChange] = useState(0)
   useEffect(() => {
@@ -86,6 +84,7 @@ export default function Catalog({
     <section id="catalog" className="card-section catalog-section">
       <div className="section-heading"><UiIcon name="catalog" /><div><p className="eyebrow">CHECKED ITEMS</p><h2>저장한 물품</h2><p>판정을 마친 물품 정보와 직원 제시 화면을 다시 확인합니다.</p></div></div>
       <p className="local-storage-note">이 기기의 브라우저에만 저장되며 다른 기기와 자동 동기화되지 않습니다.</p>
+      {!!cards.length && <button className="primary-action full-action catalog-staff-action" onClick={() => setShowStaff(true)}>저장한 물품 전체 직원에게 보여주기</button>}
       {message && <p role="status">{message}</p>}
       {!cards.length && (
         <div className="empty-state"><strong>저장한 물품이 없습니다.</strong><p>판정 결과에서 확인한 물품을 저장해 주세요.</p></div>
@@ -94,14 +93,13 @@ export default function Catalog({
         <Entry
           key={card.id}
           card={card}
-          onOpen={() => setSelected(card)}
           onDelete={() => void remove(card)}
         />
       ))}</div>
-      {selected && (
+      {showStaff && !!cards.length && (
         <StaffCard
-          card={selected}
-          onClose={() => setSelected(null)}
+          cards={cards}
+          onClose={() => setShowStaff(false)}
           currentRuleVersion={currentRuleVersion}
           rulesCurrent={rulesCurrent}
         />

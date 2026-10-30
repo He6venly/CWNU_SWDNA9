@@ -3211,6 +3211,105 @@
               ]
             }
           },
+          "ruleLimits": {
+            "type": "object",
+            "properties": {
+              "battery": {
+                "type": "object",
+                "properties": {
+                  "approvalAboveWh": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "powerBankMaximumWh": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "deviceMaximumWh": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "powerBankCount": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "electronicDeviceCount": {
+                    "type": "integer",
+                    "exclusiveMinimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "approvalAboveWh",
+                  "powerBankMaximumWh",
+                  "deviceMaximumWh",
+                  "powerBankCount",
+                  "electronicDeviceCount"
+                ],
+                "additionalProperties": false
+              },
+              "liquid": {
+                "type": "object",
+                "properties": {
+                  "internationalContainerMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "toiletryContainerMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "toiletryTotalMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "sanitizerContainerMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "sanitizerTotalMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  },
+                  "alcoholLowPercent": {
+                    "type": "number",
+                    "minimum": 0
+                  },
+                  "alcoholHighPercent": {
+                    "type": "number",
+                    "maximum": 100
+                  },
+                  "alcoholTotalMl": {
+                    "type": "number",
+                    "exclusiveMinimum": 0
+                  }
+                },
+                "required": [
+                  "internationalContainerMl",
+                  "toiletryContainerMl",
+                  "toiletryTotalMl",
+                  "sanitizerContainerMl",
+                  "sanitizerTotalMl",
+                  "alcoholLowPercent",
+                  "alcoholHighPercent",
+                  "alcoholTotalMl"
+                ],
+                "additionalProperties": false
+              },
+              "lighterCount": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            },
+            "required": [
+              "battery",
+              "liquid",
+              "lighterCount"
+            ],
+            "additionalProperties": false
+          },
           "scope": {
             "type": "object",
             "properties": {
@@ -3288,6 +3387,7 @@
           "reviewBy",
           "sources",
           "supportedCategories",
+          "ruleLimits",
           "scope",
           "meta"
         ],

@@ -1,5 +1,12 @@
 # 2.0 계약·스텁 검증 — 2026-10-30
 
+## 2026-10-31 운영 전환 검증
+
+- `npm run check`: lint, 8개 파일 177개 테스트, 타입 검사, 내부 체크 화면 빌드 통과
+- `npm --prefix apps/web run build`: 사용자 웹 프로덕션 빌드 통과
+- Gemini `gemini-3.6-flash` 실호출: HTTP 200, `isDemoRecognition=false`, 물품 없음 샘플에 `NO_ITEM_DETECTED` 반환. 사진·비밀키 로그 없음
+- 기존 프로세스의 `gemini-2.5-flash`는 일일 무료 한도 429를 반환했으며 자동 재시도하지 않음. 배포 환경은 `gemini-3.6-flash` 설정 필요
+
 아래는 최초 계약 단계 이력. 이후 규정 엔진·Gemini 잠금 어댑터 구현, 163개 검사·6개 분류 실제 HTTP·360px 화면·사진 1/3장 등록·판정 변경 흐름 확인. Gemini는 가짜 fetch로만 검사. 실제 휴대전화·Netlify·Gemini 실호출은 미검증.
 
 범위: 계약·목업·버전 공존·시연 API·내부 체크 화면. 실제 인식·검색·규정 판정·Wh 계산·원격 배포 완료를 의미하지 않음.

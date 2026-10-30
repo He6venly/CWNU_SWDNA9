@@ -14,7 +14,7 @@ const makeRequest = (path: string, body?: unknown, headers: Record<string, strin
 })
 describe('HTTP 핸들러 교차검증', () => {
   it('실제 클라이언트로 health·meta·목록·인식·제품조회·판정 호출', async () => {
-    const client = createApiClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), {}) })
+    const client = createApiClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), { USE_DEMO_RECOGNITION: 'true' }) })
     expect((await client.health()).meta.contractVersion).toBe('1.0.0')
     expect((await client.meta()).capabilities).toEqual({ recognition: 'demo', productLookup: 'demo', evaluation: 'stub' })
     expect((await client.airlines()).airlines.filter(a => a.enabled)).toHaveLength(1)

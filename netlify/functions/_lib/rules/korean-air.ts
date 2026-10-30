@@ -28,6 +28,15 @@ export function ruleMetadata(now = new Date()) {
   const current = rulesCurrent(now)
   return RulesResponseSchema.parse({ airlineId: 'korean-air', ruleVersion: current ? koreanAirRules.version : null, current,
     reviewedAt: koreanAirRules.reviewedAt, reviewBy: koreanAirRules.reviewBy, sources: koreanAirRules.sources, supportedCategories: CATEGORY_IDS,
+    ruleLimits: {
+      battery: {
+        approvalAboveWh: koreanAirRules.battery.approvalAboveWh, powerBankMaximumWh: koreanAirRules.battery.maximumWh,
+        deviceMaximumWh: koreanAirRules.battery.maximumWh, powerBankCount: koreanAirRules.battery.powerBankCount,
+        electronicDeviceCount: koreanAirRules.battery.electronicDeviceCount,
+      },
+      liquid: koreanAirRules.liquid,
+      lighterCount: koreanAirRules.lighterCount,
+    },
     scope: { departureCountry: 'KR', flightTypes: FLIGHT_TYPES, passengers: 1, operatingCarrier: 'korean-air', notice: '대한항공 직접 운항편의 한국 출발 구간만 대상입니다. 공동운항·환승·목적지 세관·검역·수하물 크기와 무게는 별도 확인이 필요합니다. 품목별 미지원 유형과 주류 24도·70도 경계는 자동 확정하지 않습니다.' },
     meta: { contractVersion: CONTRACT_VERSION, isDemoRules: false, isDemoRecognition: true, isDemoLookup: true },
   })

@@ -7,6 +7,7 @@
 - `createManualItem(categoryId,id)`(contract/v2/manual.ts): 보조배터리·고데기·액체 빈 입력 생성. identification=manual, imageId 생략. 안전 상태·사양은 null에서 직접 입력·확인
 - evaluate 요청에 `resultFormat:'detailed'`를 넣으면 각 결과의 `presentation`에 conditions(코드·한영 문구·적용 구분), requiredInfo, sources, 규정 검수일/기한, 승인·사용/충전 상태, staffSummaryEn 반환. 기존 reason·action 유지, 옵션 생략 시 이전 응답 유지
 - 프론트는 reason 문자열을 분석해 조건을 만들지 않고 presentation을 표시. resultScenario:'battery-conditional' 목업으로 조건부 카드 구성 가능(실제 규정 판정 아님)
+- 빠른 규정 확인은 `/rules`의 `ruleLimits`를 사용해 선택 항공사의 Wh·수량·액체 용량을 표시. 클라이언트 고정 숫자로 대체하지 않음
 - CatalogCard.photoKeys는 직접 입력이면 빈 배열 가능. assessmentContext에 판정 당시 목록·전체 목록 여부 저장. 사진 인식 결과와 직접 입력을 혼동하지 않음
 - `contract/v2/catalog-store.ts`: 사진 Blob과 카드의 IndexedDB 저장·목록·삭제·사진 조회. 서버 저장·계정 동기화 없음. 기존 별도 프론트 DB를 덮어쓰지 않는 독립 저장소이며 프론트 저장 모듈로 교체 가능
 - apps/check/src의 ResultCard → Catalog → StaffCard가 연결 예시. 직원 모드에 저장 사진·모델·사양·기내/위탁·조건·출처·규정 기준일·영문 요약 표시, 인쇄/PDF와 기한 경과 안내 포함
@@ -40,7 +41,7 @@ const request = {
 ## 결과·표시
 
 - 지원 16개 항공사: 항공사별 검수 규정 알고리즘, meta.isDemoRules=false, result.isDemo=false, 개별 ruleVersion 제공
-- 인식·제품 조회는 여전히 시연. isDemoRules=false를 전체 AI 연동 완료로 해석하지 않기
+- 운영에서 인식은 Gemini, 제품 조회는 Tavily를 사용. 각 응답의 `meta` 플래그로 실제 연동 여부 확인
 - createMockClient.evaluate는 기존 고정 NEEDS_INFO 유지. 실제 판정 검수는 로컬 API의 지원 항공사로 수행
 - 합산 초과: verdict=PROHIBITED, reason의 현재 구성 불가 안내, action=CHECK_CONDITIONS. 모든 물품을 버리라는 뜻이 아니므로 action을 UI에서 재계산하지 않기
 - 출력용 displayValue를 판정에 다시 사용하지 않기. 최신 판정이 반환한 derivedFields.wh를 표시
@@ -54,8 +55,7 @@ const request = {
 
 ## Gemini 연결 준비
 
-- 사용자 승인으로 로컬 실호출 활성화. 신규 설치의 .env.example은 GEMINI_CALLS_ENABLED=false 유지. 키만 추가해도 호출되지 않음
-- 실제 연결 시 USE_DEMO_RECOGNITION=false, GEMINI_CALLS_ENABLED=true, 서버 GEMINI_API_KEY·GEMINI_MODEL 설정. 검색 모델은 GEMINI_LOOKUP_MODEL로 분리 가능. 로컬 실행에서는 기존 프로세스 환경변수가 .env.local보다 우선하므로 실제 적용 모델 확인
+- 운영·로컬 기본은 USE_DEMO_RECOGNITION=false, GEMINI_CALLS_ENABLED=true, 서버 GEMINI_API_KEY·GEMINI_MODEL 설정. 시연 모드는 개발·테스트에서만 명시적으로 true 사용
 - 제품 조회는 모델명이 정확히 일치하고 검색 인용 출처가 있는 후보만 반환. apply-candidate.ts의 applyCandidate로 기존 값을 보존하고 빈 값만 채운 뒤 재확인
 - createMockClient({lookupScenario:'candidate'})로 실제 호출 없이 후보 적용 UI 개발 가능. 가상 사양·출처임을 표시
 - 실제 조회 응답에는 선택 searchSuggestions HTML이 추가될 수 있으므로 최신 계약으로 갱신한 뒤 실제 연결 활성화. LookupCandidates.tsx처럼 스크립트 없는 sandbox iframe에서 표시하고 직접 DOM 삽입 금지

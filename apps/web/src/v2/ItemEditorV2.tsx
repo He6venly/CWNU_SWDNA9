@@ -7,11 +7,9 @@ import DetailsEditor from './DetailsEditor.tsx'
 export default function ItemEditorV2({
   item,
   onChange,
-  isDemo = true,
 }: {
   item: ItemInfo
   onChange: (item: ItemInfo) => void
-  isDemo?: boolean
 }) {
   const edit = (patch: Partial<ItemInfo>) =>
     onChange({ ...item, ...patch, confirmed: false, userEdited: true })
@@ -22,7 +20,7 @@ export default function ItemEditorV2({
         식별:{' '}
         {item.identification === 'manual'
           ? '사진 없이 직접 입력'
-          : `${item.identification === 'ai_estimated' ? 'AI 추정' : '라벨 판독'}${isDemo ? ' (시연)' : ''} · 신뢰도 ${item.confidence}`}
+          : `${item.identification === 'ai_estimated' ? 'AI 추정' : '라벨 판독'} · 신뢰도 ${item.confidence}`}
       </p>
       <label>
         물품명

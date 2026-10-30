@@ -225,8 +225,6 @@ export default function TravelApp() {
   }
 
   const nav: Array<[View, string]> = [['home', '여행 홈'], ['register', '물품 등록·판정'], ['catalog', '여행 기록']]
-  const demoResult = workbench.results.some((result) => result.isDemo)
-
   if (view === 'intro') return <LandingScreen onEnter={() => changeView('home')} />
 
   return <div className="app-shell">
@@ -238,7 +236,6 @@ export default function TravelApp() {
     </header>
 
     <div className="mode-banner" role="note">
-      <strong>{demoResult || workbench.demoRecognition ? '시연 연동 포함' : '실제 연동'}</strong>
       <span>사진 인식·제품 조회와 규정 판정은 분리되어 실행됩니다. {labels.referenceNotice}</span>
     </div>
 
