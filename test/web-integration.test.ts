@@ -2,14 +2,16 @@ import { describe, it, expect, vi } from 'vitest'
 import { mergeLabel } from '../apps/web/src/v2/mergeLabel.ts'
 import { createManualItem, createNamedManualItem } from '../contract/v2/manual.ts'
 import { recognizeDemo } from '../contract/v2/demo.ts'
-import { RecognizeRequestSchema } from '../contract/v2/schemas.ts'
+import { RecognizeRequestSchema, RulesResponseSchema } from '../contract/v2/schemas.ts'
 import requests from '../contract/v2/fixtures/requests.json' with { type: 'json' }
 import { recognizeCached, clearRecognitionCache } from '../apps/web/src/v2/recognitionCache.ts'
 import { api } from '../apps/web/src/v2/api.ts'
 import { analyzeImagePixels, imageLongEdge } from '../apps/check/src/image-analysis.ts'
-import { canFlyItemIds, searchQuickItems } from '../apps/web/src/v2/quickItemCatalog.ts'
+import { canFlyItemIds, quickItemCatalog, searchQuickItems } from '../apps/web/src/v2/quickItemCatalog.ts'
 import { quickItemIcons } from '../apps/web/src/v2/quickItemIcons.ts'
+import { quickRuleGuidance } from '../apps/web/src/v2/quickRuleGuidance.ts'
 import { flightTypeForCountries } from '../apps/web/src/v2/travelCountries.ts'
+import ruleExample from '../contract/v2/fixtures/rules.json' with { type: 'json' }
 const input = RecognizeRequestSchema.parse(requests.label)
 describe('사용자 화면 라벨 보완·인식 캐시', () => {
   it('사용자 값·다른 카드·수량을 보존하고 빈 사양만 보완하며 확인을 해제', () => {
@@ -65,6 +67,9 @@ describe('사진 전송 전 경량 분석', () => {
 })
 
 describe('빠른 규정 품목 검색', () => {
+  const limits = RulesResponseSchema.parse(ruleExample).ruleLimits
+  const guidance = (id: string, flightType: 'domestic' | 'international' = 'international') => quickRuleGuidance(quickItemCatalog.find(item => item.id === id)!, flightType, limits)
+
   it('품목명과 별칭을 즉시 검색하고 관련 없는 결과를 제외', () => {
     expect(searchQuickItems('가').map((item) => item.name)).toContain('가위')
     expect(searchQuickItems('에어팟')[0]?.name).toBe('무선 이어폰')
@@ -88,6 +93,22 @@ describe('빠른 규정 품목 검색', () => {
     expect(item.name).toBe('가위')
     expect(item.categoryId).toBe('general-items')
     expect(item.details?.type).toBe('general-items')
+  })
+
+  it('명시된 항공사 수치를 해당 품목에만 표시', () => {
+    expect(guidance('power-bank').action).toContain('160Wh')
+    expect(guidance('power-bank').action).toContain('2개')
+    expect(guidance('laptop').action).toContain('15개')
+    expect(guidance('curling-iron').cabin).toContain('160Wh')
+    expect(guidance('perfume').action).toContain('500mL')
+    expect(guidance('perfume').action).toContain('2000mL')
+    expect(guidance('alcohol-beverage').action).toContain('24%')
+    expect(guidance('alcohol-beverage').action).toContain('70%')
+    expect(guidance('hand-sanitizer').action).toContain('500mL')
+    expect(guidance('lighter').action).toContain('합쳐 1명당 1개')
+    expect(guidance('semi-liquid-food').cabin).toContain('100mL')
+    expect(guidance('wet-wipes').cabin).not.toContain('100mL')
+    expect(guidance('e-scooter').action).not.toContain('160Wh')
   })
 })
 

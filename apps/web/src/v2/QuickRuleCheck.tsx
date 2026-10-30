@@ -7,6 +7,7 @@ import { quickItemCatalog, searchQuickItems, type QuickCategory, type QuickItem 
 import { prepareImage } from './image.ts'
 import { api } from './api.ts'
 import { quickItemIcon } from './quickItemIcons.ts'
+import { quickRuleGuidance } from './quickRuleGuidance.ts'
 
 const categoryLabels: Record<QuickCategory, string> = {
   'power-bank': '배터리',
@@ -15,48 +16,6 @@ const categoryLabels: Record<QuickCategory, string> = {
   lighter: '점화 용품',
   electronics: '전자기기',
   'general-items': '일반 소지품',
-}
-
-function guidance(item: QuickItem, flightType: FlightType, limits: RulesResponse['ruleLimits']) {
-  const international = flightType === 'international'
-  const base = item.guidance ?? {
-    'power-bank': { cabin: '조건 확인 후 기내', checked: '위탁 불가', action: 'Wh·수량·손상 여부를 확인하고 단자를 절연하세요.' },
-    'cordless-iron': { cabin: '제품 방식 확인 필요', checked: '배터리형 위탁 불가', action: '유선·가스·배터리 방식과 분리·물리 차단 가능 여부를 확인하세요.' },
-    liquid: { cabin: international ? '100mL 이하 조건' : '품목별 조건 확인', checked: '종류·용량 확인', action: international ? '용기당 100mL 이하, 1L 투명 지퍼백 조건을 확인하세요.' : '액체 종류·용기 용량·누출 방지 조건을 확인하세요.' },
-    lighter: { cabin: '종류 확인 후 1개', checked: '위탁 불가', action: '일반 소형 라이터·안전성냥인지 확인하세요. 토치·플라즈마·연료는 제한됩니다.' },
-    electronics: { cabin: '조건 확인 후 가능', checked: '조건 확인 후 가능', action: '배터리 종류·Wh·손상 여부를 확인하고 전원과 오작동을 차단하세요.' },
-    'general-items': { cabin: '제한 요소 없으면 가능', checked: '제한 요소 없으면 가능', action: '배터리·액체·날카로운 부품·위험물이 포함되었는지 확인하세요.' },
-  }[item.category]
-  const battery = limits.battery
-  const batteryRange = battery.approvalAboveWh < battery.powerBankMaximumWh
-    ? `${battery.approvalAboveWh}Wh 이하 가능 · 초과~${battery.powerBankMaximumWh}Wh 승인 필요`
-    : `${battery.powerBankMaximumWh}Wh 이하 가능 · 초과 불가`
-  if (item.category === 'power-bank' && item.id === 'power-bank') return {
-    ...base,
-    cabin: batteryRange,
-    action: `${base.action} 보조배터리는 1명당 ${battery.powerBankCount}개 이하이며 ${battery.powerBankMaximumWh}Wh를 초과할 수 없습니다.`,
-  }
-  if (item.category === 'power-bank') return {
-    ...base,
-    cabin: item.guidance?.cabin ?? batteryRange,
-    action: `${base.action} 리튬 배터리는 ${battery.approvalAboveWh}Wh 초과 시 승인, ${battery.deviceMaximumWh}Wh 초과 시 반입 불가입니다.`,
-  }
-  if (item.category === 'electronics') return {
-    ...base,
-    cabin: item.guidance?.cabin ?? `${battery.approvalAboveWh}Wh 이하 가능 · 초과~${battery.deviceMaximumWh}Wh 승인 필요`,
-    action: `${base.action} 배터리는 ${battery.approvalAboveWh}Wh 초과 시 승인, ${battery.deviceMaximumWh}Wh 초과 시 반입 불가이며 휴대 전자기기는 1명당 ${battery.electronicDeviceCount}개 이하입니다.`,
-  }
-  if (item.category === 'liquid' && international) return {
-    ...base,
-    cabin: item.guidance?.cabin ?? `용기당 ${limits.liquid.internationalContainerMl}mL 이하`,
-    action: `${base.action} 국제선 기내 용기는 각각 ${limits.liquid.internationalContainerMl}mL 이하여야 합니다.`,
-  }
-  if (item.category === 'lighter' && ['lighter', 'safety-matches'].includes(item.id)) return {
-    ...base,
-    cabin: limits.lighterCount > 0 ? `1명당 ${limits.lighterCount}개 기내 휴대` : '기내 반입 불가',
-    action: limits.lighterCount > 0 ? `${base.action} 1명당 ${limits.lighterCount}개까지만 허용됩니다.` : '선택한 항공사는 라이터·성냥의 기내 및 위탁 반입을 허용하지 않습니다.',
-  }
-  return base
 }
 
 type Props = {
@@ -83,7 +42,7 @@ export default function QuickRuleCheck({ airlines, flightType, originCountry, fo
   const photoRequest = useRef<AbortController | null>(null)
   const results = useMemo(() => searchQuickItems(query).slice(0, 8), [query])
   const selectedAirline = airlines.find((airline) => airline.id === airlineId)
-  const result = selectedItem && ruleInfo?.airlineId === airlineId ? guidance(selectedItem, flightType, ruleInfo.ruleLimits) : null
+  const result = selectedItem && ruleInfo?.airlineId === airlineId ? quickRuleGuidance(selectedItem, flightType, ruleInfo.ruleLimits) : null
   const searching = Boolean(query.trim()) && !selectedItem
 
   useEffect(() => () => { photoRequest.current?.abort(); photoRequest.current = null }, [])
