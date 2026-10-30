@@ -72,6 +72,12 @@ export function evaluateStub(input: EvaluateRequest): EvaluateResponse {
       checked: { verdict: 'NEEDS_INFO', reason: `${item.confirmed ? '' : '사용자 확인 전. '}규정 엔진 미연결. 현재는 시연용 고정 응답입니다.` },
       action: 'CHECK_CONDITIONS', missingFields: [], derivedFields: {},
       staffSummary: `기내·위탁: 제품 정보 확인 필요 / ${labels.flightTypes[input.flightType]} / 시연용 고정 응답`, isDemo: true,
+      ...(input.resultFormat === 'detailed' ? { presentation: {
+        conditions: [], requiredInfo: [{ key: 'demo', text: '시연 항공사는 고정 응답입니다. 실제 판정은 대한항공을 선택해 주세요.', textEn: 'Demo response only. Select Korean Air for rule-based assessment.' }],
+        sources: [], ruleVersion: null, reviewedAt: null, reviewBy: null, current: false,
+        airlineApproval: 'not-assessed' as const, inFlightUse: 'not-assessed' as const, inFlightCharging: 'not-assessed' as const,
+        staffSummaryEn: 'Demo data only. Product information and carriage rules have not been assessed.', scopeNotice: '실제 항공사 규정에 따른 결과가 아닌 시연용 화면입니다.',
+      } } : {}),
     })), meta: demoMeta,
   }
 }

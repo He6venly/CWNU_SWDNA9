@@ -4,8 +4,9 @@ import { demoAirlines, demoCategories, demoMeta, demoMetadata, evaluateStub, loo
 import type { RecognitionScenario } from './demo.ts'
 import * as s from './schemas.ts'
 import ruleExample from './fixtures/rules.json' with { type: 'json' }
+import { condition } from './presentation.ts'
 
-export function createMockClient({ scenario = 'standard', delayMs = 200, lookupScenario = 'empty' }: { scenario?: RecognitionScenario; delayMs?: number; lookupScenario?: 'empty' | 'candidate' } = {}) {
+export function createMockClient({ scenario = 'standard', delayMs = 200, lookupScenario = 'empty', resultScenario = 'stub' }: { scenario?: RecognitionScenario; delayMs?: number; lookupScenario?: 'empty' | 'candidate'; resultScenario?: 'stub' | 'battery-conditional' } = {}) {
   const mockFetch: typeof fetch = async (url, init) => {
     const request = new Request(url, init)
     const signal = request.signal
@@ -44,7 +45,17 @@ export function createMockClient({ scenario = 'standard', delayMs = 200, lookupS
       case 'evaluate': {
         const input = s.EvaluateRequestSchema.parse(await request.json())
         s.assertEvaluationItems(input.items)
-        return ensureAirline(input.airlineId) ?? Response.json(evaluateStub(input))
+        const failure = ensureAirline(input.airlineId)
+        if (failure) return failure
+        const output = evaluateStub(input)
+        if (resultScenario === 'battery-conditional') for (const result of output.results) {
+          if (input.items.find(item => item.id === result.itemId)?.categoryId !== 'power-bank') continue
+          result.cabin = { verdict: 'CONDITIONAL', reason: '시연: 항공사 승인과 단락 방지 조건을 보여주는 고정 예시입니다.' }
+          result.checked = { verdict: 'PROHIBITED', reason: '시연: 위탁 금지 표시 예시입니다.' }
+          result.staffSummary = '시연용 조건부 가능 카드입니다. 실제 규정 판정이 아닙니다.'
+          if (result.presentation) { result.presentation.conditions = [condition('AIRLINE_APPROVAL', 'cabin'), condition('INSULATE_TERMINALS', 'cabin')]; result.presentation.airlineApproval = 'required' }
+        }
+        return Response.json(output)
       }
       default: return Response.json({ error: { code: 'NOT_FOUND', message: 'API 경로를 찾을 수 없습니다.' } }, { status: 404 })
     }

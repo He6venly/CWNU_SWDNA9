@@ -2,6 +2,7 @@ import { z } from 'zod'
 import * as v1 from '../schemas.ts'
 import { CATEGORY_IDS, CONTRACT_VERSION, DEPARTURE_COUNTRY, FIELD_KEYS, FLIGHT_TYPES, LIMITS } from './constants.ts'
 import { ItemDetailsSchema } from './item-details.ts'
+import { ResultPresentationSchema } from './presentation.ts'
 
 const shortText = (max = 120) => v1.ResultDetailSchema.shape.reason.max(max)
 export const FieldKeySchema = z.enum(FIELD_KEYS)
@@ -25,7 +26,9 @@ export const DetectedItemSchema = v1.DetectedItemSchema.omit({ fields: true, cat
   imageId: v1.IdSchema,
   bbox: v1.DetectedItemSchema.shape.bbox.describe('imageId의 전송 이미지 기준 정규화 [x,y,width,height]. 크롭/재인코딩 전 원본 좌표가 아님.'),
 })
-export const ItemInfoSchema = DetectedItemSchema.extend({ confirmed: z.boolean(), userEdited: z.boolean(), details: ItemDetailsSchema.optional() })
+export const ItemInfoSchema = DetectedItemSchema.extend({ confirmed: z.boolean(), userEdited: z.boolean(), details: ItemDetailsSchema.optional(),
+  identification: z.enum(['label_read', 'ai_estimated', 'manual']), imageId: v1.IdSchema.optional(),
+})
 export const InputImageSchema = v1.ImageSchema.extend({ id: v1.IdSchema, kind: z.enum(['overview', 'closeup', 'label']), cropped: z.boolean().optional() })
 export const RecognizeRequestSchema = z.discriminatedUnion('captureMode', [
   z.strictObject({ captureMode: z.literal('overview'), images: z.array(InputImageSchema).length(1) }),
@@ -58,12 +61,14 @@ export const LookupResponseSchema = z.strictObject({ itemId: v1.IdSchema, candid
 export const EvaluateRequestSchema = z.strictObject({
   airlineId: v1.IdSchema, flightType: FlightTypeSchema, departureCountry: z.literal(DEPARTURE_COUNTRY), items: z.array(ItemInfoSchema).min(1).max(LIMITS.maxItems),
   inventoryComplete: z.boolean().optional().describe('여행자 1명의 전체 물품 목록인지 여부. 생략은 부분 목록. 합산 한도를 별도 확인해야 함.'),
+  resultFormat: z.literal('detailed').optional().describe('상세 조건·추가 확인 정보·근거·영문 요약을 요청. 생략하면 기존 응답 형식 유지.'),
 })
 export const DerivedWhSchema = z.strictObject({
   value: z.number().positive(), displayValue: z.number().nonnegative(), basis: z.literal('mah*volts/1000'), source: z.literal('calculated'),
 })
 export const ItemResultSchema = v1.ItemResultSchema.omit({ missingFields: true }).extend({
   missingFields: z.array(FieldKeySchema).max(FIELD_KEYS.length), derivedFields: z.strictObject({ wh: DerivedWhSchema.optional() }),
+  presentation: ResultPresentationSchema.optional(),
 })
 export const EvaluateResponseSchema = z.strictObject({
   airlineId: v1.IdSchema, flightType: FlightTypeSchema, departureCountry: z.literal(DEPARTURE_COUNTRY), ruleVersion: shortText().nullable(),
@@ -103,13 +108,15 @@ export const MetaResponseSchema = z.strictObject({
   }),
 })
 export const CatalogCardSchema = z.strictObject({
-  id: v1.IdSchema, photoKeys: z.array(v1.IdSchema).min(1).max(LIMITS.maxImages),
+  id: v1.IdSchema, photoKeys: z.array(v1.IdSchema).max(LIMITS.maxImages),
   item: ItemInfoSchema, result: ItemResultSchema, airline: AirlineSchema, flightType: FlightTypeSchema, departureCountry: z.literal(DEPARTURE_COUNTRY),
   productSources: z.array(v1.SourceSchema).max(5), savedAt: z.iso.datetime(), evaluatedAt: z.iso.datetime(),
   ruleVersion: shortText().nullable(), meta: MetaSchema,
+  assessmentContext: z.strictObject({ inventoryComplete: z.boolean(), evaluatedItemIds: z.array(v1.IdSchema).min(1).max(LIMITS.maxItems) }).optional(),
 })
 
-export function assertItemSemantics(item: z.infer<typeof DetectedItemSchema>) {
+type SemanticItem = Omit<z.infer<typeof ItemInfoSchema>, 'confirmed' | 'userEdited'>
+export function assertItemSemantics(item: SemanticItem) {
   if (new Set(item.unreadFields).size !== item.unreadFields.length) throw new Error('duplicate unreadFields')
   for (const field of FIELD_KEYS) {
     const source = item.fieldSources[field]
@@ -125,6 +132,7 @@ export function assertItemSemantics(item: z.infer<typeof DetectedItemSchema>) {
   }
   if (item.identification === 'ai_estimated' && !item.estimate) throw new Error('estimate required')
   if (item.identification === 'label_read' && item.estimate) throw new Error('estimate forbidden for label_read')
+  if (item.identification === 'manual' && item.estimate) throw new Error('manual entry cannot contain AI estimates')
   if (item.bbox && (item.bbox[0] + item.bbox[2] > 1 || item.bbox[1] + item.bbox[3] > 1)) throw new Error('bbox bounds')
 }
 export function assertRecognizeRequest(input: z.infer<typeof RecognizeRequestSchema>) {
@@ -137,13 +145,14 @@ export function assertRecognizeRequest(input: z.infer<typeof RecognizeRequestSch
     if (input.mode === 'estimate' && !input.images.some(image => image.kind === 'closeup')) throw new Error('closeup image required')
   }
 }
-export function assertItems(items: z.infer<typeof DetectedItemSchema>[]) {
+export function assertItems(items: SemanticItem[]) {
   if (new Set(items.map(item => item.id)).size !== items.length) throw new Error('duplicate item id')
   items.forEach(assertItemSemantics)
 }
 export function assertEvaluationItems(items: z.infer<typeof ItemInfoSchema>[]) {
   assertItems(items)
   if (items.some(item => item.details && item.details.type !== item.categoryId)) throw new Error('details category mismatch')
+  if (items.some(item => item.identification !== 'manual' && !item.imageId)) throw new Error('recognized item image required')
 }
 export function assertRecognizeResponse(input: z.infer<typeof RecognizeRequestSchema>, output: z.infer<typeof RecognizeResponseSchema>) {
   assertItems(output.items)

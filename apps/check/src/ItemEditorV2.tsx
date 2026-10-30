@@ -7,7 +7,7 @@ import DetailsEditor from './DetailsEditor.tsx'
 export default function ItemEditorV2({ item, onChange, isDemo = true }: { item: ItemInfo; onChange: (item: ItemInfo) => void; isDemo?: boolean }) {
   const edit = (patch: Partial<ItemInfo>) => onChange({ ...item, ...patch, confirmed: false, userEdited: true })
   return <fieldset><legend>{item.name}</legend>
-    <p>식별: {item.identification === 'ai_estimated' ? 'AI 추정' : '라벨 판독'}{isDemo ? ' (시연)' : ''} · 신뢰도 {item.confidence}</p>
+    <p>식별: {item.identification === 'manual' ? '사진 없이 직접 입력' : `${item.identification === 'ai_estimated' ? 'AI 추정' : '라벨 판독'}${isDemo ? ' (시연)' : ''} · 신뢰도 ${item.confidence}`}</p>
     <label>물품명<input value={item.name} maxLength={120} onChange={e => edit({ name: e.target.value })} /></label>
     <label>카테고리<select value={item.categoryId ?? ''} onChange={e => {
       const categoryId = (e.target.value || null) as ItemInfo['categoryId']
@@ -15,7 +15,7 @@ export default function ItemEditorV2({ item, onChange, isDemo = true }: { item: 
     }}>
       <option value="">미확인</option>{CATEGORY_IDS.map(id => <option value={id} key={id}>{id}</option>)}
     </select></label>
-    {FIELD_KEYS.map(field => <label key={field}>{labels.fields[field]}<input type={field === 'modelName' || field === 'brand' ? 'text' : 'number'}
+    {FIELD_KEYS.filter(field => item.identification !== 'manual' || (item.categoryId === 'liquid' ? ['brand', 'modelName', 'ml', 'count'] : ['brand', 'modelName', 'wh', 'mah', 'volts', 'count']).includes(field)).map(field => <label key={field}>{labels.fields[field]}<input type={field === 'modelName' || field === 'brand' ? 'text' : 'number'}
       value={item.fields[field] ?? ''} step={field === 'count' ? 1 : 'any'} onChange={e => {
         const value = e.target.value === '' ? null : field === 'modelName' || field === 'brand' ? e.target.value : Number(e.target.value)
         const fields = { ...item.fields, [field]: value }, fieldSources = { ...item.fieldSources }

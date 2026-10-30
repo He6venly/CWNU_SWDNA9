@@ -18,6 +18,12 @@ const envelope = (value: unknown, sources: string[] = []) => Response.json({ sta
   { type: 'model_output', content: [{ type: 'text', text: JSON.stringify(value), annotations: sources.map(url => ({ type: 'url_citation', url, title: '검증용 출처' })) }] },
 ] })
 const lookupInput = { itemId: 'existing-item-1', categoryId: 'power-bank' as const, modelName: 'MODEL-TEST', brand: null }
+const searchEnvelope = (urls: string[]) => Response.json({ candidates: [{ content: { parts: [{ text: 'MODEL-TEST 제품 사양' }] }, groundingMetadata: {
+  groundingChunks: urls.map(uri => ({ web: { uri, title: '검증용 출처' } })), searchEntryPoint: { renderedContent: '<div>검색 제안</div>' },
+} }] })
+function lookupFetch(value: unknown, urls: string[]) {
+  return vi.fn<typeof fetch>(async url => String(url).includes(':generateContent') ? searchEnvelope(urls) : envelope(value))
+}
 
 describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () => {
   it('키만 있어도 잠금 유지, API 기본·잠금 상태는 외부 호출 없음', async () => {
@@ -49,11 +55,13 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
   it('인용 출처가 있는 정확한 모델 후보만 제공, 라벨 보존·재확인', async () => {
     const sample = await createMockClient({ lookupScenario: 'candidate', delayMs: 0 }).lookup(lookupInput)
     const candidate = sample.candidates[0]!, url = candidate.sources[0]!.url
-    const request = vi.fn<typeof fetch>(async () => envelope({ itemId: lookupInput.itemId, candidates: [candidate], message: '확인할 후보' }, [url]))
+    const { sources: _sources, ...fields } = candidate
+    const request = lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [0] }], message: '확인할 후보' }, [url])
     const output = await createGeminiV2(environment, request).lookup(lookupInput)
     expect(output.meta.isDemoLookup).toBe(false); expect(output.searchSuggestions).toContain('검색 제안')
     const body = JSON.parse(request.mock.calls[0]![1]!.body as string)
-    expect(body.tools).toEqual([{ type: 'google_search' }]); expect(body.input).not.toContain('base64')
+    expect(body.tools).toEqual([{ google_search: {} }]); expect(JSON.stringify(body.contents)).not.toContain('base64')
+    expect(request).toHaveBeenCalledTimes(2)
     const entry = { ...recognizeDemo(label).items[0]!, confirmed: true, userEdited: false }
     const merged = applyCandidate(entry, output.candidates[0])
     expect(merged.fields.mah).toBe(1000); expect(merged.fields.wh).toBe(74)
@@ -62,9 +70,11 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
   })
   it('검색 인용 없는 URL·비슷한 다른 모델 후보 거부', async () => {
     const sample = await createMockClient({ lookupScenario: 'candidate', delayMs: 0 }).lookup(lookupInput), candidate = sample.candidates[0]!
-    await expect(createGeminiV2(environment, async () => envelope({ itemId: lookupInput.itemId, candidates: [candidate], message: '후보' })).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
+    const { sources: _sources, ...fields } = candidate
+    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [0] }], message: '후보' }, [])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
+    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, sourceIndices: [1] }], message: '후보' }, [candidate.sources[0]!.url])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
     candidate.fields.modelName = 'MODEL-TEST-PRO'
-    await expect(createGeminiV2(environment, async () => envelope({ itemId: lookupInput.itemId, candidates: [candidate], message: '후보' }, [candidate.sources[0]!.url])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
+    await expect(createGeminiV2(environment, lookupFetch({ itemId: lookupInput.itemId, candidates: [{ ...fields, fields: candidate.fields, sourceIndices: [0] }], message: '후보' }, [candidate.sources[0]!.url])).lookup(lookupInput)).rejects.toMatchObject({ code: 'PRODUCT_LOOKUP_FAILED' })
   })
   it('활성화한 API도 가짜 fetch로만 인식, 상류 한도 오류는 재시도 없이 공통 오류', async () => {
     const network = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => envelope(recognized()))
