@@ -19,9 +19,10 @@ const envelope = (value: unknown, sources: string[] = []) => {
 ] }) }
 function providerRecognized(input = label) {
   const output = recognized(input)
-  return { items: output.items.map(item => ({ name: item.name, categoryId: item.categoryId, confidence: item.confidence,
-    fields: item.fields, basis: input.captureMode === 'detail' && input.mode === 'label' ? null : '사진 외형' })),
-    imageQuality: output.imageQuality.map(quality => ({ usable: quality.usable, issues: quality.issues })), multipleItemsDetected: false }
+  return { items: output.items.map(item => input.captureMode === 'detail' && input.mode === 'label'
+    ? { name: item.name, categoryId: item.categoryId, brand: item.fields.brand, modelName: item.fields.modelName,
+      wh: item.fields.wh, mah: item.fields.mah, nominalVolts: item.fields.volts, ml: item.fields.ml }
+    : { name: item.name, categoryId: item.categoryId }) }
 }
 const lookupInput = { itemId: 'existing-item-1', categoryId: 'power-bank' as const, modelName: 'MODEL-TEST', brand: null }
 const searchEnvelope = (urls: string[], content = 'MODEL-TEST 제품 사양', title = 'MODEL-TEST 검증용 출처') => Response.json({ results: urls.map(url => ({ title, url, content, score: 0.9 })) })
@@ -49,12 +50,11 @@ describe('Gemini 2.0 연결 — 전부 가짜 fetch, 실제 호출 없음', () =
     expect(options!.signal).toBeDefined(); expect(request).toHaveBeenCalledTimes(1); expect('evaluate' in provider).toBe(false)
     expect(body.response_format).toMatchObject({ type: 'text', mime_type: 'application/json' })
     const itemSchema = body.response_format.schema.properties.items.items
-    expect(itemSchema.properties.fields.properties.volts).toBeDefined()
-    expect(itemSchema.properties.fieldSources).toBeUndefined()
+    expect(itemSchema.properties.nominalVolts).toBeDefined()
+    expect(itemSchema.properties.fields).toBeUndefined()
   })
   it('외형 추정 모드에서 수치·모델을 반환하면 거부', async () => {
-    const output = providerRecognized(estimate), entry = output.items[0]!
-    entry.fields.wh = 10
+    const output = providerRecognized(estimate)
     const recognizedOutput = await createGeminiV2(environment, async () => envelope(output)).recognize(estimate)
     expect(recognizedOutput.items[0]!.fields.wh).toBeNull()
     expect(recognizedOutput.items[0]!.identification).toBe('ai_estimated')
