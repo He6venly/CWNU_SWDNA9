@@ -85,10 +85,23 @@ export const CategorySchema = z.strictObject({
 })
 export const CategoriesResponseSchema = CategoriesQuerySchema.extend({ categories: z.array(CategorySchema).max(CATEGORY_IDS.length), meta: MetaSchema })
 export const RulesQuerySchema = z.strictObject({ airlineId: v1.IdSchema })
+export const RuleLimitsSchema = z.strictObject({
+  battery: z.strictObject({
+    approvalAboveWh: z.number().positive(), powerBankMaximumWh: z.number().positive(), deviceMaximumWh: z.number().positive(),
+    powerBankCount: z.int().positive(), electronicDeviceCount: z.int().positive(),
+  }),
+  liquid: z.strictObject({
+    internationalContainerMl: z.number().positive(), toiletryContainerMl: z.number().positive(), toiletryTotalMl: z.number().positive(),
+    sanitizerContainerMl: z.number().positive(), sanitizerTotalMl: z.number().positive(), alcoholLowPercent: z.number().min(0),
+    alcoholHighPercent: z.number().max(100), alcoholTotalMl: z.number().positive(),
+  }),
+  lighterCount: z.int().nonnegative(),
+})
 export const RulesResponseSchema = z.strictObject({
   airlineId: v1.IdSchema, ruleVersion: shortText().nullable(), current: z.boolean(),
   reviewedAt: z.iso.datetime(), reviewBy: z.iso.datetime(), sources: z.array(v1.SourceSchema).min(2).max(5),
   supportedCategories: z.array(z.enum(CATEGORY_IDS)).length(CATEGORY_IDS.length),
+  ruleLimits: RuleLimitsSchema,
   scope: z.strictObject({ departureCountry: z.literal(DEPARTURE_COUNTRY), flightTypes: z.array(FlightTypeSchema), passengers: z.literal(1), operatingCarrier: v1.IdSchema, notice: shortText(600) }),
   meta: MetaSchema,
 })

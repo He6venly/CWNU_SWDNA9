@@ -7,6 +7,7 @@
 - `createManualItem(categoryId,id)`(contract/v2/manual.ts): 보조배터리·고데기·액체 빈 입력 생성. identification=manual, imageId 생략. 안전 상태·사양은 null에서 직접 입력·확인
 - evaluate 요청에 `resultFormat:'detailed'`를 넣으면 각 결과의 `presentation`에 conditions(코드·한영 문구·적용 구분), requiredInfo, sources, 규정 검수일/기한, 승인·사용/충전 상태, staffSummaryEn 반환. 기존 reason·action 유지, 옵션 생략 시 이전 응답 유지
 - 프론트는 reason 문자열을 분석해 조건을 만들지 않고 presentation을 표시. resultScenario:'battery-conditional' 목업으로 조건부 카드 구성 가능(실제 규정 판정 아님)
+- 빠른 규정 확인은 `/rules`의 `ruleLimits`를 사용해 선택 항공사의 Wh·수량·액체 용량을 표시. 클라이언트 고정 숫자로 대체하지 않음
 - CatalogCard.photoKeys는 직접 입력이면 빈 배열 가능. assessmentContext에 판정 당시 목록·전체 목록 여부 저장. 사진 인식 결과와 직접 입력을 혼동하지 않음
 - `contract/v2/catalog-store.ts`: 사진 Blob과 카드의 IndexedDB 저장·목록·삭제·사진 조회. 서버 저장·계정 동기화 없음. 기존 별도 프론트 DB를 덮어쓰지 않는 독립 저장소이며 프론트 저장 모듈로 교체 가능
 - apps/check/src의 ResultCard → Catalog → StaffCard가 연결 예시. 직원 모드에 저장 사진·모델·사양·기내/위탁·조건·출처·규정 기준일·영문 요약 표시, 인쇄/PDF와 기한 경과 안내 포함

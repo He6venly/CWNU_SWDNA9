@@ -29,6 +29,26 @@
     "electronics",
     "general-items"
   ],
+  "ruleLimits": {
+    "battery": {
+      "approvalAboveWh": 100,
+      "powerBankMaximumWh": 160,
+      "deviceMaximumWh": 160,
+      "powerBankCount": 2,
+      "electronicDeviceCount": 15
+    },
+    "liquid": {
+      "internationalContainerMl": 100,
+      "toiletryContainerMl": 500,
+      "toiletryTotalMl": 2000,
+      "sanitizerContainerMl": 100,
+      "sanitizerTotalMl": 500,
+      "alcoholLowPercent": 24,
+      "alcoholHighPercent": 70,
+      "alcoholTotalMl": 5000
+    },
+    "lighterCount": 1
+  },
   "scope": {
     "departureCountry": "KR",
     "flightTypes": [

@@ -193,6 +193,7 @@ describe('규정 수명·공식 출처·실제 HTTP handler 계약', () => {
       const metadata = airlineRuleMetadata(airline.id, when)
       expect(metadata?.current).toBe(true)
       expect(metadata?.ruleVersion).toMatch(/-KR-2026-10-31-r\d+$/)
+      expect(metadata?.ruleLimits.battery.powerBankMaximumWh).toBeGreaterThanOrEqual(100)
       expect(metadata?.sources.some(source => !source.url.includes('molit.go.kr') && !source.url.includes('airport.kr'))).toBe(true)
       const flightType = airline.supportedFlightTypes[0]
       expect(evaluateAirline({ ...request([item('general-items')], flightType), airlineId: airline.id }, when).ruleVersion).toBe(metadata?.ruleVersion)
@@ -202,6 +203,8 @@ describe('규정 수명·공식 출처·실제 HTTP handler 계약', () => {
     const info = await api.rules('korean-air')
     expect(info.current).toBe(true); expect(info.scope.passengers).toBe(1); expect(info.sources).toHaveLength(4)
     expect(info.supportedCategories).toHaveLength(6)
+    expect(info.ruleLimits).toMatchObject({ battery: { approvalAboveWh: 100, powerBankMaximumWh: 160, powerBankCount: 2 }, liquid: { internationalContainerMl: 100 }, lighterCount: 1 })
+    expect((await api.rules('delta-air-lines')).ruleLimits.battery.powerBankMaximumWh).toBe(100)
     const mock = await createMockClient({ delayMs: 0 }).rules('korean-air')
     expect(mock.meta.isDemoRules).toBe(true); expect(mock.current).toBe(false); expect(mock.ruleVersion).toBeNull()
     expect(RulesResponseSchema.parse(JSON.parse(await readFile(new URL('../contract/v2/fixtures/rules.json', import.meta.url), 'utf8')))).toEqual(mock)

@@ -93,7 +93,7 @@ await api.recognize({
 - derivedFields.wh의 value는 판정용 반올림 전 값, displayValue는 표시용. basis·source를 함께 제공. 확인한 공칭 전압만 사용, Wh/계산값 충돌은 NEEDS_INFO
 - 수량 초과는 현재 구성 PROHIBITED와 CHECK_CONDITIONS 반환. 제품 자체 금지와 구분해 수량 조정·재판정 안내. 프론트가 action을 다시 계산하지 않음
 - 판정 응답의 airlineId·flightType·itemId 일치를 클라이언트도 검사. 정보·노선 변경 시 이전 결과와 진행 중 응답 폐기
-- /rules?airlineId=...에서 항공사별 공식 출처·검수 기한·적용 범위 조회. 주류 24/70도 경계와 미지원 유형은 자동 확정하지 않음. 기준표·예외는 docs/RULE_ENGINE.md 참조
+- /rules?airlineId=...에서 항공사별 공식 출처·검수 기한·적용 범위와 `ruleLimits`(배터리 Wh·수량, 액체 용량, 라이터 수량) 조회. 주류 24/70도 경계와 미지원 유형은 자동 확정하지 않음. 기준표·예외는 docs/RULE_ENGINE.md 참조
 
 ## 클라이언트·목업
 

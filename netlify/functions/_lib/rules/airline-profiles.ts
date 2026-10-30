@@ -47,6 +47,15 @@ export function airlineRuleMetadata(id: string, now = new Date()) {
     airlineId: profile.airlineId, ruleVersion: current ? profile.version : null, current,
     reviewedAt: profile.reviewedAt, reviewBy: profile.reviewBy, sources: profile.allSources,
     supportedCategories: CATEGORY_IDS,
+    ruleLimits: {
+      battery: {
+        approvalAboveWh: profile.battery.approvalAboveWh, powerBankMaximumWh: profile.battery.powerBankMaximumWh,
+        deviceMaximumWh: profile.battery.maximumWh, powerBankCount: profile.battery.powerBankCount,
+        electronicDeviceCount: profile.battery.electronicDeviceCount,
+      },
+      liquid: profile.liquid,
+      lighterCount: profile.lighterCount,
+    },
     scope: {
       departureCountry: 'KR', flightTypes: profile.flightTypes, passengers: 1, operatingCarrier: profile.airlineId,
       notice: `${profile.name} 직접 운항 한국 출발편·여행자 1명 기준입니다. 항공사 공식 규정과 한국 출발 보안 기준을 함께 적용하며 공동운항·환승·목적지 세관·검역·수하물 규격은 별도 확인해야 합니다.`,
