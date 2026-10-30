@@ -1,6 +1,6 @@
 # 백엔드 MVP 실행 계획
 
-상태: 아래는 최초 계획 기록. 최신 2.0 계약·시연 스텁은 contract/v2, 프론트 전환은 docs/FRONTEND_HANDOFF_V2.md, 검증은 docs/VALIDATION_V2.md 기준. 1.0 API는 유지. 원격 배포·실규정 판정·Gemini 실호출은 미완료.
+상태: 아래는 최초 계획 기록. 최신 규정 엔진은 docs/RULE_ENGINE.md, 프론트 추가 인계는 docs/FRONTEND_RULES_HANDOFF.md. 1.0 API는 유지. 원격 배포·Gemini 실호출은 미완료.
 
 추가 사용자 지시 반영: 제공자는 Gemini로 확정. 사진 인식 → 제품 정보 검색 → 사용자 확인 → 항공사 규정 대조의 단계로 분리. 기존 순수 판정 엔진 단독 계획은 Gemini 대조 Provider와 순수 안전 검증·권장 조치 로직으로 조정. 계약 충돌 해소 내용은 contract/CHANGELOG.md·docs/DECISIONS.md에 기록.
 

@@ -6,8 +6,9 @@ import { HttpError, invalidRequest, unavailable } from './errors.ts'
 import { checkImage, checkItems, parse, readJson } from './input.ts'
 import { evaluateStub, recognizeDemo, resolveProductDemo } from './providers/demo.ts'
 import { handleApiV2 } from './api-v2.ts'
+import type { GeminiEnvironment } from './providers/gemini-v2.ts'
 
-export interface ApiEnvironment { ALLOWED_ORIGINS?: string; USE_DEMO_RECOGNITION?: string }
+export interface ApiEnvironment extends GeminiEnvironment { ALLOWED_ORIGINS?: string; USE_DEMO_RECOGNITION?: string }
 const methods: Record<string, string> = {
   '/api/health': 'GET', '/api/meta': 'GET', '/api/airlines': 'GET', '/api/categories': 'GET',
   '/api/recognize': 'POST', '/api/resolve-product': 'POST', '/api/evaluate': 'POST',

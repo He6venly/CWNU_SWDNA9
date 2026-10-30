@@ -1,6 +1,8 @@
 # 계약 2.0.0 — 전체·개별 사진 등록
 
-이번 범위는 공용 계약·클라이언트·목업·시연 API·체크 화면. 실제 Gemini·제품 검색·규정 엔진은 미연결. 1.0.0의 /api/* 및 기존 클라이언트는 유지.
+현재는 사진 인식·제품 조회 시연과 대한항공 규정 엔진 제공. 1.0.0의 /api/*·기존 2.0 응답 유지. details·inventoryComplete 선택 요청과 /rules 조회를 호환 확장. 최신 입력/표시 기준: docs/FRONTEND_RULES_HANDOFF.md, 근거·범위: docs/RULE_ENGINE.md.
+
+Gemini 연결 코드는 준비했으며 기본 호출 잠금. 활성화 전 최신 계약·프론트 인계 반영 필요. 실제 lookup만 선택 searchSuggestions HTML을 포함할 수 있음. candidate 목업과 apply-candidate.ts로 사용자 재확인 흐름 개발 가능.
 
 ## 시작
 
@@ -31,10 +33,10 @@ Vite·TypeScript 소스로 사용하는 방식. Zod 4.x 필요, allowImportingTs
 | 판정 결과 | results + meta | airlineId + flightType + departureCountry + ruleVersion + results + meta |
 | 저장 형식 | 단일 photoKey | photoKeys 배열 + flightType + 출처·식별 방식 |
 
-- 경로별 health·meta·airlines·categories·recognize·lookup·evaluate 제공. 2.0에는 resolve-product 별칭 없음
+- 경로별 health·meta·airlines·categories·rules·recognize·lookup·evaluate 제공. 2.0에는 resolve-product 별칭 없음
 - 모든 성공 응답 meta: contractVersion=2.0.0, isDemoRecognition, isDemoRules, isDemoLookup
 - 오류는 기존 {error:{code,message}} 유지. OPTIONS 정상은 본문 없는 204
-- /api/v2/meta.capabilities로 demo/stub/unavailable 구분. 실제 미연결인데 규정 판정이 완료된 것처럼 표시하지 않음
+- /api/v2/meta.capabilities로 demo/gemini/stub/rules/unavailable 구분. 실제 연결·잠금·시연 여부를 표시
 - 계약과 표준 JSON Schema로 표현하기 어려운 출처·ID·모드 제약은 schemas.ts의 의미 검증 함수가 함께 담당. OpenAPI 설명에도 해당 조건 명시
 
 ## 사진 등록 요청
@@ -77,18 +79,21 @@ await api.recognize({
 
 ## 항공사·노선·판정
 
-- 첫 실제 연동 대상은 대한항공(korean-air). 현재는 규정 연동 전이므로 enabled=false. 시연 항공사만 enabled=true
+- 대한항공(korean-air)은 규정 검수 기한 안이면 enabled=true. 직접 운항편·여행자 1명만 대상. 기한 경과 시 비활성·evaluate 409
 - 지원 범위는 한국 국내선·한국 출발 국제선. flightType은 domestic / international, departureCountry는 KR 고정이며 categories·evaluate에 필수. 해외 출발 요청은 현재 400. categories 클라이언트 메서드는 KR을 자동 전달
 - 인식에는 항공사·노선을 보내지 않아 변경 시 재인식 불필요. 제품 자체 인식과 적용 규정 범위를 분리
 - categories의 requiredFields는 cabin/checked 각각 유지. general-items만 allowed_with_confirm 정책 예시이며 나머지는 never_definitive
-- 현재 evaluate는 모든 결과 NEEDS_INFO, derivedFields={}, ruleVersion=null. Wh 계산·정식 규정 판정은 아직 수행하지 않음
-- 향후 derivedFields.wh의 value는 판정용 반올림 전 값, displayValue는 표시용. basis·source를 함께 제공
+- 시연 항공사·목업 evaluate는 NEEDS_INFO·ruleVersion=null. 실제 API 대한항공은 사용자 확인한 details와 필드로 순수 알고리즘 판정. details 누락은 NEEDS_INFO, 분류 불일치는 400
+- ItemInfo.details는 item-details.ts의 분류별 구분 유니언. 모르면 null, details.confirmed는 사용자 확인. 기존 사진 추정 결과에 안전 상태를 임의 추가하지 않음
+- EvaluateRequest.inventoryComplete는 여행자 1명의 전체 물품 목록인지 표시. 생략/false는 부분 목록. 개인 합산 한도는 별도 확인
+- derivedFields.wh의 value는 판정용 반올림 전 값, displayValue는 표시용. basis·source를 함께 제공. 확인한 공칭 전압만 사용, Wh/계산값 충돌은 NEEDS_INFO
+- 수량 초과는 현재 구성 PROHIBITED와 CHECK_CONDITIONS 반환. 제품 자체 금지와 구분해 수량 조정·재판정 안내. 프론트가 action을 다시 계산하지 않음
 - 판정 응답의 airlineId·flightType·itemId 일치를 클라이언트도 검사. 정보·노선 변경 시 이전 결과와 진행 중 응답 폐기
-- 실제 규정 최신성·추정 제한·조회값 확인·일관된 알고리즘은 다음 규정 엔진 단계에서 구현
+- /rules?airlineId=korean-air에서 공식 출처·검수 기한·적용 범위 조회. 주류 24/70도 경계와 미지원 유형은 자동 확정하지 않음. 기준표·예외는 docs/RULE_ENGINE.md 참조
 
 ## 클라이언트·목업
 
-- 메서드: health(signal?), meta(signal?), airlines(signal?), categories(airlineId,flightType,signal?), recognize(body,signal?), lookup(body,signal?), evaluate(body,signal?)
+- 메서드: health(signal?), meta(signal?), airlines(signal?), categories(airlineId,flightType,signal?), rules(airlineId,signal?), recognize(body,signal?), lookup(body,signal?), evaluate(body,signal?)
 - baseUrl은 호스트까지만 지정. 클라이언트가 /api/v2를 추가. /api/v2를 baseUrl에 중복 입력하지 않음
 - 요청 구조·의미와 응답 ID·이미지 연결을 검증. 로컬 입력 오류 INVALID_REQUEST, 잘못된 응답 INVALID_RESPONSE. 네트워크 오류와 사용자 취소는 별도 처리
 - mock 시나리오: standard / empty / multiple / no-label / blur / risk-estimate / low-confidence. 선택한 모드에 의미 있는 시나리오를 사용 (예: no-label은 detail+label)
@@ -103,8 +108,8 @@ await api.recognize({
 - JPEG·PNG·WebP. 클라이언트 1280px·1MiB 목표는 현재 공통 변환 기준이며 라벨 판독 품질·비용 최적화의 최종 검증값 아님
 - 사진·base64·개인정보 서버 저장/로그 없음. 요청 뷰어에서 사진 데이터 생략. 선택만으로 네트워크 호출 없음
 - 기존 CORS 허용 목록·본문 크기·수신 제한·공통 오류 적용. 클라이언트의 메타데이터를 서버 보안 검증 대신 사용하지 않음
-- USE_DEMO_RECOGNITION=false이면 실제 공급자로 조용히 전환하지 않고 인식·조회 503. 외부 Gemini 호출·비용은 이번 단계에서 없음
-- 실제 규정 연결 전까지 조건부 가능/가능을 실제 판정으로 보여주지 않음. 직원 참고 안내와 시연 배너 유지
+- USE_DEMO_RECOGNITION=false만 설정하면 인식·조회 503. 실제 호출에는 추가 GEMINI_CALLS_ENABLED=true·서버 키·모델이 필요. 기본 잠금이며 이번 구현 중 실제 Gemini 호출·비용 발생 없음
+- meta.isDemoRules=false는 실제 규정 알고리즘 사용 여부. 사진 인식·제품 조회의 시연 플래그와 별개이며 전체 실제 AI 연동 완료를 뜻하지 않음. 직원 참고 안내 유지
 
 ## 프론트 전환
 

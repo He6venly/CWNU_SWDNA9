@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import requests from '../contract/v2/fixtures/requests.json' with { type: 'json' }
 import fixtureItems from '../contract/v2/fixtures/items.json' with { type: 'json' }
 import examples from '../contract/v2/fixtures/responses.json' with { type: 'json' }
@@ -20,21 +20,23 @@ const actual = createApiClient({ baseUrl: 'https://api.example', fetch: async (u
 const itemInfo = () => ({ ...s.DetectedItemSchema.parse(fixtureItems.label), confirmed: false, userEdited: false })
 const evaluateBody = () => ({ airlineId: 'demo-airline', flightType: 'domestic' as const, departureCountry: 'KR' as const, items: [itemInfo()] })
 const post = (operation: string, body: unknown, headers?: HeadersInit) => handleApi(new Request(`https://api.example/api/v2/${operation}`, { method: 'POST', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json', ...headers } }), {})
+beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date('2026-10-30T09:00:00Z')) })
+afterEach(() => vi.useRealTimers())
 
 describe('2.0 계약과 버전 공존', () => {
   it('v1과 v2 실제 클라이언트가 서로 다른 메타 계약으로 동작', async () => {
     const legacy = createLegacyClient({ baseUrl: 'https://api.example', fetch: async (url, init) => handleApi(new Request(url, init), {}) })
     expect((await legacy.health()).meta.contractVersion).toBe('1.0.0')
-    expect((await actual.health()).meta).toEqual(demoMeta)
-    expect((await actual.meta()).capabilities.evaluation).toBe('stub')
+    expect((await actual.health()).meta).toEqual({ ...demoMeta, isDemoRules: false })
+    expect((await actual.meta()).capabilities.evaluation).toBe('rules')
     expect((await actual.meta()).supportedFlightTypes).toEqual(['domestic', 'international'])
     const airline = (await actual.airlines()).airlines.find(a => a.id === 'korean-air')!
-    expect(airline.enabled).toBe(false); expect(airline.isDemo).toBe(false)
+    expect(airline.enabled).toBe(true); expect(airline.isDemo).toBe(false)
   })
   it('OpenAPI 파일·요청/응답 스키마·노선 쿼리 기준 일치', async () => {
     const spec = buildOpenApi()
     expect(JSON.parse(await readFile(new URL('../contract/v2/openapi.yaml', import.meta.url), 'utf8'))).toEqual(spec)
-    expect(Object.keys(spec.paths)).toHaveLength(7)
+    expect(Object.keys(spec.paths)).toHaveLength(8)
     const category = spec.paths['/api/v2/categories'] as { get: { parameters: Array<{ name: string; required: boolean }> } }
     expect(category.get.parameters.map(p => p.name)).toEqual(['airlineId', 'flightType', 'departureCountry'])
     expect(category.get.parameters.every(p => p.required)).toBe(true)
@@ -148,7 +150,9 @@ describe('2.0 잘못된 입력·출처·상태 연결 거부', () => {
     expect((await post('evaluate', { ...evaluateBody(), flightType: 'invalid' })).status).toBe(400)
     expect((await post('evaluate', { ...evaluateBody(), departureCountry: 'JP' })).status).toBe(400)
     expect((await post('evaluate', { ...evaluateBody(), items: [itemInfo(), itemInfo()] })).status).toBe(400)
-    expect((await post('evaluate', { ...evaluateBody(), airlineId: 'korean-air' })).status).toBe(409)
+    const actualRules = await post('evaluate', { ...evaluateBody(), airlineId: 'korean-air' })
+    expect(actualRules.status).toBe(200)
+    expect((await actualRules.json()).results[0].cabin.verdict).toBe('NEEDS_INFO')
   })
   it('잘못된 서버 결과 ID·사진 연결을 클라이언트도 거부', async () => {
     const response = recognizeDemo(label)

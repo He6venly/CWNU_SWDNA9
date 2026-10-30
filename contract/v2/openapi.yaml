@@ -3,7 +3,7 @@
   "info": {
     "title": "여행 짐 반입 확인 API",
     "version": "2.0.0",
-    "description": "2.0.0 시연 API. 전체/개별 기존 사진 등록·필드 출처·국내/국제 구분. 실제 인식·제품 조회·최종 규정 엔진 미연결. mode/이미지 kind/출처/ID 관계 등 의미 제약은 README와 런타임 검증을 함께 준수."
+    "description": "2.0.0 호환 확장. 사진 인식·제품 조회는 시연. 대한항공 직접 운항·한국 출발·1명 기준의 검수 규정 판정 지원. 선택 입력 details·inventoryComplete와 /rules 추가. mode/이미지 kind/출처/ID/추가정보 관계 등 의미 제약은 README와 런타임 검증을 함께 준수."
   },
   "servers": [
     {
@@ -497,6 +497,166 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/categoriesResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "405": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "408": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "502": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v2/rules": {
+      "get": {
+        "operationId": "rules",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "airlineId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "^[a-zA-Z0-9_-]+$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/rulesResponse"
                 }
               }
             }
@@ -1499,6 +1659,310 @@
               },
               "userEdited": {
                 "type": "boolean"
+              },
+              "details": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "power-bank"
+                      },
+                      "damaged": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "recalled": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "batteryType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "lithium-ion",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "damaged",
+                      "recalled",
+                      "batteryType"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "cordless-iron"
+                      },
+                      "damaged": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "recalled": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "powerSource": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "lithium-ion-battery",
+                              "mains",
+                              "gas",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "isolation": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "removable",
+                              "physical-cutoff",
+                              "software-lock",
+                              "none"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "damaged",
+                      "recalled",
+                      "powerSource",
+                      "isolation"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "liquid"
+                      },
+                      "liquidType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "water-drink",
+                              "toiletry",
+                              "alcohol",
+                              "ethanol-sanitizer",
+                              "hazardous",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "alcoholPercent": {
+                        "anyOf": [
+                          {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "liquidType",
+                      "alcoholPercent"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "lighter"
+                      },
+                      "lighterType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "standard",
+                              "safety-matches",
+                              "torch",
+                              "plasma",
+                              "fuel",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "lighterType"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "electronics"
+                      },
+                      "damaged": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "recalled": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "deviceType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "portable-electronic",
+                              "heating",
+                              "mobility",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "batteryType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "lithium-ion",
+                              "lithium-metal",
+                              "none",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "damaged",
+                      "recalled",
+                      "deviceType",
+                      "batteryType"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "confirmed": {
+                        "type": "boolean"
+                      },
+                      "type": {
+                        "type": "string",
+                        "const": "general-items"
+                      },
+                      "itemType": {
+                        "anyOf": [
+                          {
+                            "type": "string",
+                            "enum": [
+                              "clothing-book",
+                              "other"
+                            ]
+                          },
+                          {
+                            "type": "null"
+                          }
+                        ]
+                      },
+                      "hasRestrictedParts": {
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "confirmed",
+                      "type",
+                      "itemType",
+                      "hasRestrictedParts"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
               }
             },
             "required": [
@@ -2438,6 +2902,184 @@
         ],
         "additionalProperties": false
       },
+      "rulesResponse": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "const": "korean-air"
+          },
+          "ruleVersion": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "reviewedAt": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "reviewBy": {
+            "type": "string",
+            "format": "date-time",
+            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+          },
+          "sources": {
+            "minItems": 2,
+            "maxItems": 5,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 200,
+                  "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+                },
+                "url": {
+                  "type": "string",
+                  "maxLength": 2048,
+                  "pattern": "^https:\\/\\/"
+                },
+                "retrievedAt": {
+                  "type": "string",
+                  "format": "date-time",
+                  "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                }
+              },
+              "required": [
+                "title",
+                "url",
+                "retrievedAt"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "supportedCategories": {
+            "minItems": 6,
+            "maxItems": 6,
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "power-bank",
+                "cordless-iron",
+                "liquid",
+                "lighter",
+                "electronics",
+                "general-items"
+              ]
+            }
+          },
+          "scope": {
+            "type": "object",
+            "properties": {
+              "departureCountry": {
+                "type": "string",
+                "const": "KR"
+              },
+              "flightTypes": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "domestic",
+                    "international"
+                  ]
+                }
+              },
+              "passengers": {
+                "type": "number",
+                "const": 1
+              },
+              "operatingCarrier": {
+                "type": "string",
+                "const": "korean-air"
+              },
+              "notice": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600,
+                "pattern": "^[^\\u0000-\\u001f\\u007f]*\\S[^\\u0000-\\u001f\\u007f]*$"
+              }
+            },
+            "required": [
+              "departureCountry",
+              "flightTypes",
+              "passengers",
+              "operatingCarrier",
+              "notice"
+            ],
+            "additionalProperties": false
+          },
+          "meta": {
+            "type": "object",
+            "properties": {
+              "contractVersion": {
+                "type": "string",
+                "const": "2.0.0"
+              },
+              "isDemoRecognition": {
+                "type": "boolean"
+              },
+              "isDemoRules": {
+                "type": "boolean"
+              },
+              "isDemoLookup": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "contractVersion",
+              "isDemoRecognition",
+              "isDemoRules",
+              "isDemoLookup"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "airlineId",
+          "ruleVersion",
+          "current",
+          "reviewedAt",
+          "reviewBy",
+          "sources",
+          "supportedCategories",
+          "scope",
+          "meta"
+        ],
+        "additionalProperties": false
+      },
+      "rulesRequest": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "type": "object",
+        "properties": {
+          "airlineId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        },
+        "required": [
+          "airlineId"
+        ],
+        "additionalProperties": false
+      },
       "recognizeResponse": {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
         "type": "object",
@@ -3282,6 +3924,11 @@
               "isDemoLookup"
             ],
             "additionalProperties": false
+          },
+          "searchSuggestions": {
+            "description": "Google 검색 제안 HTML. 직접 DOM 삽입 금지. 스크립트 없는 sandbox iframe에서 표시.",
+            "type": "string",
+            "maxLength": 200000
           }
         },
         "required": [
@@ -3911,6 +4558,310 @@
                 },
                 "userEdited": {
                   "type": "boolean"
+                },
+                "details": {
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "power-bank"
+                        },
+                        "damaged": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "recalled": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "batteryType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "lithium-ion",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "damaged",
+                        "recalled",
+                        "batteryType"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "cordless-iron"
+                        },
+                        "damaged": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "recalled": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "powerSource": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "lithium-ion-battery",
+                                "mains",
+                                "gas",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "isolation": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "removable",
+                                "physical-cutoff",
+                                "software-lock",
+                                "none"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "damaged",
+                        "recalled",
+                        "powerSource",
+                        "isolation"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "liquid"
+                        },
+                        "liquidType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "water-drink",
+                                "toiletry",
+                                "alcohol",
+                                "ethanol-sanitizer",
+                                "hazardous",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "alcoholPercent": {
+                          "anyOf": [
+                            {
+                              "type": "number",
+                              "minimum": 0,
+                              "maximum": 100
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "liquidType",
+                        "alcoholPercent"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "lighter"
+                        },
+                        "lighterType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "standard",
+                                "safety-matches",
+                                "torch",
+                                "plasma",
+                                "fuel",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "lighterType"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "electronics"
+                        },
+                        "damaged": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "recalled": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "deviceType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "portable-electronic",
+                                "heating",
+                                "mobility",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "batteryType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "lithium-ion",
+                                "lithium-metal",
+                                "none",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "damaged",
+                        "recalled",
+                        "deviceType",
+                        "batteryType"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "confirmed": {
+                          "type": "boolean"
+                        },
+                        "type": {
+                          "type": "string",
+                          "const": "general-items"
+                        },
+                        "itemType": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "enum": [
+                                "clothing-book",
+                                "other"
+                              ]
+                            },
+                            {
+                              "type": "null"
+                            }
+                          ]
+                        },
+                        "hasRestrictedParts": {
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "confirmed",
+                        "type",
+                        "itemType",
+                        "hasRestrictedParts"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
                 }
               },
               "required": [
@@ -3928,6 +4879,10 @@
               ],
               "additionalProperties": false
             }
+          },
+          "inventoryComplete": {
+            "description": "여행자 1명의 전체 물품 목록인지 여부. 생략은 부분 목록. 합산 한도를 별도 확인해야 함.",
+            "type": "boolean"
           }
         },
         "required": [

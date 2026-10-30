@@ -1,0 +1,17 @@
+{
+  "airlineId": "korean-air",
+  "version": "KE-KR-2026-10-30-r1",
+  "reviewedAt": "2026-10-30T00:00:00Z",
+  "reviewBy": "2026-11-29T00:00:00Z",
+  "powerBankEffectiveFrom": "2026-04-20",
+  "departureCountry": "KR",
+  "passengers": 1,
+  "sources": [
+    { "title": "대한항공 운송 제한 물품", "url": "https://www.koreanair.com/contents/plan-your-travel/baggage/restricted-item", "retrievedAt": "2026-10-30T00:00:00Z" },
+    { "title": "대한항공 보조배터리 기내 반입 기준 (2026년 4월 20일 부)", "url": "https://www.koreanair.com/contents/footer/customer-support/notice/2026/260410-powerbanks-guide", "retrievedAt": "2026-10-30T00:00:00Z" },
+    { "title": "인천공항 제한물품 FAQ — 주류", "url": "https://www.airport.kr/ap_ko/907/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGYXBfa28lMkY5NDYlMkYxMzg0MjMlMkZhcnRjbFZpZXcuZG8lM0Y%3D", "retrievedAt": "2026-10-30T00:00:00Z" }
+  ],
+  "battery": { "approvalAboveWh": 100, "maximumWh": 160, "powerBankCount": 2, "electronicDeviceCount": 15 },
+  "liquid": { "internationalContainerMl": 100, "toiletryContainerMl": 500, "toiletryTotalMl": 2000, "sanitizerContainerMl": 100, "sanitizerTotalMl": 500, "alcoholLowPercent": 24, "alcoholHighPercent": 70, "alcoholTotalMl": 5000 },
+  "lighterCount": 1
+}

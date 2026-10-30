@@ -2,11 +2,11 @@
 
 2026 CWNU SW-DNA² 챌린지 웹앱 개발 저장소. 임시 제목: 여행 짐 반입 확인.
 
-최신 기준: [계약 2.0.0](contract/v2/README.md), [프론트 전환 안내](docs/FRONTEND_HANDOFF_V2.md), [진행 상태](implementation-plan.md). 전체/개별 사진 등록·필드 출처·국내/국제 구분의 시연 API는 `/api/v2`. 기존 `/api`는 1.0.0으로 유지. 실제 인식·제품 조회·규정 판정은 아직 스텁.
+최신 기준: [계약 2.0.0](contract/v2/README.md), [규정 엔진](docs/RULE_ENGINE.md), [프론트 추가 인계](docs/FRONTEND_RULES_HANDOFF.md). API는 `/api/v2`, 기존 `/api`는 1.0.0으로 유지. 대한항공 직접 운항편·한국 출발·여행자 1명·6개 분류 규정 판정 지원. 실제 인식·제품 조회는 시연.
 
-현재 범위는 **백엔드 API·공용 계약·시연 체크 화면**. 사용자 UI/UX·티켓 디자인·개인 도감 저장은 프론트 담당. 인식·제품 검색·규정 대조는 현재 시연용 고정 응답이며 실제 Gemini·최신 규정 미연결.
+현재 범위는 **백엔드 API·공용 계약·내부 체크 화면**. 사용자 UI/UX·티켓 디자인·개인 도감 저장은 프론트 담당. 판정은 순수 알고리즘, Gemini 인식·제품 검색은 연결 코드 준비·실제 호출 잠금 상태.
 
-프론트 새 연동: [2.0 인계 가이드](docs/FRONTEND_HANDOFF_V2.md), [계약 2.0.0](contract/v2/README.md), [최신 검증](docs/VALIDATION_V2.md). 기존 1.0은 [이전 인계 가이드](docs/FRONTEND_HANDOFF.md)와 [이전 계약](contract/README.md)에 보존.
+프론트 새 연동: [규정 입력 인계](docs/FRONTEND_RULES_HANDOFF.md), [2.0 사진 연동](docs/FRONTEND_HANDOFF_V2.md). 기존 1.0은 [이전 인계 가이드](docs/FRONTEND_HANDOFF.md)와 [이전 계약](contract/README.md)에 보존.
 
 ## 시작
 
@@ -52,7 +52,7 @@ git pull --ff-only
 git switch -c feat/기능명
 ```
 
-기능별 브랜치에서 작업하고 `npm run check` 통과 후 PR로 병합. 이번 초기 설정은 `chore/project-setup` 브랜치에 작성. 원격 푸시와 배포는 별도 실행 필요.
+백엔드 공유 브랜치는 `codex/backend`. 프론트의 기존 작업을 보존하며 인계 문서대로 병합. main 반영·Netlify 배포는 별도 단계.
 
 ## 환경변수·Netlify 배포
 

@@ -36,6 +36,12 @@ export function createApiClient({ baseUrl = '', fetch: request = globalThis.fetc
     health: (signal?: AbortSignal) => call('health', s.HealthResponseSchema, undefined, signal),
     meta: (signal?: AbortSignal) => call('meta', s.MetaResponseSchema, undefined, signal),
     airlines: (signal?: AbortSignal) => call('airlines', s.AirlinesResponseSchema, undefined, signal),
+    rules: async (airlineId: string, signal?: AbortSignal) => {
+      parseRequest(s.RulesQuerySchema, { airlineId })
+      const result = await call(`rules?airlineId=${encodeURIComponent(airlineId)}`, s.RulesResponseSchema, undefined, signal)
+      validateSemantics(() => { if (result.airlineId !== airlineId) throw new Error('airline id') }, true)
+      return result
+    },
     categories: async (airlineId: string, flightType: FlightType, signal?: AbortSignal) => {
       parseRequest(s.CategoriesQuerySchema, { airlineId, flightType, departureCountry: DEPARTURE_COUNTRY })
       const result = await call(`categories?airlineId=${encodeURIComponent(airlineId)}&flightType=${flightType}&departureCountry=${DEPARTURE_COUNTRY}`, s.CategoriesResponseSchema, undefined, signal)
@@ -57,7 +63,7 @@ export function createApiClient({ baseUrl = '', fetch: request = globalThis.fetc
     },
     evaluate: async (body: EvaluateRequest, signal?: AbortSignal) => {
       const input = parseRequest(s.EvaluateRequestSchema, body)
-      validateSemantics(() => s.assertItems(input.items))
+      validateSemantics(() => s.assertEvaluationItems(input.items))
       const result = await call('evaluate', s.EvaluateResponseSchema, input, signal)
       validateSemantics(() => {
         const ids = new Set(result.results.map(r => r.itemId))

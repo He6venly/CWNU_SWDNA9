@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import * as v1 from '../schemas.ts'
 import { CATEGORY_IDS, CONTRACT_VERSION, DEPARTURE_COUNTRY, FIELD_KEYS, FLIGHT_TYPES, LIMITS } from './constants.ts'
+import { ItemDetailsSchema } from './item-details.ts'
 
 const shortText = (max = 120) => v1.ResultDetailSchema.shape.reason.max(max)
 export const FieldKeySchema = z.enum(FIELD_KEYS)
@@ -24,7 +25,7 @@ export const DetectedItemSchema = v1.DetectedItemSchema.omit({ fields: true, cat
   imageId: v1.IdSchema,
   bbox: v1.DetectedItemSchema.shape.bbox.describe('imageId의 전송 이미지 기준 정규화 [x,y,width,height]. 크롭/재인코딩 전 원본 좌표가 아님.'),
 })
-export const ItemInfoSchema = DetectedItemSchema.extend({ confirmed: z.boolean(), userEdited: z.boolean() })
+export const ItemInfoSchema = DetectedItemSchema.extend({ confirmed: z.boolean(), userEdited: z.boolean(), details: ItemDetailsSchema.optional() })
 export const InputImageSchema = v1.ImageSchema.extend({ id: v1.IdSchema, kind: z.enum(['overview', 'closeup', 'label']), cropped: z.boolean().optional() })
 export const RecognizeRequestSchema = z.discriminatedUnion('captureMode', [
   z.strictObject({ captureMode: z.literal('overview'), images: z.array(InputImageSchema).length(1) }),
@@ -51,9 +52,12 @@ export const CandidateSchema = z.strictObject({
   id: v1.IdSchema, itemId: v1.IdSchema, name: shortText(), fields: FieldsSchema,
   sources: z.array(v1.SourceSchema).min(1).max(5), confidence: z.number().min(0).max(1), requiresConfirmation: z.literal(true),
 })
-export const LookupResponseSchema = z.strictObject({ itemId: v1.IdSchema, candidates: z.array(CandidateSchema).max(5), message: shortText(400), meta: MetaSchema })
+export const LookupResponseSchema = z.strictObject({ itemId: v1.IdSchema, candidates: z.array(CandidateSchema).max(5), message: shortText(400), meta: MetaSchema,
+  searchSuggestions: z.string().max(200_000).optional().describe('Google 검색 제안 HTML. 직접 DOM 삽입 금지. 스크립트 없는 sandbox iframe에서 표시.'),
+})
 export const EvaluateRequestSchema = z.strictObject({
   airlineId: v1.IdSchema, flightType: FlightTypeSchema, departureCountry: z.literal(DEPARTURE_COUNTRY), items: z.array(ItemInfoSchema).min(1).max(LIMITS.maxItems),
+  inventoryComplete: z.boolean().optional().describe('여행자 1명의 전체 물품 목록인지 여부. 생략은 부분 목록. 합산 한도를 별도 확인해야 함.'),
 })
 export const DerivedWhSchema = z.strictObject({
   value: z.number().positive(), displayValue: z.number().nonnegative(), basis: z.literal('mah*volts/1000'), source: z.literal('calculated'),
@@ -75,6 +79,14 @@ export const CategorySchema = z.strictObject({
   estimatePolicy: z.enum(['never_definitive', 'allowed_with_confirm']),
 })
 export const CategoriesResponseSchema = CategoriesQuerySchema.extend({ categories: z.array(CategorySchema).max(CATEGORY_IDS.length), meta: MetaSchema })
+export const RulesQuerySchema = z.strictObject({ airlineId: v1.IdSchema })
+export const RulesResponseSchema = z.strictObject({
+  airlineId: z.literal('korean-air'), ruleVersion: shortText().nullable(), current: z.boolean(),
+  reviewedAt: z.iso.datetime(), reviewBy: z.iso.datetime(), sources: z.array(v1.SourceSchema).min(2).max(5),
+  supportedCategories: z.array(z.enum(CATEGORY_IDS)).length(CATEGORY_IDS.length),
+  scope: z.strictObject({ departureCountry: z.literal(DEPARTURE_COUNTRY), flightTypes: z.array(FlightTypeSchema), passengers: z.literal(1), operatingCarrier: z.literal('korean-air'), notice: shortText(600) }),
+  meta: MetaSchema,
+})
 export const MetaResponseSchema = z.strictObject({
   meta: MetaSchema,
   capabilities: z.strictObject({ recognition: z.enum(['demo', 'gemini', 'unavailable']), productLookup: z.enum(['demo', 'gemini', 'unavailable']), evaluation: z.enum(['stub', 'rules', 'unavailable']) }),
@@ -129,6 +141,10 @@ export function assertItems(items: z.infer<typeof DetectedItemSchema>[]) {
   if (new Set(items.map(item => item.id)).size !== items.length) throw new Error('duplicate item id')
   items.forEach(assertItemSemantics)
 }
+export function assertEvaluationItems(items: z.infer<typeof ItemInfoSchema>[]) {
+  assertItems(items)
+  if (items.some(item => item.details && item.details.type !== item.categoryId)) throw new Error('details category mismatch')
+}
 export function assertRecognizeResponse(input: z.infer<typeof RecognizeRequestSchema>, output: z.infer<typeof RecognizeResponseSchema>) {
   assertItems(output.items)
   const imageIds = new Set(input.images.map(image => image.id))
@@ -144,6 +160,7 @@ export function assertRecognizeResponse(input: z.infer<typeof RecognizeRequestSc
 export const operationSchemas = {
   health: { response: HealthResponseSchema }, meta: { response: MetaResponseSchema },
   airlines: { response: AirlinesResponseSchema }, categories: { request: CategoriesQuerySchema, response: CategoriesResponseSchema },
+  rules: { request: RulesQuerySchema, response: RulesResponseSchema },
   recognize: { request: RecognizeRequestSchema, response: RecognizeResponseSchema },
   lookup: { request: LookupRequestSchema, response: LookupResponseSchema }, evaluate: { request: EvaluateRequestSchema, response: EvaluateResponseSchema },
 } as const

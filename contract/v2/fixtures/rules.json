@@ -1,0 +1,48 @@
+{
+  "airlineId": "korean-air",
+  "ruleVersion": null,
+  "current": false,
+  "reviewedAt": "2026-10-30T00:00:00Z",
+  "reviewBy": "2026-11-29T00:00:00Z",
+  "sources": [
+    {
+      "title": "대한항공 운송 제한 물품",
+      "url": "https://www.koreanair.com/contents/plan-your-travel/baggage/restricted-item",
+      "retrievedAt": "2026-10-30T00:00:00Z"
+    },
+    {
+      "title": "대한항공 보조배터리 기내 반입 기준 (2026년 4월 20일 부)",
+      "url": "https://www.koreanair.com/contents/footer/customer-support/notice/2026/260410-powerbanks-guide",
+      "retrievedAt": "2026-10-30T00:00:00Z"
+    },
+    {
+      "title": "인천공항 제한물품 FAQ — 주류",
+      "url": "https://www.airport.kr/ap_ko/907/subview.do?enc=Zm5jdDF8QEB8JTJGYmJzJTJGYXBfa28lMkY5NDYlMkYxMzg0MjMlMkZhcnRjbFZpZXcuZG8lM0Y%3D",
+      "retrievedAt": "2026-10-30T00:00:00Z"
+    }
+  ],
+  "supportedCategories": [
+    "power-bank",
+    "cordless-iron",
+    "liquid",
+    "lighter",
+    "electronics",
+    "general-items"
+  ],
+  "scope": {
+    "departureCountry": "KR",
+    "flightTypes": [
+      "domestic",
+      "international"
+    ],
+    "passengers": 1,
+    "operatingCarrier": "korean-air",
+    "notice": "대한항공 직접 운항편의 한국 출발 구간만 대상입니다. 공동운항·환승·목적지 세관·검역·수하물 크기와 무게는 별도 확인이 필요합니다. 품목별 미지원 유형과 주류 24도·70도 경계는 자동 확정하지 않습니다."
+  },
+  "meta": {
+    "contractVersion": "2.0.0",
+    "isDemoRecognition": true,
+    "isDemoRules": true,
+    "isDemoLookup": true
+  }
+}
