@@ -1,0 +1,31 @@
+{
+  "label": {
+    "id": "demo-battery", "name": "시연 보조배터리", "categoryId": "power-bank", "confidence": 0.8,
+    "imageId": "image-1", "identification": "label_read",
+    "fields": { "brand": null, "modelName": null, "wh": null, "mah": 1000, "volts": 3.7, "ml": null, "count": null },
+    "fieldSources": {
+      "mah": { "source": "label", "confirmed": false, "imageId": "image-1" },
+      "volts": { "source": "label", "confirmed": false, "imageId": "image-1", "voltageType": "nominal" }
+    },
+    "unreadFields": ["brand", "modelName", "wh", "ml", "count"]
+  },
+  "estimate": {
+    "id": "demo-general", "name": "시연 일반 소지품", "categoryId": "general-items", "confidence": 0.7,
+    "imageId": "image-1", "identification": "ai_estimated",
+    "fields": { "brand": null, "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+    "fieldSources": {}, "unreadFields": ["brand", "modelName", "wh", "mah", "volts", "ml", "count"],
+    "estimate": { "basis": "시연용 고정 후보이며 실제 사진을 분석한 결과가 아님", "candidates": [
+      { "name": "시연 일반 소지품", "categoryId": "general-items", "confidence": 0.7 },
+      { "name": "시연 미확인 소품", "categoryId": null, "confidence": 0.3 }
+    ] }
+  },
+  "riskEstimate": {
+    "id": "demo-battery-estimate", "name": "시연 보조배터리 추정", "categoryId": "power-bank", "confidence": 0.7,
+    "imageId": "image-1", "identification": "ai_estimated",
+    "fields": { "brand": null, "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+    "fieldSources": {}, "unreadFields": ["brand", "modelName", "wh", "mah", "volts", "ml", "count"],
+    "estimate": { "basis": "시연용 종류 추정. 실제 라벨 수치 판독 없음", "candidates": [
+      { "name": "시연 보조배터리 추정", "categoryId": "power-bank", "confidence": 0.7 }
+    ] }
+  }
+}

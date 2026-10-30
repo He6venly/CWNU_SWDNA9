@@ -1,0 +1,651 @@
+{
+  "overview": {
+    "request": {
+      "captureMode": "overview",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "overview"
+        }
+      ]
+    },
+    "response": {
+      "captureMode": "overview",
+      "items": [
+        {
+          "id": "demo-general",
+          "name": "시연 일반 소지품",
+          "confidence": 0.7,
+          "categoryId": "general-items",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": null,
+            "volts": null,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {},
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "mah",
+            "volts",
+            "ml",
+            "count"
+          ],
+          "identification": "ai_estimated",
+          "estimate": {
+            "basis": "시연용 고정 후보이며 실제 사진을 분석한 결과가 아님",
+            "candidates": [
+              {
+                "name": "시연 일반 소지품",
+                "categoryId": "general-items",
+                "confidence": 0.7
+              },
+              {
+                "name": "시연 미확인 소품",
+                "categoryId": null,
+                "confidence": 0.3
+              }
+            ]
+          },
+          "imageId": "image-1"
+        },
+        {
+          "id": "demo-battery-estimate",
+          "name": "시연 보조배터리 추정",
+          "confidence": 0.7,
+          "categoryId": "power-bank",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": null,
+            "volts": null,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {},
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "mah",
+            "volts",
+            "ml",
+            "count"
+          ],
+          "identification": "ai_estimated",
+          "estimate": {
+            "basis": "시연용 종류 추정. 실제 라벨 수치 판독 없음",
+            "candidates": [
+              {
+                "name": "시연 보조배터리 추정",
+                "categoryId": "power-bank",
+                "confidence": 0.7
+              }
+            ]
+          },
+          "imageId": "image-1"
+        }
+      ],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": false,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": true,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "label": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "label",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "label",
+          "cropped": true
+        }
+      ],
+      "targetItemId": "existing-item-1"
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [
+        {
+          "id": "existing-item-1",
+          "name": "시연 보조배터리",
+          "confidence": 0.8,
+          "categoryId": "power-bank",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": 1000,
+            "volts": 3.7,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {
+            "mah": {
+              "source": "label",
+              "confirmed": false,
+              "imageId": "image-1"
+            },
+            "volts": {
+              "source": "label",
+              "confirmed": false,
+              "imageId": "image-1",
+              "voltageType": "nominal"
+            }
+          },
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "ml",
+            "count"
+          ],
+          "identification": "label_read",
+          "imageId": "image-1"
+        }
+      ],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": false,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "estimate": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "estimate",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "closeup"
+        }
+      ]
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [
+        {
+          "id": "demo-general",
+          "name": "시연 일반 소지품",
+          "confidence": 0.7,
+          "categoryId": "general-items",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": null,
+            "volts": null,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {},
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "mah",
+            "volts",
+            "ml",
+            "count"
+          ],
+          "identification": "ai_estimated",
+          "estimate": {
+            "basis": "시연용 고정 후보이며 실제 사진을 분석한 결과가 아님",
+            "candidates": [
+              {
+                "name": "시연 일반 소지품",
+                "categoryId": "general-items",
+                "confidence": 0.7
+              },
+              {
+                "name": "시연 미확인 소품",
+                "categoryId": null,
+                "confidence": 0.3
+              }
+            ]
+          },
+          "imageId": "image-1"
+        }
+      ],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": false,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": false,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "empty": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "label",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "label",
+          "cropped": true
+        }
+      ],
+      "targetItemId": "existing-item-1"
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": true,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        },
+        {
+          "code": "NO_ITEM_DETECTED",
+          "message": "물품을 확인할 수 없습니다. 다른 사진을 등록해 주세요. (시연 시나리오)"
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "multiple": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "label",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "label",
+          "cropped": true
+        }
+      ],
+      "targetItemId": "existing-item-1"
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": true,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": true,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        },
+        {
+          "code": "MULTIPLE_ITEMS",
+          "message": "개별 사진에는 같은 물품만 담아 주세요. (시연 시나리오)"
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "no-label": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "label",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "label",
+          "cropped": true
+        }
+      ],
+      "targetItemId": "existing-item-1"
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": [
+            "no_label_found"
+          ]
+        }
+      ],
+      "suggestRetake": true,
+      "suggestEstimateMode": true,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        },
+        {
+          "code": "NO_LABEL_FOUND",
+          "message": "라벨 사진을 다시 등록하거나 종류 추정을 선택해 주세요. (시연 시나리오)"
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "blur": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "label",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "label",
+          "cropped": true
+        }
+      ],
+      "targetItemId": "existing-item-1"
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": [
+            "blur"
+          ]
+        }
+      ],
+      "suggestRetake": true,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        },
+        {
+          "code": "POOR_IMAGE",
+          "message": "더 선명한 사진을 선택해 주세요. (시연 시나리오)"
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "risk-estimate": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "estimate",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "closeup"
+        }
+      ]
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [
+        {
+          "id": "demo-battery-estimate",
+          "name": "시연 보조배터리 추정",
+          "confidence": 0.7,
+          "categoryId": "power-bank",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": null,
+            "volts": null,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {},
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "mah",
+            "volts",
+            "ml",
+            "count"
+          ],
+          "identification": "ai_estimated",
+          "estimate": {
+            "basis": "시연용 종류 추정. 실제 라벨 수치 판독 없음",
+            "candidates": [
+              {
+                "name": "시연 보조배터리 추정",
+                "categoryId": "power-bank",
+                "confidence": 0.7
+              }
+            ]
+          },
+          "imageId": "image-1"
+        }
+      ],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": false,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": true,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  },
+  "low-confidence": {
+    "request": {
+      "captureMode": "detail",
+      "mode": "estimate",
+      "images": [
+        {
+          "mimeType": "image/png",
+          "base64": "iVBORw0KGgo=",
+          "id": "image-1",
+          "kind": "closeup"
+        }
+      ]
+    },
+    "response": {
+      "captureMode": "detail",
+      "items": [
+        {
+          "id": "demo-general",
+          "name": "시연 일반 소지품",
+          "confidence": 0.4,
+          "categoryId": "general-items",
+          "fields": {
+            "modelName": null,
+            "wh": null,
+            "mah": null,
+            "volts": null,
+            "ml": null,
+            "count": null,
+            "brand": null
+          },
+          "fieldSources": {},
+          "unreadFields": [
+            "brand",
+            "modelName",
+            "wh",
+            "mah",
+            "volts",
+            "ml",
+            "count"
+          ],
+          "identification": "ai_estimated",
+          "estimate": {
+            "basis": "시연용 고정 후보이며 실제 사진을 분석한 결과가 아님",
+            "candidates": [
+              {
+                "name": "시연 일반 소지품",
+                "categoryId": "general-items",
+                "confidence": 0.4
+              },
+              {
+                "name": "시연 미확인 소품",
+                "categoryId": null,
+                "confidence": 0.3
+              }
+            ]
+          },
+          "imageId": "image-1"
+        }
+      ],
+      "imageQuality": [
+        {
+          "imageId": "image-1",
+          "source": "demo",
+          "usable": null,
+          "issues": []
+        }
+      ],
+      "suggestRetake": false,
+      "suggestEstimateMode": false,
+      "multipleItemsDetected": false,
+      "needsLabelPhoto": false,
+      "warnings": [
+        {
+          "code": "DEMO_RESPONSE",
+          "message": "사진 내용과 무관한 고정 시나리오입니다. 실제 AI 인식·이미지 품질 검사 결과가 아닙니다."
+        }
+      ],
+      "meta": {
+        "contractVersion": "2.0.0",
+        "isDemoRecognition": true,
+        "isDemoRules": true,
+        "isDemoLookup": true
+      }
+    }
+  }
+}

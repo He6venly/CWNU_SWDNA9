@@ -13,8 +13,10 @@
 - 프론트 통합 기준인 API 계약·표준 명세·목업을 먼저 정의하고 구현과 함께 일치 여부 검증
 - 단계마다 기능·보안·모바일 반응성·실패 경로를 교차검증하고, 실행한 검증과 미검증 항목을 구분
 - 현재 담당 범위는 백엔드 API·contract·apps/check. 사용자용 UI/UX·티켓 디자인은 프론트 담당과 분리
-- 공용 계약 기준은 contract/README.md·schemas.ts·openapi.yaml·fixtures. 변경 시 버전·CHANGELOG·목업·인계 문서 동기화
+- 새 공용 계약은 contract/v2/README.md·schemas.ts·openapi.yaml·fixtures, API는 /api/v2. 기존 contract/와 /api의 1.0 입출력은 프론트 이행 전 유지. 변경 시 버전·CHANGELOG·목업·인계 문서 동기화
 - 인식·제품 정보 검색·항공사 규정 대조는 분리하며 Gemini 연결 지점 유지. 미연결 기능은 시연·스텁 표시, 제품 정보·최신 규정 추측 금지
-- 서버 사진 저장 및 이미지·개인정보 로그 금지. 프론트 병렬 개발 기준은 docs/FRONTEND_HANDOFF.md
+- 서버 사진 저장 및 이미지·개인정보 로그 금지. 새 프론트 병렬 개발 기준은 docs/FRONTEND_HANDOFF_V2.md, 기존 1.0 안내는 docs/FRONTEND_HANDOFF.md에 보존
 - 최신 사용자 결정: 최종 반입 판정은 순수 규정 알고리즘, Gemini는 사진 인식·제품 조회에 사용. 기존 Gemini 판정 어댑터는 이전 준비 코드이며 대체 대상
-- 새 촬영 구조는 전체 overview / 개별 detail. 개별 방식만 label/estimate로 구분. 기존 계약 1.0.0에는 아직 반영되지 않았으며 implementation-plan.md·docs/SPEC_REVIEW.md 기준으로 2.0.0 전환 필요
+- 2.0 사진 구조는 전체 overview / 개별 detail. 개별 방식만 label/estimate로 구분. Gemini 인식·조회 연결 코드 준비, 사용자 요청으로 실호출 잠금 유지. 대한항공 순수 규정 엔진은 docs/RULE_ENGINE.md 범위로 구현
+- 사진 입력은 기존 사진의 보관함·파일 선택을 기본으로 함. 카메라 권한·앱 내 촬영은 필수 아님. 전체/개별은 사진 분석 용도 구분이며 선택만으로 자동 AI 호출하지 않음
+- 대한항공 직접 운항편·한국 국내선/한국 출발 국제선·여행자 1명. 6개 분류의 details 확인·합산 수량·규정 검수 기한 적용. 재검수 필요 시 비활성. 최신 인계는 docs/FRONTEND_RULES_HANDOFF.md

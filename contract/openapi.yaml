@@ -3,7 +3,7 @@
   "info": {
     "title": "여행 짐 반입 확인 API",
     "version": "1.0.0",
-    "description": "B1 스텁. 실제 Gemini·최신 규정 미연결. resolve-product는 명시적 제품 조회 단계. fields의 null과 unreadFields 일치, bbox 좌표 합 상한, ID 고유성은 서버 의미 검증. 상세: contract/README.md"
+    "description": "기존 1.0.0 시연 API. 새 프론트는 /api/v2 사용. 실제 Gemini·최신 규정 미연결. 상세: contract/README.md"
   },
   "servers": [
     {
@@ -17,7 +17,7 @@
         "operationId": "health",
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -27,7 +27,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -37,7 +37,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -47,7 +47,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -57,7 +57,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -67,7 +67,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -77,7 +77,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -87,7 +87,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -97,7 +97,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -107,7 +107,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -117,7 +117,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -127,7 +127,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -137,7 +137,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -147,7 +147,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -164,7 +164,7 @@
         "operationId": "meta",
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -174,7 +174,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -184,7 +184,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -194,7 +194,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -204,7 +204,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -214,7 +214,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -224,7 +224,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -234,7 +234,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -244,7 +244,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -254,7 +254,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -264,7 +264,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -274,7 +274,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -284,7 +284,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -294,7 +294,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -311,7 +311,7 @@
         "operationId": "airlines",
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -321,7 +321,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -331,7 +331,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -341,7 +341,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -351,7 +351,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -361,7 +361,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -371,7 +371,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -381,7 +381,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -391,7 +391,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -401,7 +401,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -411,7 +411,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -421,7 +421,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -431,7 +431,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -441,7 +441,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -463,15 +463,15 @@
             "required": true,
             "schema": {
               "type": "string",
-              "pattern": "^[a-zA-Z0-9_-]+$",
               "minLength": 1,
-              "maxLength": 80
+              "maxLength": 80,
+              "pattern": "^[a-zA-Z0-9_-]+$"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -481,7 +481,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -491,7 +491,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -501,7 +501,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -511,7 +511,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -521,7 +521,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -531,7 +531,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -541,7 +541,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -551,7 +551,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -561,7 +561,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -571,7 +571,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -581,7 +581,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -591,7 +591,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -601,7 +601,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -628,7 +628,7 @@
         },
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -638,7 +638,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -648,7 +648,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -658,7 +658,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -668,7 +668,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -678,7 +678,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -688,7 +688,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -698,7 +698,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -708,7 +708,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -718,7 +718,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -728,7 +728,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -738,7 +738,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -748,7 +748,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -758,7 +758,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -785,7 +785,7 @@
         },
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -795,7 +795,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -805,7 +805,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -815,7 +815,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -825,7 +825,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -835,7 +835,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -845,7 +845,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -855,7 +855,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -865,7 +865,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -875,7 +875,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -885,7 +885,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -895,7 +895,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -905,7 +905,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -915,7 +915,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -942,7 +942,7 @@
         },
         "responses": {
           "200": {
-            "description": "성공. meta는 시연 플래그와 계약 버전 포함.",
+            "description": "성공. meta에 계약 버전·시연 상태 포함.",
             "content": {
               "application/json": {
                 "schema": {
@@ -952,7 +952,7 @@
             }
           },
           "400": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -962,7 +962,7 @@
             }
           },
           "403": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -972,7 +972,7 @@
             }
           },
           "404": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -982,7 +982,7 @@
             }
           },
           "405": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -992,7 +992,7 @@
             }
           },
           "408": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1002,7 +1002,7 @@
             }
           },
           "409": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1012,7 +1012,7 @@
             }
           },
           "413": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1022,7 +1022,7 @@
             }
           },
           "415": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1032,7 +1032,7 @@
             }
           },
           "429": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1042,7 +1042,7 @@
             }
           },
           "500": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1052,7 +1052,7 @@
             }
           },
           "502": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1062,7 +1062,7 @@
             }
           },
           "503": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {
@@ -1072,7 +1072,7 @@
             }
           },
           "504": {
-            "description": "공통 오류 형식. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
+            "description": "공통 오류. 플랫폼 자체 차단 응답은 이 형식이 아닐 수 있음.",
             "content": {
               "application/json": {
                 "schema": {

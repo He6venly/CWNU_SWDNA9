@@ -1,0 +1,13 @@
+{
+  "overview": {
+    "captureMode": "overview", "images": [{ "id": "image-1", "kind": "overview", "mimeType": "image/png", "base64": "iVBORw0KGgo=" }]
+  },
+  "label": {
+    "captureMode": "detail", "mode": "label", "targetItemId": "existing-item-1",
+    "images": [{ "id": "image-1", "kind": "label", "mimeType": "image/png", "base64": "iVBORw0KGgo=", "cropped": true }]
+  },
+  "estimate": {
+    "captureMode": "detail", "mode": "estimate",
+    "images": [{ "id": "image-1", "kind": "closeup", "mimeType": "image/png", "base64": "iVBORw0KGgo=" }]
+  }
+}
