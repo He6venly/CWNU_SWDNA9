@@ -1,0 +1,9 @@
+{
+  "airlineId": "demo-airline",
+  "items": [{
+    "id": "power-bank-1", "name": "보조배터리", "categoryId": "power-bank", "confidence": 0.8,
+    "fields": { "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+    "unreadFields": ["modelName", "wh", "mah", "volts", "ml", "count"],
+    "confirmed": false, "userEdited": false
+  }]
+}

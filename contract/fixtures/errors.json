@@ -1,0 +1,6 @@
+[
+  { "status": 400, "body": { "error": { "code": "INVALID_REQUEST", "message": "요청 형식을 확인해 주세요." } } },
+  { "status": 404, "body": { "error": { "code": "UNKNOWN_AIRLINE", "message": "항공사 정보를 찾을 수 없습니다." } } },
+  { "status": 413, "body": { "error": { "code": "PAYLOAD_TOO_LARGE", "message": "요청 또는 이미지 크기가 제한을 초과했습니다." } } },
+  { "status": 503, "body": { "error": { "code": "SERVICE_UNAVAILABLE", "message": "실제 AI 연결은 아직 활성화되지 않았습니다." } } }
+]

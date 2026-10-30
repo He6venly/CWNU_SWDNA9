@@ -1,0 +1,10 @@
+{
+  "itemId": "power-bank-1", "status": "CANDIDATES_FOUND",
+  "candidates": [{
+    "id": "demo-candidate-1", "itemId": "power-bank-1", "name": "시연용 가상 제품", "requiresConfirmation": true,
+    "fields": { "modelName": "DEMO-MODEL (가상)", "wh": 12, "mah": null, "volts": null, "ml": null, "count": null },
+    "sources": [{ "title": "시연용 가상 출처 (실제 제품 검색 결과 아님)", "url": "https://example.invalid/demo-product", "retrievedAt": "2026-10-30T00:00:00.000Z" }]
+  }],
+  "missingFields": [], "message": "디자인 확인용 가상 후보입니다. 실제 제품 정보나 검색 결과가 아닙니다.",
+  "meta": { "isDemoRecognition": true, "isDemoRules": true, "contractVersion": "1.0.0" }
+}

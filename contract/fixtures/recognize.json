@@ -1,0 +1,17 @@
+{
+  "items": [
+    { "id": "power-bank-1", "name": "보조배터리", "categoryId": "power-bank", "confidence": 0.8,
+      "fields": { "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+      "unreadFields": ["modelName", "wh", "mah", "volts", "ml", "count"] },
+    { "id": "iron-1", "name": "무선 고데기", "categoryId": "cordless-iron", "confidence": 0.7,
+      "fields": { "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+      "unreadFields": ["modelName", "wh", "mah", "volts", "ml", "count"] },
+    { "id": "liquid-1", "name": "샴푸", "categoryId": "liquid", "confidence": 0.75,
+      "fields": { "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+      "unreadFields": ["modelName", "wh", "mah", "volts", "ml", "count"] },
+    { "id": "unknown-1", "name": "일반 케이블", "categoryId": null, "confidence": 0.5,
+      "fields": { "modelName": null, "wh": null, "mah": null, "volts": null, "ml": null, "count": null },
+      "unreadFields": ["modelName", "wh", "mah", "volts", "ml", "count"] }
+  ],
+  "meta": { "isDemoRecognition": true, "isDemoRules": true, "contractVersion": "1.0.0" }
+}

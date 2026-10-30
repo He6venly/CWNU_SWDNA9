@@ -1,0 +1,19 @@
+:root { font-family: 'Malgun Gothic', system-ui, sans-serif; color: #17212a; background: #f8f9fa; line-height: 1.6; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 900px; margin: auto; padding: 16px; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.15rem; }
+aside, section, article, fieldset, details { border: 1px solid #c7cdd3; padding: 16px; margin-block: 16px; background: white; border-radius: 4px; min-width: 0; }
+aside { background: #fff7de; }
+label { display: block; margin-block: 10px; }
+input, select, button { font: inherit; padding: 8px; max-width: 100%; }
+input:not([type='checkbox']), select { display: block; width: 100%; }
+button { margin: 6px 6px 6px 0; min-height: 44px; cursor: pointer; }
+button:disabled { cursor: default; }
+pre { background: #f1f3f5; padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: .8rem; }
+p, summary { overflow-wrap: anywhere; }
+.photo { display: block; max-width: 100%; max-height: 240px; object-fit: contain; margin-block: 12px; }
+details { padding: 12px; }
+summary { cursor: pointer; }
+@media (max-width: 480px) { main { padding: 12px; } section, aside, fieldset { padding: 12px; } button { width: 100%; } }
