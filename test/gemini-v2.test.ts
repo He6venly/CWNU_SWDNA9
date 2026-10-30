@@ -20,7 +20,7 @@ const envelope = (value: unknown, sources: string[] = []) => {
 function providerRecognized(input = label) {
   const output = recognized(input)
   return { items: output.items.map(item => ({ name: item.name, categoryId: item.categoryId, confidence: item.confidence,
-    bbox: item.bbox ?? null, fields: item.fields, basis: input.captureMode === 'detail' && input.mode === 'label' ? null : '사진 외형' })),
+    fields: item.fields, basis: input.captureMode === 'detail' && input.mode === 'label' ? null : '사진 외형' })),
     imageQuality: output.imageQuality.map(quality => ({ usable: quality.usable, issues: quality.issues })), multipleItemsDetected: false }
 }
 const lookupInput = { itemId: 'existing-item-1', categoryId: 'power-bank' as const, modelName: 'MODEL-TEST', brand: null }
