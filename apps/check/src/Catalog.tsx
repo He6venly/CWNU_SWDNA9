@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react'
 import type { CatalogCard } from '../../../contract/v2/types.ts'
 import { deleteCatalogCard, listCatalogCards } from '../../../contract/v2/catalog-store.ts'
 import { labels } from '../../../contract/v2/labels.ts'
-import StaffCard, { useCatalogPhotos } from './StaffCard.tsx'
+import StaffCard from './StaffCard.tsx'
+import { useCatalogPhotos } from './useCatalogPhotos.ts'
 
 function Entry({ card, onOpen, onDelete }: { card: CatalogCard; onOpen: () => void; onDelete: () => void }) {
   const { photos } = useCatalogPhotos(card.photoKeys.slice(0, 1))

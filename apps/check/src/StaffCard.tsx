@@ -1,32 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CatalogCard } from '../../../contract/v2/types.ts'
-import { getCatalogPhotos } from '../../../contract/v2/catalog-store.ts'
+import { useCatalogPhotos } from './useCatalogPhotos.ts'
 import { FIELD_KEYS } from '../../../contract/v2/constants.ts'
 import { labels } from '../../../contract/v2/labels.ts'
 
 const englishFields = { brand: 'Brand', modelName: 'Model', wh: 'Energy (Wh)', mah: 'Capacity (mAh)', volts: 'Voltage (V)', ml: 'Container (mL)', count: 'Quantity' }
 const englishTypes = { 'power-bank': 'Power bank', 'cordless-iron': 'Hair-styling device', liquid: 'Liquid / gel', lighter: 'Lighter / matches', electronics: 'Portable electronic device', 'general-items': 'General belongings' }
-export function useCatalogPhotos(keys: string[]) {
-  const [photos, setPhotos] = useState<string[]>([]), [error, setError] = useState('')
-  const signature = JSON.stringify(keys)
-  useEffect(() => {
-    let active = true; const urls: string[] = []
-    setPhotos([]); setError('')
-    void getCatalogPhotos(JSON.parse(signature)).then(values => {
-      if (!active) return
-      urls.push(...values.map(value => URL.createObjectURL(value.blob))); setPhotos([...urls])
-      if (values.length !== JSON.parse(signature).length) setError('일부 저장 사진을 찾을 수 없습니다.')
-    }).catch(() => { if (active) setError('저장 사진을 읽지 못했습니다.') })
-    return () => { active = false; urls.forEach(url => URL.revokeObjectURL(url)) }
-  }, [signature])
-  return { photos, error }
-}
 export default function StaffCard({ card, onClose, currentRuleVersion, rulesCurrent }: { card: CatalogCard; onClose: () => void; currentRuleVersion: string | null; rulesCurrent: boolean }) {
   const dialog = useRef<HTMLDialogElement>(null)
   const { photos, error } = useCatalogPhotos(card.photoKeys)
+  const [openedAt] = useState(() => Date.now())
   useEffect(() => { const element = dialog.current; element?.showModal(); return () => element?.close() }, [])
   const item = card.item, result = card.result, view = result.presentation
-  const expired = !rulesCurrent || !view?.current || !view.reviewBy || Date.now() >= Date.parse(view.reviewBy) || card.ruleVersion !== currentRuleVersion
+  const expired = !rulesCurrent || !view?.current || !view.reviewBy || openedAt >= Date.parse(view.reviewBy) || card.ruleVersion !== currentRuleVersion
   return <dialog ref={dialog} className="staff-dialog" aria-labelledby="staff-title" onCancel={event => { event.preventDefault(); onClose() }}>
     <div className="staff-toolbar"><button onClick={onClose}>닫기 / Close</button><button onClick={() => window.print()}>인쇄 / PDF 저장</button></div>
     <h2 id="staff-title">물품 참고 정보 <small>Item reference</small></h2>

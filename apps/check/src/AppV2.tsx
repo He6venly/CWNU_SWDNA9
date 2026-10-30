@@ -56,7 +56,7 @@ export default function AppV2() {
     setItems(current => [...current.filter(item => item.identification === 'manual'), ...response.items.map(item => ({ ...item, confirmed: false, userEdited: false }))])
     setAssessment(null); setSaved([]); task.setMessage(response.warnings.map(w => w.message).join(' '))
   }
-  async function saveItem(item: ItemInfo) {
+  async function saveItem(item: ItemInfo, savedAt: string) {
     if (!assessment || !item.confirmed || savingRef.current || saved.includes(item.id)) return
     const result = assessment.results.find(result => result.itemId === item.id), airline = airlines.find(airline => airline.id === assessment.airlineId)
     if (!result || !airline) return
@@ -71,7 +71,7 @@ export default function AppV2() {
       await saveCatalogCard({ id, photoKeys: Object.keys(blobs), item, result,
         airline,
         flightType: assessment.flightType, departureCountry: assessment.departureCountry, productSources: productSources[item.id] ?? [],
-        savedAt: new Date().toISOString(), evaluatedAt, ruleVersion: assessment.ruleVersion, meta: assessment.meta,
+        savedAt, evaluatedAt, ruleVersion: assessment.ruleVersion, meta: assessment.meta,
         assessmentContext: { inventoryComplete, evaluatedItemIds: items.map(entry => entry.id) },
       }, blobs)
       setSaved(current => [...current, item.id]); setCatalogRevision(value => value + 1); task.setMessage('개인 도감에 저장했습니다. 아래 도감에서 직원 제시 화면을 열 수 있습니다.')
@@ -141,7 +141,7 @@ export default function AppV2() {
         const body = { airlineId, flightType, departureCountry: DEPARTURE_COUNTRY, inventoryComplete, items, resultFormat: 'detailed' as const }
         void task.run('evaluate', body, signal => api.evaluate(body, signal), response => { setAssessment(response); setEvaluatedAt(new Date().toISOString()); setSaved([]) })
       }}>노선별 판정 요청 (대한항공 규정 / 시연 항공사 고정 응답)</button>
-      {results.map(result => { const item = items.find(item => item.id === result.itemId); return item && <ResultCard key={result.itemId} item={item} result={result} onSave={() => void saveItem(item)} saving={saving} saved={saved.includes(item.id)} /> })}
+      {results.map(result => { const item = items.find(item => item.id === result.itemId); return item && <ResultCard key={result.itemId} item={item} result={result} onSave={() => void saveItem(item, new Date().toISOString())} saving={saving} saved={saved.includes(item.id)} /> })}
     </section>
     <Catalog revision={catalogRevision} currentRuleVersion={ruleInfo?.ruleVersion ?? null} rulesCurrent={ruleInfo?.current ?? false} />
     <section><h2>5. 마지막 요청·응답</h2>{task.busy && <button onClick={() => { task.cancel(); task.setMessage('요청을 취소했습니다.') }}>요청 취소</button>}<p role="status">{task.message}</p>
