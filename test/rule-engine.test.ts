@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { deriveAction, evaluateKoreanAir, resolveEnergy } from '../netlify/functions/_lib/rules/evaluate.ts'
+import { deriveAction, evaluateAirline, evaluateKoreanAir, resolveEnergy } from '../netlify/functions/_lib/rules/evaluate.ts'
 import { koreanAirRules, KoreanAirRuleSetSchema } from '../netlify/functions/_lib/rules/korean-air.ts'
 import { ItemInfoSchema, RulesResponseSchema } from '../contract/v2/schemas.ts'
 import { FIELD_KEYS } from '../contract/v2/constants.ts'
@@ -10,8 +10,10 @@ import { createApiClient } from '../contract/v2/client.ts'
 import { createMockClient } from '../contract/v2/mock.ts'
 import { handleApi } from '../netlify/functions/_lib/api.ts'
 import { readFile } from 'node:fs/promises'
+import { supportedAirlines } from '../contract/v2/airlines.ts'
+import { airlineRuleMetadata } from '../netlify/functions/_lib/rules/airlines.ts'
 
-const when = new Date('2026-10-30T09:00:00Z')
+const when = new Date('2026-10-31T09:00:00Z')
 beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(when) })
 afterEach(() => vi.useRealTimers())
 const defaults: Record<ItemDetails['type'], Record<string, unknown>> = {
@@ -164,13 +166,41 @@ describe('규정 수명·공식 출처·실제 HTTP handler 계약', () => {
     try {
       const output = await api.evaluate(request([item()]))
       expect(output.meta).toMatchObject({ isDemoRules: false, isDemoRecognition: true })
-      expect(output.ruleVersion).toBe('KE-KR-2026-10-30-r1'); expect(output.results[0]!.isDemo).toBe(false)
+      expect(output.ruleVersion).toBe('KE-KR-2026-10-31-r2'); expect(output.results[0]!.isDemo).toBe(false)
       expect(network).not.toHaveBeenCalled()
     } finally { network.mockRestore() }
   })
+  it('국내 여객 항공사 전체와 한국 출발 해외 Top 5를 선택·판정', async () => {
+    const list = (await api.airlines()).airlines.filter((airline) => !airline.isDemo)
+    expect(list).toHaveLength(16)
+    expect(list.filter((airline) => airline.supportedFlightTypes.includes('domestic'))).toHaveLength(10)
+    const output = await api.evaluate({ ...request([item('general-items')], 'international'), airlineId: 'delta-air-lines', resultFormat: 'detailed' })
+    expect(output).toMatchObject({ airlineId: 'delta-air-lines', meta: { isDemoRules: false }, results: [{ cabin: { verdict: 'ALLOWED' } }] })
+    expect(output.results[0]!.presentation?.scopeNotice).toContain('델타항공')
+  })
+  it('항공사별 용량·휴대 제한을 독립 적용', () => {
+    const powerBank = item('power-bank', { wh: 120 })
+    const base = { ...request([powerBank], 'international'), resultFormat: 'detailed' as const }
+    expect(evaluateAirline({ ...base, airlineId: 'asiana-airlines' }, when).results[0]!.cabin.verdict).toBe('CONDITIONAL')
+    expect(evaluateAirline({ ...base, airlineId: 'delta-air-lines' }, when).results[0]!.cabin.verdict).toBe('PROHIBITED')
+    expect(evaluateAirline({ ...request([item('lighter')], 'international'), airlineId: 'air-china' }, when).results[0]!.cabin.verdict).toBe('PROHIBITED')
+  })
+  it('16개 항공사 모두 개별 버전·공식 출처로 판정', () => {
+    expect(supportedAirlines.map(airline => String(airline.id)).includes('trinity-airways')).toBe(false)
+    expect(supportedAirlines.map(airline => String(airline.name)).includes('트리니티항공')).toBe(false)
+    expect(supportedAirlines.find(airline => airline.id === 'tway-air')?.name).toBe('티웨이항공')
+    for (const airline of supportedAirlines) {
+      const metadata = airlineRuleMetadata(airline.id, when)
+      expect(metadata?.current).toBe(true)
+      expect(metadata?.ruleVersion).toMatch(/-KR-2026-10-31-r\d+$/)
+      expect(metadata?.sources.some(source => !source.url.includes('molit.go.kr') && !source.url.includes('airport.kr'))).toBe(true)
+      const flightType = airline.supportedFlightTypes[0]
+      expect(evaluateAirline({ ...request([item('general-items')], flightType), airlineId: airline.id }, when).ruleVersion).toBe(metadata?.ruleVersion)
+    }
+  })
   it('규정 출처 API·생성된 목업·쿼리 명세 연결', async () => {
     const info = await api.rules('korean-air')
-    expect(info.current).toBe(true); expect(info.scope.passengers).toBe(1); expect(info.sources).toHaveLength(3)
+    expect(info.current).toBe(true); expect(info.scope.passengers).toBe(1); expect(info.sources).toHaveLength(4)
     expect(info.supportedCategories).toHaveLength(6)
     const mock = await createMockClient({ delayMs: 0 }).rules('korean-air')
     expect(mock.meta.isDemoRules).toBe(true); expect(mock.current).toBe(false); expect(mock.ruleVersion).toBeNull()
@@ -181,7 +211,7 @@ describe('규정 수명·공식 출처·실제 HTTP handler 계약', () => {
   })
   it('검수기한 만료·미래 검수는 자동 판정 중단', async () => {
     expect(evaluateKoreanAir(request([item()]), new Date('2026-10-29T23:59:59Z')).results[0]!.cabin.verdict).toBe('NEEDS_INFO')
-    vi.setSystemTime(new Date('2026-11-29T00:00:00Z'))
+    vi.setSystemTime(new Date('2026-11-30T00:00:00Z'))
     const output = evaluateKoreanAir(request([item()]))
     expect(output.ruleVersion).toBeNull(); expect(output.results[0]!.checked.verdict).toBe('NEEDS_INFO')
     expect((await api.meta()).capabilities.evaluation).toBe('unavailable')

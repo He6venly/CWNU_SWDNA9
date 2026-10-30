@@ -15,7 +15,7 @@ function open() {
     r.onsuccess = () => resolve(r.result)
     r.onerror = () => reject(r.error)
     r.onblocked = () =>
-      reject(new Error('다른 도감 탭을 닫고 다시 시도해 주세요.'))
+      reject(new Error('다른 여행 기록 탭을 닫고 다시 시도해 주세요.'))
   })
 }
 async function transaction<T>(

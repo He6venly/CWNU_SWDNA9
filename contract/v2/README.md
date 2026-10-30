@@ -2,9 +2,11 @@
 
 최신 추가 구현: 사진 없는 manual 입력, evaluate의 선택 resultFormat=detailed, 구조화된 presentation 결과, 로컬 도감·직원 모드. 사용법은 docs/FRONTEND_RULES_HANDOFF.md 상단. 이번 확장의 테스트·빌드는 사용자 요청으로 보류.
 
-현재는 사진 인식·제품 조회 시연과 대한항공 규정 엔진 제공. 1.0.0의 /api/*·기존 2.0 응답 유지. details·inventoryComplete 선택 요청과 /rules 조회를 호환 확장. 최신 입력/표시 기준: docs/FRONTEND_RULES_HANDOFF.md, 근거·범위: docs/RULE_ENGINE.md.
+현재는 Gemini 사진 인식·Tavily 제품 조회와 16개 항공사 규정 엔진 제공. 1.0.0의 /api/*·기존 2.0 응답 유지. details·inventoryComplete 선택 요청과 /rules 조회를 호환 확장. 최신 입력/표시 기준: docs/FRONTEND_RULES_HANDOFF.md, 근거·범위: docs/RULE_ENGINE.md.
 
-Gemini 연결 코드는 준비했으며 기본 호출 잠금. 활성화 전 최신 계약·프론트 인계 반영 필요. 실제 lookup만 선택 searchSuggestions HTML을 포함할 수 있음. candidate 목업과 apply-candidate.ts로 사용자 재확인 흐름 개발 가능.
+Gemini 사진 인식과 Tavily 제품 조회 연결 코드는 준비했으며 기본 호출 잠금. Tavily 조회는 정확한 모델 출처의 명시 사양만 후보로 제공하고 사용자 재확인을 요구함. candidate 목업과 apply-candidate.ts로 같은 흐름을 개발할 수 있음.
+
+비용 절감 흐름은 라벨 판독 → 사용자 확인 → 공칭전압 기반 로컬 Wh 계산 → 규정 판정이다. 제품 검색은 모델명이 확인됐지만 사양이 부족할 때만 선택 실행한다. 검색 실패·한도 초과는 빈 후보 정상 응답으로 처리해 수동 입력과 판정을 막지 않는다. 동일 사진 인식 성공 결과는 실행 중 30분간 재사용하며 자동 재시도하지 않는다.
 
 ## 시작
 
@@ -38,7 +40,7 @@ Vite·TypeScript 소스로 사용하는 방식. Zod 4.x 필요, allowImportingTs
 - 경로별 health·meta·airlines·categories·rules·recognize·lookup·evaluate 제공. 2.0에는 resolve-product 별칭 없음
 - 모든 성공 응답 meta: contractVersion=2.0.0, isDemoRecognition, isDemoRules, isDemoLookup
 - 오류는 기존 {error:{code,message}} 유지. OPTIONS 정상은 본문 없는 204
-- /api/v2/meta.capabilities로 demo/gemini/stub/rules/unavailable 구분. 실제 연결·잠금·시연 여부를 표시
+- /api/v2/meta.capabilities로 demo/gemini/tavily/stub/rules/unavailable 구분. 실제 연결·잠금·시연 여부를 표시
 - 계약과 표준 JSON Schema로 표현하기 어려운 출처·ID·모드 제약은 schemas.ts의 의미 검증 함수가 함께 담당. OpenAPI 설명에도 해당 조건 명시
 
 ## 사진 등록 요청
@@ -81,17 +83,17 @@ await api.recognize({
 
 ## 항공사·노선·판정
 
-- 대한항공(korean-air)은 규정 검수 기한 안이면 enabled=true. 직접 운항편·여행자 1명만 대상. 기한 경과 시 비활성·evaluate 409
+- 지원 16개 항공사는 규정 검수 기한 안이면 enabled=true. 선택 항공사 직접 운항편·여행자 1명만 대상. 기한 경과 시 비활성·evaluate 409
 - 지원 범위는 한국 국내선·한국 출발 국제선. flightType은 domestic / international, departureCountry는 KR 고정이며 categories·evaluate에 필수. 해외 출발 요청은 현재 400. categories 클라이언트 메서드는 KR을 자동 전달
 - 인식에는 항공사·노선을 보내지 않아 변경 시 재인식 불필요. 제품 자체 인식과 적용 규정 범위를 분리
 - categories의 requiredFields는 cabin/checked 각각 유지. general-items만 allowed_with_confirm 정책 예시이며 나머지는 never_definitive
-- 시연 항공사·목업 evaluate는 NEEDS_INFO·ruleVersion=null. 실제 API 대한항공은 사용자 확인한 details와 필드로 순수 알고리즘 판정. details 누락은 NEEDS_INFO, 분류 불일치는 400
+- 목업 evaluate는 NEEDS_INFO·ruleVersion=null. 실제 API 16개 항공사는 사용자 확인한 details와 필드로 항공사별 순수 알고리즘 판정. details 누락은 NEEDS_INFO, 분류 불일치는 400
 - ItemInfo.details는 item-details.ts의 분류별 구분 유니언. 모르면 null, details.confirmed는 사용자 확인. 기존 사진 추정 결과에 안전 상태를 임의 추가하지 않음
 - EvaluateRequest.inventoryComplete는 여행자 1명의 전체 물품 목록인지 표시. 생략/false는 부분 목록. 개인 합산 한도는 별도 확인
 - derivedFields.wh의 value는 판정용 반올림 전 값, displayValue는 표시용. basis·source를 함께 제공. 확인한 공칭 전압만 사용, Wh/계산값 충돌은 NEEDS_INFO
 - 수량 초과는 현재 구성 PROHIBITED와 CHECK_CONDITIONS 반환. 제품 자체 금지와 구분해 수량 조정·재판정 안내. 프론트가 action을 다시 계산하지 않음
 - 판정 응답의 airlineId·flightType·itemId 일치를 클라이언트도 검사. 정보·노선 변경 시 이전 결과와 진행 중 응답 폐기
-- /rules?airlineId=korean-air에서 공식 출처·검수 기한·적용 범위 조회. 주류 24/70도 경계와 미지원 유형은 자동 확정하지 않음. 기준표·예외는 docs/RULE_ENGINE.md 참조
+- /rules?airlineId=...에서 항공사별 공식 출처·검수 기한·적용 범위 조회. 주류 24/70도 경계와 미지원 유형은 자동 확정하지 않음. 기준표·예외는 docs/RULE_ENGINE.md 참조
 
 ## 클라이언트·목업
 

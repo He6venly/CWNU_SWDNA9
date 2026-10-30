@@ -1,6 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react'
 import PhotoPicker from './PhotoPicker'
 import type { Photo } from './PhotoPicker'
+import UiIcon from '../../../check/src/UiIcon.tsx'
 type Props = {
   photos: Photo[]
   captureMode: 'overview' | 'detail'
@@ -13,7 +14,6 @@ type Props = {
   setPreparing: (value: boolean) => void
   message: (text: string) => void
   invalidate: () => void
-  clearRecognized: () => void
   analyze: () => void
 }
 export default function PhotoSection({
@@ -28,14 +28,12 @@ export default function PhotoSection({
   setPreparing,
   message,
   invalidate,
-  clearRecognized,
   analyze,
 }: Props) {
   return (
-    <section>
-      <h2>2. 기존 사진 등록</h2>
-      <p>기존 사진을 선택해 주세요. 사진 선택만으로 분석하지 않습니다.</p>
-      <label>
+    <section id="photo" className="card-section photo-section">
+      <div className="section-heading"><UiIcon name="photo" /><div><p className="eyebrow">PHOTO SCAN</p><h2>기존 사진 등록</h2><p>보관함의 사진을 선택해 주세요. 선택만으로 AI가 실행되지 않습니다.</p></div></div>
+      <div className="photo-controls"><label className="form-field">
         사진 등록 방식
         <select
           value={captureMode}
@@ -49,7 +47,7 @@ export default function PhotoSection({
         </select>
       </label>
       {captureMode === 'detail' && (
-        <label>
+        <label className="form-field">
           개별 식별 방식
           <select
             value={mode}
@@ -62,7 +60,11 @@ export default function PhotoSection({
             <option value="estimate">물품 종류 추정</option>
           </select>
         </label>
-      )}
+      )}</div>
+      <div className="upload-zone">
+        <span className="upload-icon" aria-hidden="true">↥</span>
+        <strong>{captureMode === 'overview' ? '전체 짐 사진을 등록하세요' : '물품 또는 라벨 사진을 등록하세요'}</strong>
+        <small>JPEG · PNG · WebP / 전송 전 자동 압축·품질 확인</small>
       <PhotoPicker
         key={`${captureMode}-${mode}`}
         maxImages={captureMode === 'overview' ? 1 : 3}
@@ -78,8 +80,9 @@ export default function PhotoSection({
         onWorking={setPreparing}
         onMessage={message}
       />
-      {photos.map((photo) => (
-        <div key={photo.id}>
+      </div>
+      <div className="photo-grid">{photos.map((photo) => (
+        <div className="photo-preview" key={photo.id}>
           <img
             className="photo"
             alt={`선택한 사진 ${photo.id}`}
@@ -92,7 +95,6 @@ export default function PhotoSection({
                 value={photo.kind}
                 onChange={(e) => {
                   invalidate()
-                  clearRecognized()
                   setPhotos((current) =>
                     current.map((p) =>
                       p.id === photo.id
@@ -107,20 +109,19 @@ export default function PhotoSection({
               </select>
             </label>
           )}
-          <button
+          <button className="danger-action"
             disabled={busy}
             onClick={() => {
               invalidate()
-              clearRecognized()
               setPhotos((current) => current.filter((p) => p.id !== photo.id))
             }}
           >
             사진 삭제
           </button>
         </div>
-      ))}
-      <button disabled={busy || !photos.length} onClick={analyze}>
-        등록 사진 AI 분석
+      ))}</div>
+      <button className="primary-action analyze-button" disabled={busy || !photos.length} onClick={analyze}>
+        <span aria-hidden="true">✦</span> 등록 사진 AI 분석
       </button>
     </section>
   )

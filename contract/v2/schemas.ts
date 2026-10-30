@@ -56,7 +56,7 @@ export const CandidateSchema = z.strictObject({
   sources: z.array(v1.SourceSchema).min(1).max(5), confidence: z.number().min(0).max(1), requiresConfirmation: z.literal(true),
 })
 export const LookupResponseSchema = z.strictObject({ itemId: v1.IdSchema, candidates: z.array(CandidateSchema).max(5), message: shortText(400), meta: MetaSchema,
-  searchSuggestions: z.string().max(200_000).optional().describe('Google 검색 제안 HTML. 직접 DOM 삽입 금지. 스크립트 없는 sandbox iframe에서 표시.'),
+  searchSuggestions: z.string().max(200_000).optional().describe('이전 제공자 호환용 검색 제안 HTML. 실제 Tavily 조회는 반환하지 않음. 직접 DOM 삽입 금지.'),
 })
 export const EvaluateRequestSchema = z.strictObject({
   airlineId: v1.IdSchema, flightType: FlightTypeSchema, departureCountry: z.literal(DEPARTURE_COUNTRY), items: z.array(ItemInfoSchema).min(1).max(LIMITS.maxItems),
@@ -86,15 +86,15 @@ export const CategorySchema = z.strictObject({
 export const CategoriesResponseSchema = CategoriesQuerySchema.extend({ categories: z.array(CategorySchema).max(CATEGORY_IDS.length), meta: MetaSchema })
 export const RulesQuerySchema = z.strictObject({ airlineId: v1.IdSchema })
 export const RulesResponseSchema = z.strictObject({
-  airlineId: z.literal('korean-air'), ruleVersion: shortText().nullable(), current: z.boolean(),
+  airlineId: v1.IdSchema, ruleVersion: shortText().nullable(), current: z.boolean(),
   reviewedAt: z.iso.datetime(), reviewBy: z.iso.datetime(), sources: z.array(v1.SourceSchema).min(2).max(5),
   supportedCategories: z.array(z.enum(CATEGORY_IDS)).length(CATEGORY_IDS.length),
-  scope: z.strictObject({ departureCountry: z.literal(DEPARTURE_COUNTRY), flightTypes: z.array(FlightTypeSchema), passengers: z.literal(1), operatingCarrier: z.literal('korean-air'), notice: shortText(600) }),
+  scope: z.strictObject({ departureCountry: z.literal(DEPARTURE_COUNTRY), flightTypes: z.array(FlightTypeSchema), passengers: z.literal(1), operatingCarrier: v1.IdSchema, notice: shortText(600) }),
   meta: MetaSchema,
 })
 export const MetaResponseSchema = z.strictObject({
   meta: MetaSchema,
-  capabilities: z.strictObject({ recognition: z.enum(['demo', 'gemini', 'unavailable']), productLookup: z.enum(['demo', 'gemini', 'unavailable']), evaluation: z.enum(['stub', 'rules', 'unavailable']) }),
+  capabilities: z.strictObject({ recognition: z.enum(['demo', 'gemini', 'unavailable']), productLookup: z.enum(['demo', 'gemini', 'tavily', 'unavailable']), evaluation: z.enum(['stub', 'rules', 'unavailable']) }),
   supportedCaptureModes: z.array(CaptureModeSchema), supportedFlightTypes: z.array(FlightTypeSchema),
   supportedDepartureCountries: z.array(z.string().regex(/^[A-Z]{2}$/)).min(1),
   plannedAirlineId: z.literal('korean-air'),

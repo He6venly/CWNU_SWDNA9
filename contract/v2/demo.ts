@@ -1,4 +1,5 @@
 import fixtureItems from './fixtures/items.json' with { type: 'json' }
+import { supportedAirlines } from './airlines.ts'
 import { demoAirlines as legacyAirlines } from '../data.ts'
 import { CONTRACT_VERSION, FIELD_KEYS, LIMITS } from './constants.ts'
 import { labels } from './labels.ts'
@@ -8,7 +9,7 @@ import type { EvaluateRequest, EvaluateResponse, LookupRequest, LookupResponse, 
 export type RecognitionScenario = 'standard' | 'empty' | 'multiple' | 'no-label' | 'blur' | 'risk-estimate' | 'low-confidence'
 export const demoMeta = { contractVersion: CONTRACT_VERSION, isDemoRecognition: true, isDemoRules: true, isDemoLookup: true } as const
 export const demoAirlines = s.AirlinesResponseSchema.parse({
-  airlines: [legacyAirlines[0], { id: 'korean-air', name: '대한항공 (실제 규정 연동 준비 중)', enabled: false, isDemo: false }].map(a => ({ ...a, supportedFlightTypes: ['domestic', 'international'] })),
+  airlines: [...legacyAirlines.map((airline) => ({ ...airline, supportedFlightTypes: ['domestic', 'international'] as const })), ...supportedAirlines],
   meta: demoMeta,
 }).airlines
 export const demoCategories = s.CategoriesResponseSchema.shape.categories.parse([

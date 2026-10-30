@@ -2,10 +2,12 @@ import { assertEvaluationItems, EvaluateRequestSchema, EvaluateResponseSchema } 
 import type { EvaluateRequest, FieldKey, ItemInfo, ItemResult } from '../../../../contract/v2/types.ts'
 import { labels } from '../../../../contract/v2/labels.ts'
 import { CONTRACT_VERSION } from '../../../../contract/v2/constants.ts'
-import { koreanAirRules as rules, rulesCurrent } from './korean-air.ts'
+import { koreanAirRules as rules } from './korean-air.ts'
 import { buildPresentation } from './presentation.ts'
 import { condition } from '../../../../contract/v2/presentation.ts'
 import type { ConditionCode } from '../../../../contract/v2/presentation.ts'
+import { airlineEntry, airlineRuleMetadata, airlineRuleProfile } from './airlines.ts'
+import { airlineRulesCurrent, type AirlineRuleProfile } from './airline-profiles.ts'
 
 type Verdict = ItemResult['cabin']['verdict']
 type Detail = ItemResult['cabin'] & { conditionCodes?: ConditionCode[] }
@@ -62,19 +64,19 @@ function count(items: ItemInfo[], predicate: (item: ItemInfo) => boolean) {
 function volume(items: ItemInfo[], predicate: (item: ItemInfo) => boolean) {
   return items.filter(item => ready(item) && predicate(item) && trusted(item, 'count') && trusted(item, 'ml')).reduce((sum, item) => sum + item.fields.count! * item.fields.ml!, 0)
 }
-function liquid(input: EvaluateRequest, item: ItemInfo): ItemResult {
+function liquid(input: EvaluateRequest, item: ItemInfo, rule: AirlineRuleProfile): ItemResult {
   const info = item.details
   if (info?.type !== 'liquid') return both(item, need('액체 종류를 확인해 주세요.'))
   if (info.liquidType === 'hazardous') return both(item, prohibited('발화성·인화성·부식성 등 위험 액체는 휴대·위탁하지 마세요. 예외 가능 품목은 별도 확인이 필요합니다.'))
   if (!info.liquidType || info.liquidType === 'other') return both(item, need('물·비알코올 음료, 개인용 화장품, 주류, 에탄올 손소독제 중 종류를 확인해 주세요. 의약품·면세품·기타 화학제품은 별도 확인 대상입니다.'))
-  if (info.liquidType === 'alcohol' && info.alcoholPercent !== null && info.alcoholPercent > rules.liquid.alcoholHighPercent) return both(item, prohibited('70도를 초과하는 주류는 휴대·위탁할 수 없습니다.'))
+  if (info.liquidType === 'alcohol' && info.alcoholPercent !== null && info.alcoholPercent > rule.liquid.alcoholHighPercent) return both(item, prohibited('70도를 초과하는 주류는 휴대·위탁할 수 없습니다.'))
   const missing: FieldKey[] = (['ml', 'count'] as const).filter(field => !trusted(item, field))
   if (missing.length) {
-    const oversized = trusted(item, 'ml') && (input.flightType === 'international' && item.fields.ml! > rules.liquid.internationalContainerMl || info.liquidType === 'ethanol-sanitizer' && item.fields.ml! > rules.liquid.sanitizerContainerMl)
-    const oversizedToiletry = trusted(item, 'ml') && item.fields.ml! > rules.liquid.toiletryContainerMl && info.liquidType === 'toiletry'
+    const oversized = trusted(item, 'ml') && (input.flightType === 'international' && item.fields.ml! > rule.liquid.internationalContainerMl || info.liquidType === 'ethanol-sanitizer' && item.fields.ml! > rule.liquid.sanitizerContainerMl)
+    const oversizedToiletry = trusted(item, 'ml') && item.fields.ml! > rule.liquid.toiletryContainerMl && info.liquidType === 'toiletry'
     return finish(item, oversized || oversizedToiletry && input.flightType === 'domestic' ? prohibited('용기 표시 용량이 기내 휴대 제한을 초과합니다.') : need('내용물 잔량이 아닌 용기 표시 용량(mL)과 수량을 확인해 주세요.'), oversizedToiletry ? prohibited('개인용 화장품·향수·헤어스프레이 용기는 500mL 이하여야 합니다.') : need('용기 용량(mL)과 수량을 확인해 주세요.'), missing)
   }
-  const ml = item.fields.ml!, type = info.liquidType, limits = rules.liquid
+  const ml = item.fields.ml!, type = info.liquidType, limits = rule.liquid
   let cabin = input.flightType === 'international'
     ? ml > limits.internationalContainerMl ? prohibited('일반 액체의 국제선 기내 휴대 용기는 100mL 이하여야 합니다. 면세품·의약품 예외는 별도 확인 대상입니다.') : conditional('개별 용기 100mL 이하. 여행자 1명당 1L 투명 지퍼백 1개에 모두 넣어 밀봉해야 합니다.', ['LIQUID_BAG'])
     : detail('ALLOWED', '해당 한국 국내선 액체에 국제선 100mL 제한을 일괄 적용하지 않습니다. 품목별 용량·포장 조건과 수하물 규격은 별도 확인해 주세요.')
@@ -113,11 +115,11 @@ function liquid(input: EvaluateRequest, item: ItemInfo): ItemResult {
   }
   return finish(item, cabin, checked, [], {}, quantityIssue)
 }
-function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
+function evaluateItem(input: EvaluateRequest, item: ItemInfo, rule: AirlineRuleProfile): ItemResult {
   if (!ready(item)) return both(item, need('물품 종류·제품 정보와 추가 안전 정보를 사용자가 확인해야 합니다. 사진 추정·미확인 조회값만으로 확정하지 않습니다.'))
   const info = item.details!
   const category = item.categoryId
-  if (category === 'liquid') return liquid(input, item)
+  if (category === 'liquid') return liquid(input, item, rule)
   if (category === 'general-items' && info.type === 'general-items') {
     return info.itemType === 'clothing-book' && info.hasRestrictedParts === false
       ? both(item, detail('ALLOWED', '제한 부품이 없는 일반 의류·책이라는 사용자 확인 기준입니다. 수하물 크기·무게와 목적지 규정은 별도 확인해 주세요.'))
@@ -128,8 +130,9 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     if (['torch', 'plasma', 'fuel'].includes(info.lighterType ?? '')) return both(item, prohibited('토치·플라즈마 라이터와 라이터 연료는 휴대·위탁 불가입니다.'))
     if (!['standard', 'safety-matches'].includes(info.lighterType ?? '')) return finish(item, need('일반 소형 라이터인지 안전성냥인지 확인해 주세요.'), need('종류가 확인되지 않아 위탁 결과를 확정하지 않습니다.'))
     if (!trusted(item, 'count')) return finish(item, need('여행자 1명 기준 수량을 확인해 주세요.'), checked, ['count'])
-    const quantityIssue = count(input.items, candidate => candidate.details?.type === 'lighter' && ['standard', 'safety-matches'].includes(candidate.details.lighterType ?? '')) > rules.lighterCount
-    return finish(item, quantityIssue ? prohibited('현재 구성 불가. 일반 라이터·안전성냥 합계를 1명당 1개로 줄이고 재판정해 주세요.') : conditional('1명당 1개 이하. 일반 라이터는 가방에 넣지 말고 몸에 소지해야 합니다. 다른 라이터·성냥과 합산 여부를 확인해 주세요.', ['LIGHTER_LIMIT', ...(info.lighterType === 'standard' ? ['LIGHTER_ON_PERSON' as const] : [])]), checked, [], {}, quantityIssue)
+    const quantityIssue = count(input.items, candidate => candidate.details?.type === 'lighter' && ['standard', 'safety-matches'].includes(candidate.details.lighterType ?? '')) > rule.lighterCount
+    if (rule.lighterCount === 0) return finish(item, prohibited('선택한 항공사는 라이터·성냥 휴대를 허용하지 않습니다.'), checked)
+    return finish(item, quantityIssue ? prohibited(`현재 구성 불가. 일반 라이터·안전성냥 합계를 1명당 ${rule.lighterCount}개로 줄이고 재판정해 주세요.`) : conditional(`1명당 ${rule.lighterCount}개 이하. 일반 라이터는 가방에 넣지 말고 몸에 소지해야 합니다. 다른 라이터·성냥과 합산 여부를 확인해 주세요.`, ['LIGHTER_LIMIT', ...(info.lighterType === 'standard' ? ['LIGHTER_ON_PERSON' as const] : [])]), checked, [], {}, quantityIssue)
   }
   if (category === 'cordless-iron' && info.type === 'cordless-iron') {
     if (info.powerSource === 'mains' && (info.damaged === true || info.recalled === true)) return both(item, need('유선 전용과 배터리 손상·미조치 리콜 정보가 함께 입력되었습니다. 제품 정보를 다시 확인해 주세요.'))
@@ -143,7 +146,7 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     if (danger) return finish(item, danger, checked)
     const energy = resolveEnergy(item)
     if (energy.value === undefined) return finish(item, need(energy.issue!), checked, ['wh'])
-    if (energy.value > rules.battery.maximumWh) return finish(item, prohibited('160Wh 초과 배터리 제품은 운송 불가입니다.'), checked, [], energy.derived)
+    if (energy.value > rule.battery.maximumWh) return finish(item, prohibited(`${rule.battery.maximumWh}Wh 초과 배터리 제품은 운송 불가입니다.`), checked, [], energy.derived)
     return finish(item, conditional('배터리 분리형 또는 물리적 퓨즈 차단 제품은 항공사 승인 후 기내 휴대만 가능합니다. 분리·차단 방법과 단락 방지 조치를 확인해 주세요.', ['AIRLINE_APPROVAL', info.isolation === 'removable' ? 'REMOVE_BATTERY' : 'PHYSICAL_ISOLATION', 'INSULATE_TERMINALS']), checked, [], energy.derived)
   }
   if (category === 'power-bank' && info.type === 'power-bank' || category === 'electronics' && info.type === 'electronics') {
@@ -156,43 +159,63 @@ function evaluateItem(input: EvaluateRequest, item: ItemInfo): ItemResult {
     const danger = safety(item)
     if (danger) return danger.verdict === 'PROHIBITED' ? both(item, danger) : finish(item, danger, powerBank ? checked : danger)
     const energy = resolveEnergy(item)
-    if (energy.value !== undefined && energy.value > rules.battery.maximumWh) return finish(item, prohibited('160Wh 초과 배터리는 운송 불가입니다.'), prohibited('160Wh 초과 배터리는 위탁할 수 없습니다.'), [], energy.derived)
+    const maximumWh = powerBank ? rule.battery.powerBankMaximumWh : rule.battery.maximumWh
+    if (energy.value !== undefined && energy.value > maximumWh) return finish(item, prohibited(`${maximumWh}Wh 초과 ${powerBank ? '보조배터리' : '배터리'}는 운송 불가입니다.`), prohibited(`${maximumWh}Wh 초과 ${powerBank ? '보조배터리' : '배터리'}는 위탁할 수 없습니다.`), [], energy.derived)
     const missing: FieldKey[] = [...(energy.value === undefined ? ['wh' as const] : []), ...(!trusted(item, 'count') ? ['count' as const] : [])]
     if (missing.length) return finish(item, need(energy.issue ?? '수량을 확인해 주세요.'), powerBank ? checked : need(energy.issue ?? '수량을 확인해 주세요.'), missing, energy.derived)
     const total = count(input.items, candidate => candidate.categoryId === category && (powerBank || candidate.details?.type === 'electronics' && candidate.details.batteryType === 'lithium-ion'))
-    const quantityIssue = powerBank && total > rules.battery.powerBankCount
-    const aboveApproval = energy.value! > rules.battery.approvalAboveWh
+    const quantityIssue = powerBank && total > rule.battery.powerBankCount
+    const aboveApproval = energy.value! > rule.battery.approvalAboveWh
     let reason = powerBank
-      ? '보조배터리 합계 1명당 2개 이하. 단자 절연·개별 보호, 직접 소지 또는 앞 좌석 주머니 보관. 선반 보관과 기내 사용·충전 금지.'
-      : '휴대 전자기기는 1명당 15개 이하. 손상·우발 작동을 방지하고 항공사 지침을 확인해 주세요.'
-    if (aboveApproval || !powerBank && total > rules.battery.electronicDeviceCount) reason += ' 항공사 사전 승인이 필요합니다.'
+      ? `보조배터리 합계 1명당 ${rule.battery.powerBankCount}개 이하. 단자 절연·개별 보호, 직접 소지 또는 앞 좌석 주머니 보관. 선반 보관과 기내 사용·충전 금지.`
+      : `휴대 전자기기는 1명당 ${rule.battery.electronicDeviceCount}개 이하. 손상·우발 작동을 방지하고 항공사 지침을 확인해 주세요.`
+    if (aboveApproval || !powerBank && total > rule.battery.electronicDeviceCount) reason += ' 항공사 사전 승인이 필요합니다.'
     if (aboveApproval && powerBank) reason += ' 100Wh 초과 교체용 배터리를 함께 소지하면 합산 2개 한도도 확인해 주세요.'
     if (!input.inventoryComplete) reason += ' 부분 목록이므로 나머지 짐과 개인 합산 한도를 확인해 주세요.'
     const codes: ConditionCode[] = powerBank ? ['POWER_BANK_LIMIT', 'INSULATE_TERMINALS', 'KEEP_WITH_YOU', 'NO_OVERHEAD', 'NO_INFLIGHT_USE'] : ['DEVICE_LIMIT', 'PROTECT_DEVICE']
-    if (aboveApproval || !powerBank && total > rules.battery.electronicDeviceCount) codes.push('AIRLINE_APPROVAL')
+    if (aboveApproval || !powerBank && total > rule.battery.electronicDeviceCount) codes.push('AIRLINE_APPROVAL')
     if (aboveApproval && powerBank) codes.push('HIGH_CAPACITY_SPARES')
     if (!input.inventoryComplete) codes.push('CHECK_OTHER_ITEMS')
-    const cabin = quantityIssue ? prohibited('현재 구성 불가. 보조배터리 목록 합계가 1명당 2개를 초과합니다. 선택 수량을 줄인 후 재판정해 주세요.') : conditional(reason, codes)
-    const finalChecked = !powerBank && (aboveApproval || total > rules.battery.electronicDeviceCount) ? conditional(checked.reason + ' 100Wh 초과 또는 총 15개 초과 기기는 항공사 승인이 필요합니다.', [...(checked.conditionCodes ?? []), 'AIRLINE_APPROVAL']) : checked
+    const cabin = quantityIssue ? prohibited(`현재 구성 불가. 보조배터리 목록 합계가 1명당 ${rule.battery.powerBankCount}개를 초과합니다. 선택 수량을 줄인 후 재판정해 주세요.`) : conditional(reason, codes)
+    const finalChecked = !powerBank && (aboveApproval || total > rule.battery.electronicDeviceCount) ? conditional(checked.reason + ` ${rule.battery.approvalAboveWh}Wh 초과 또는 총 ${rule.battery.electronicDeviceCount}개 초과 기기는 항공사 승인이 필요합니다.`, [...(checked.conditionCodes ?? []), 'AIRLINE_APPROVAL']) : checked
     return finish(item, cabin, finalChecked, [], energy.derived, quantityIssue)
   }
   return both(item, need('지원 분류와 추가 제품 정보를 확인해 주세요.'))
 }
-export function evaluateKoreanAir(value: EvaluateRequest, now = new Date()) {
+function evaluateProfile(value: EvaluateRequest, now = new Date()) {
   const input = EvaluateRequestSchema.parse(value)
   assertEvaluationItems(input.items)
-  if (input.airlineId !== rules.airlineId) throw new Error('unsupported airline')
-  const current = rulesCurrent(now)
+  const profile = airlineRuleProfile(input.airlineId)
+  const airline = airlineEntry(input.airlineId)
+  const metadata = airlineRuleMetadata(input.airlineId, now)
+  if (!profile || !airline || !metadata) throw new Error('unsupported airline')
+  const current = airlineRulesCurrent(now)
   return EvaluateResponseSchema.parse({
     airlineId: input.airlineId, flightType: input.flightType, departureCountry: input.departureCountry,
-    ruleVersion: current ? rules.version : null,
+    ruleVersion: current ? profile.version : null,
     results: input.items.map(item => {
-      const result = current ? evaluateItem(input, item) : both(item, need('규정 검수 유효기간 밖입니다. 공식 규정을 다시 확인하기 전에는 자동 판정하지 않습니다.'))
+      const result = current ? evaluateItem(input, item, profile) : both(item, need('규정 검수 유효기간 밖입니다. 공식 규정을 다시 확인하기 전에는 자동 판정하지 않습니다.'))
+      result.cabin.reason = result.cabin.reason.replaceAll('대한항공', airline.name)
+      result.checked.reason = result.checked.reason.replaceAll('대한항공', airline.name)
+      result.staffSummary = result.staffSummary.replaceAll('대한항공', airline.name).replace(rules.version, current ? profile.version : '재검수 필요')
       if (input.resultFormat === 'detailed' && result.presentation) {
-        result.presentation.current = current; result.presentation.ruleVersion = current ? rules.version : null
+        result.presentation.current = current
+        result.presentation.ruleVersion = current ? profile.version : null
+        result.presentation.reviewedAt = metadata.reviewedAt
+        result.presentation.reviewBy = metadata.reviewBy
+        result.presentation.sources = metadata.sources
+        result.presentation.scopeNotice = metadata.scope.notice
+        result.presentation.staffSummaryEn = `Cabin: ${result.cabin.verdict}. Checked baggage: ${result.checked.verdict}. Evaluated with ${airline.name} rules for a direct operating flight departing Korea.`
       } else delete result.presentation
       return result
     }),
     meta: { contractVersion: CONTRACT_VERSION, isDemoRules: false, isDemoRecognition: true, isDemoLookup: true },
   })
 }
+
+export function evaluateKoreanAir(value: EvaluateRequest, now = new Date()) {
+  if (value.airlineId !== 'korean-air') throw new Error('unsupported airline')
+  return evaluateProfile(value, now)
+}
+
+export function evaluateAirline(value: EvaluateRequest, now = new Date()) { return evaluateProfile(value, now) }

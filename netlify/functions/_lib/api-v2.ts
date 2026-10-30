@@ -4,22 +4,25 @@ import { demoAirlines, demoCategories, demoMeta, demoMetadata, evaluateStub, loo
 import { corsHeaders, preflight } from './cors.ts'
 import { checkImage, parse, readJson } from './input.ts'
 import { HttpError, invalidRequest, unavailable } from './errors.ts'
-import { evaluateKoreanAir } from './rules/evaluate.ts'
-import { ruleMetadata, rulesCurrent } from './rules/korean-air.ts'
+import { evaluateAirline } from './rules/evaluate.ts'
+import { airlineRulesCurrent } from './rules/airline-profiles.ts'
+import { airlineRuleMetadata, supportedAirlineList } from './rules/airlines.ts'
 import { createGeminiV2, geminiReady } from './providers/gemini-v2.ts'
 import type { GeminiEnvironment } from './providers/gemini-v2.ts'
+import { tavilyReady, type TavilyEnvironment } from './providers/tavily.ts'
 
 function airlines() {
-  return demoAirlines.map(airline => airline.id === 'korean-air' ? { ...airline, name: '대한항공 (직접 운항편)', enabled: rulesCurrent() } : airline)
+  return [...demoAirlines.filter((airline) => airline.isDemo), ...supportedAirlineList()]
 }
 
 function semantics(check: () => void) { try { check() } catch { throw invalidRequest() } }
-function checkAirline(id: string) {
+function checkAirline(id: string, flightType?: 'domestic' | 'international') {
   const entry = airlines().find(a => a.id === id)
   if (!entry) throw new HttpError(404, 'UNKNOWN_AIRLINE', '항공사 정보를 찾을 수 없습니다.')
   if (!entry.enabled) throw new HttpError(409, 'AIRLINE_NOT_ENABLED', '해당 항공사의 공식 규정 재검수가 필요합니다.')
+  if (flightType && !entry.supportedFlightTypes.some((type) => type === flightType)) throw new HttpError(409, 'AIRLINE_NOT_ENABLED', '선택한 항공사는 해당 노선을 지원하지 않습니다.')
 }
-export async function handleApiV2(request: Request, environment: GeminiEnvironment & { ALLOWED_ORIGINS?: string; USE_DEMO_RECOGNITION?: string }) {
+export async function handleApiV2(request: Request, environment: GeminiEnvironment & TavilyEnvironment & { ALLOWED_ORIGINS?: string; USE_DEMO_RECOGNITION?: string }) {
   let headers = new Headers({ 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Vary': 'Origin', 'X-Content-Type-Options': 'nosniff' })
   try {
     headers = corsHeaders(request, environment.ALLOWED_ORIGINS)
@@ -35,24 +38,25 @@ export async function handleApiV2(request: Request, environment: GeminiEnvironme
     let body: unknown
     switch (operation) {
       case 'health': body = s.HealthResponseSchema.parse({ ok: true, time: new Date().toISOString(), meta: rulesMeta }); break
-      case 'meta': body = s.MetaResponseSchema.parse({ ...demoMetadata, meta: rulesMeta, capabilities: { recognition: demoEnabled ? 'demo' : geminiReady(environment) ? 'gemini' : 'unavailable', productLookup: demoEnabled ? 'demo' : geminiReady(environment, true) ? 'gemini' : 'unavailable', evaluation: rulesCurrent() ? 'rules' : 'unavailable' } }); break
+      case 'meta': body = s.MetaResponseSchema.parse({ ...demoMetadata, meta: rulesMeta, capabilities: { recognition: demoEnabled ? 'demo' : geminiReady(environment) ? 'gemini' : 'unavailable', productLookup: demoEnabled ? 'demo' : tavilyReady(environment) ? 'tavily' : 'unavailable', evaluation: airlineRulesCurrent() ? 'rules' : 'unavailable' } }); break
       case 'airlines': body = s.AirlinesResponseSchema.parse({ airlines: airlines(), meta: rulesMeta }); break
       case 'rules': {
         if (url.searchParams.getAll('airlineId').length !== 1) throw invalidRequest()
         const query = parse(s.RulesQuerySchema, Object.fromEntries(url.searchParams))
-        if (query.airlineId !== 'korean-air') throw new HttpError(404, 'NOT_FOUND', '실제 규정 자료가 없습니다.')
-        body = { ...ruleMetadata(), meta: rulesMeta }
+        const metadata = airlineRuleMetadata(query.airlineId)
+        if (!metadata) throw new HttpError(404, 'NOT_FOUND', '지원하지 않는 항공사입니다.')
+        body = { ...metadata, meta: rulesMeta }
         break
       }
       case 'categories': {
         if (['airlineId', 'flightType', 'departureCountry'].some(key => url.searchParams.getAll(key).length !== 1)) throw invalidRequest()
         const query = parse(s.CategoriesQuerySchema, Object.fromEntries(url.searchParams))
-        checkAirline(query.airlineId)
+        checkAirline(query.airlineId, query.flightType)
         const required = { 'power-bank': ['wh', 'count'], 'cordless-iron': ['wh'], liquid: ['ml', 'count'], lighter: ['count'], electronics: ['wh', 'count'], 'general-items': [] }
-        const categories = query.airlineId === 'korean-air' ? demoCategories.map(category => ({ ...category,
+        const categories = demoCategories.map(category => ({ ...category,
           requiredFields: { cabin: required[category.id], checked: ['liquid', 'electronics'].includes(category.id) ? required[category.id] : [] }, estimatePolicy: 'never_definitive',
-        })) : demoCategories
-        body = s.CategoriesResponseSchema.parse({ ...query, categories, meta: query.airlineId === 'korean-air' ? rulesMeta : demoRuntimeMeta })
+        }))
+        body = s.CategoriesResponseSchema.parse({ ...query, categories, meta: rulesMeta })
         break
       }
       case 'recognize': {
@@ -65,15 +69,16 @@ export async function handleApiV2(request: Request, environment: GeminiEnvironme
       }
       case 'lookup': {
         const input = parse(s.LookupRequestSchema, await readJson(request, LIMITS.evaluateBytes))
-        if (!demoEnabled && !geminiReady(environment, true)) throw unavailable()
+        if (!demoEnabled && !tavilyReady(environment)) throw unavailable()
         body = s.LookupResponseSchema.parse(demoEnabled ? lookupStub(input) : await createGeminiV2(environment).lookup(input, request.signal))
         break
       }
       case 'evaluate': {
         const input = parse(s.EvaluateRequestSchema, await readJson(request, LIMITS.evaluateBytes))
         semantics(() => s.assertEvaluationItems(input.items))
-        checkAirline(input.airlineId)
-        const result = input.airlineId === 'korean-air' ? evaluateKoreanAir(input) : evaluateStub(input)
+        checkAirline(input.airlineId, input.flightType)
+        const selected = airlines().find((airline) => airline.id === input.airlineId)!
+        const result = selected.isDemo ? evaluateStub(input) : evaluateAirline(input)
         body = s.EvaluateResponseSchema.parse({ ...result, meta: { ...result.meta, isDemoRecognition: demoEnabled, isDemoLookup: demoEnabled } })
         break
       }

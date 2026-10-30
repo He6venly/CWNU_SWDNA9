@@ -18,8 +18,10 @@ import { createManualItem, quickItems } from '../../../contract/v2/manual.ts'
 import { saveCatalogCard } from '../../../contract/v2/catalog-store.ts'
 import ResultCard from './ResultCard.tsx'
 import Catalog from './Catalog.tsx'
+import TravelAlbum from './TravelAlbum.tsx'
 
 const api = createApiClient()
+const recognitionCache = new Map<string, RecognizeResponse>()
 export default function AppV2() {
   const [status, setStatus] = useState('API 상태 확인 중'), [airlines, setAirlines] = useState<Airline[]>([])
   const [captureMode, setCaptureMode] = useState<'overview' | 'detail'>('overview'), [mode, setMode] = useState<'label' | 'estimate'>('label')
@@ -36,13 +38,17 @@ export default function AppV2() {
   const task = useCheckTask(), busy = task.busy || preparing
   useEffect(() => {
     const controller = new AbortController()
-    void Promise.all([api.health(controller.signal), api.meta(controller.signal), api.airlines(controller.signal), api.rules('korean-air', controller.signal)]).then(([health, metadata, list, rules]) => {
+    void Promise.all([api.health(controller.signal), api.meta(controller.signal), api.airlines(controller.signal)]).then(([health, metadata, list]) => {
       setStatus(`API ${health.meta.contractVersion} · 인식 ${metadata.capabilities.recognition} · 조회 ${metadata.capabilities.productLookup} · 판정 ${metadata.capabilities.evaluation}`)
       setAirlines(list.airlines)
-      setRuleInfo(rules)
     }).catch(() => { if (!controller.signal.aborted) setStatus('API 연결 실패. npm run dev로 실행해 주세요.') })
     return () => controller.abort()
   }, [])
+  useEffect(() => {
+    const controller = new AbortController()
+    void api.rules(airlineId, controller.signal).then(setRuleInfo).catch(() => { if (!controller.signal.aborted) setRuleInfo(null) })
+    return () => controller.abort()
+  }, [airlineId])
   function invalidate() { task.cancel(); setAssessment(null); setSaved([]) }
   function resetPhotos() { invalidate(); setPhotos([]); setItems(current => current.filter(item => item.identification === 'manual')); setLookups({}); setPreparing(false) }
   function updateItem(changed: ItemInfo) {
@@ -74,8 +80,8 @@ export default function AppV2() {
         savedAt, evaluatedAt, ruleVersion: assessment.ruleVersion, meta: assessment.meta,
         assessmentContext: { inventoryComplete, evaluatedItemIds: items.map(entry => entry.id) },
       }, blobs)
-      setSaved(current => [...current, item.id]); setCatalogRevision(value => value + 1); task.setMessage('개인 도감에 저장했습니다. 아래 도감에서 직원 제시 화면을 열 수 있습니다.')
-    } catch (error) { task.setMessage(error instanceof Error ? error.message : '도감에 저장하지 못했습니다.') }
+      setSaved(current => [...current, item.id]); setCatalogRevision(value => value + 1); task.setMessage('여행 기록에 물품을 저장했습니다. 직원 제시 화면을 열 수 있습니다.')
+    } catch (error) { task.setMessage(error instanceof Error ? error.message : '물품 기록을 저장하지 못했습니다.') }
     finally { savingRef.current = false; setSaving(false) }
   }
   function request(): RecognizeRequest {
@@ -85,10 +91,10 @@ export default function AppV2() {
   return <main><h1>{labels.title} · API 2.0 체크</h1>
     <aside><strong>{labels.demoBanner}</strong><p>{labels.stubBanner}</p><p>{labels.referenceNotice}</p></aside>
     <section><h2>1. 상태·항공사·노선</h2><p role="status">{status}</p>
-      <label>항공사<select value={airlineId} disabled={busy} onChange={e => { invalidate(); setAirlineId(e.target.value) }}>
+      <label>항공사<select value={airlineId} disabled={busy} onChange={e => { invalidate(); setRuleInfo(null); setAirlineId(e.target.value) }}>
         {(airlines.length ? airlines : [{ id: 'korean-air', name: '대한항공 (규정 상태 조회 중)', enabled: false }]).map(a => <option key={a.id} value={a.id} disabled={!a.enabled}>{a.name}</option>)}
       </select></label>
-      <p>여행자 1명 · 대한항공 직접 운항편의 한국 국내선·한국 출발 국제선 기준입니다. 공동운항·환승편과 목적지 세관·검역은 별도 확인해야 합니다.</p>
+      <p>여행자 1명 · 선택 항공사 직접 운항편의 한국 국내선·한국 출발 국제선 기준입니다. 공동운항·환승편과 목적지 세관·검역은 별도 확인해야 합니다.</p>
       {ruleInfo && <details><summary>규정 근거·검수 상태</summary><p>{ruleInfo.ruleVersion ?? '재검수 필요'} · 재검수 기한 {ruleInfo.reviewBy}</p><p>{ruleInfo.scope.notice}</p>{ruleInfo.sources.map(source => <p key={source.url}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.title}</a></p>)}</details>}
       <label>노선<select value={flightType} onChange={e => { invalidate(); setFlightType(e.target.value as FlightType) }}><option value="domestic">한국 국내선</option><option value="international">한국 출발 국제선</option></select></label>
       <label><input type="checkbox" checked={inventoryComplete} onChange={e => { invalidate(); setInventoryComplete(e.target.checked) }} />여행자 1명의 전체 물품 목록입니다. 부분 목록이면 합산 한도를 별도 확인합니다.</label>
@@ -104,7 +110,19 @@ export default function AppV2() {
       </div>)}
       <button disabled={busy || !photos.length} onClick={() => {
         const input = request(), redacted = { ...input, images: input.images.map(i => ({ ...i, base64: '[사진 데이터 생략]' })) }
-        void task.run('recognize · 현재 Provider', redacted, signal => api.recognize(input, signal), applyRecognition)
+        void task.run('recognize · 현재 Provider', redacted, async signal => {
+          const data = new TextEncoder().encode(JSON.stringify(input))
+          const digest = await crypto.subtle.digest('SHA-256', data)
+          const key = `${status}:${Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('')}`
+          signal.throwIfAborted()
+          const cached = recognitionCache.get(key)
+          if (cached) return structuredClone(cached)
+          const result = await api.recognize(input, signal)
+          signal.throwIfAborted()
+          if (recognitionCache.size >= 10) recognitionCache.delete(recognitionCache.keys().next().value!)
+          recognitionCache.set(key, structuredClone(result))
+          return result
+        }, applyRecognition)
       }}>등록 사진 분석 요청 (현재 Provider 상태 확인)</button>
     </section>
     <section><h2>사진 없이 빠른 확인</h2><p>사진 인식 없이 직접 입력합니다. 아래 물품을 추가한 뒤 실제 라벨·제품 정보를 확인하고 판정해 주세요. 다른 물품과 개인 한도도 함께 계산합니다.</p>
@@ -140,9 +158,10 @@ export default function AppV2() {
       <button disabled={busy || !items.length} onClick={() => {
         const body = { airlineId, flightType, departureCountry: DEPARTURE_COUNTRY, inventoryComplete, items, resultFormat: 'detailed' as const }
         void task.run('evaluate', body, signal => api.evaluate(body, signal), response => { setAssessment(response); setEvaluatedAt(new Date().toISOString()); setSaved([]) })
-      }}>노선별 판정 요청 (대한항공 규정 / 시연 항공사 고정 응답)</button>
+      }}>선택 항공사 규정으로 판정 요청</button>
       {results.map(result => { const item = items.find(item => item.id === result.itemId); return item && <ResultCard key={result.itemId} item={item} result={result} onSave={() => void saveItem(item, new Date().toISOString())} saving={saving} saved={saved.includes(item.id)} /> })}
     </section>
+    <TravelAlbum items={items} photos={photos} onRestore={restored => { invalidate(); setItems(restored.map(item => ({ ...item, confirmed: false, userEdited: true }))); setPhotos([]); setLookups({}); task.setMessage('불러온 물품을 확인하고 다시 판정해 주세요.') }} />
     <Catalog revision={catalogRevision} currentRuleVersion={ruleInfo?.ruleVersion ?? null} rulesCurrent={ruleInfo?.current ?? false} />
     <section><h2>5. 마지막 요청·응답</h2>{task.busy && <button onClick={() => { task.cancel(); task.setMessage('요청을 취소했습니다.') }}>요청 취소</button>}<p role="status">{task.message}</p>
       {task.trace && <><p>{task.trace.operation} · {task.trace.elapsedMs}ms</p><h3>요청 (사진 데이터 제외)</h3><pre>{JSON.stringify(task.trace.request, null, 2)}</pre><h3>응답</h3><pre>{JSON.stringify(task.trace.response, null, 2)}</pre></>}
