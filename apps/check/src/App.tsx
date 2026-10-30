@@ -87,7 +87,8 @@ export default function App() {
       <button disabled={busy} onClick={() => void run('categories', { airlineId }, signal => api.categories(airlineId, signal), () => {})}>필수 입력 필드 조회</button>
     </section>
     <section aria-labelledby="photo"><h2 id="photo">2. 사진 등록·시연 인식</h2>
-      <label>물품 사진 선택 <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" onChange={e => {
+      <p>이미 찍어 둔 사진을 기기의 사진 보관함이나 파일에서 선택해 주세요.</p>
+      <label>기존 물품 사진 선택 <input type="file" accept="image/jpeg,image/png,image/webp" onChange={e => {
         const file = e.currentTarget.files?.[0]; e.currentTarget.value = ''; void selectPhoto(file)
       }} /></label>
       {preview && <img className="photo" src={preview} alt="등록한 물품 사진" />}

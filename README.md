@@ -2,11 +2,11 @@
 
 2026 CWNU SW-DNA² 챌린지 웹앱 개발 저장소. 임시 제목: 여행 짐 반입 확인.
 
-최신 명세 검토: [촬영 모드·비용 최적화](docs/SPEC_REVIEW.md). 현재 코드는 1.0.0 스텁이며 전체/개별 촬영·알고리즘 판정의 2.0.0 전환은 아직 미구현. 현재 기준은 [implementation-plan.md](implementation-plan.md).
+최신 기준: [계약 2.0.0](contract/v2/README.md), [프론트 전환 안내](docs/FRONTEND_HANDOFF_V2.md), [진행 상태](implementation-plan.md). 전체/개별 사진 등록·필드 출처·국내/국제 구분의 시연 API는 `/api/v2`. 기존 `/api`는 1.0.0으로 유지. 실제 인식·제품 조회·규정 판정은 아직 스텁.
 
 현재 범위는 **백엔드 API·공용 계약·시연 체크 화면**. 사용자 UI/UX·티켓 디자인·개인 도감 저장은 프론트 담당. 인식·제품 검색·규정 대조는 현재 시연용 고정 응답이며 실제 Gemini·최신 규정 미연결.
 
-프론트 병렬 개발 시작: [인계 가이드](docs/FRONTEND_HANDOFF.md), [계약 1.0.0](contract/README.md), [검증 기록](docs/VALIDATION.md).
+프론트 새 연동: [2.0 인계 가이드](docs/FRONTEND_HANDOFF_V2.md), [계약 2.0.0](contract/v2/README.md), [최신 검증](docs/VALIDATION_V2.md). 기존 1.0은 [이전 인계 가이드](docs/FRONTEND_HANDOFF.md)와 [이전 계약](contract/README.md)에 보존.
 
 ## 시작
 

@@ -1,6 +1,6 @@
 import { LIMITS } from '../../../contract/constants.ts'
 
-export async function prepareImage(file: File, signal?: AbortSignal) {
+export async function prepareImage(file: File, signal?: AbortSignal, maxBytes: number = LIMITS.clientImageBytes) {
   if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) throw new Error('JPEG·PNG·WebP 사진을 선택해 주세요.')
   if (file.size > 20 * 1024 * 1024) throw new Error('원본 사진은 20MiB 이하로 선택해 주세요.')
   signal?.throwIfAborted()
@@ -19,7 +19,7 @@ export async function prepareImage(file: File, signal?: AbortSignal) {
     for (const quality of [0.85, 0.7, 0.5]) {
       signal?.throwIfAborted()
       const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/jpeg', quality))
-      if (blob && blob.size <= LIMITS.clientImageBytes) {
+      if (blob && blob.size <= maxBytes) {
         const bytes = new Uint8Array(await blob.arrayBuffer())
         signal?.throwIfAborted()
         let binary = ''
@@ -27,6 +27,6 @@ export async function prepareImage(file: File, signal?: AbortSignal) {
         return { image: { mimeType: 'image/jpeg' as const, base64: btoa(binary) }, preview: URL.createObjectURL(blob), bytes: blob.size }
       }
     }
-    throw new Error('사진을 1MiB 이하로 줄이지 못했습니다. 더 작은 사진을 선택해 주세요.')
+    throw new Error('사진을 전송 가능한 크기로 줄이지 못했습니다. 더 작은 사진을 선택해 주세요.')
   } finally { bitmap.close() }
 }
